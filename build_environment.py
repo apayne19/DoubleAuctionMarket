@@ -4,8 +4,8 @@ import numpy as np  # import numpy
 import time
 import random
 import csv
-#TEST0909096565
-#testing Adam Choy
+#TEST
+#testing Adam Choy2
 class BuildMarketEnv(object):
     """ A class that makes a market"""
     env = {"demand": [], "dem": [], "supply": [], "sup": [], "buyers": {}, "sellers": {}, "eq": {}}
