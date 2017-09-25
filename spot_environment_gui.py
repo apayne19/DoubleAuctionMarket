@@ -1,16 +1,47 @@
-import tkinter as tk
+# universal imports
+import tkinter as tk  # gui interface creator
 import tkinter.filedialog
 from tkinter import messagebox
-import matplotlib
+import matplotlib  # graphing functions
 matplotlib.use("TkAgg")
-import time
+import time  # https://docs.python.org/3.6/library/time.html  # time functions
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
 
+# example of time module
+'''start = time.gmtime(0)  # epoch = 1970, "start of time" for computers
+seconds = time.time()  # time measured by seconds from epoch
+print(time.localtime(seconds))'''  # gives time in present year, month, day, hour, min, sec, day of yr
 
-import os
+# example of tkinter   #
+"""class Application(tk.Frame):
+    def __init__(self, master=None):
+        super().__init__(master)
+        self.pack()
+        self.create_widgets()
+
+    def create_widgets(self):
+        self.hi_there = tk.Button(self)
+        self.hi_there["text"] = "Press my buttons\n;)"
+        self.hi_there["command"] = self.say_hi
+        self.hi_there.pack(side="top")
+        self.quit = tk.Button(self, text="QUIT", fg="red",
+                              command=root.destroy)
+        self.quit.pack(side="bottom")
+
+    def say_hi(self):
+        print("oooooooh you're dirty...\nkiklu!")
+
+root = tk.Tk()
+app = Application(master=root)
+app.mainloop()"""
+
+# local file imports
+import os  # https://docs.python.org/3.6/library/os.html
 import spot_environment_controller
 
+"""This class is using the control center commands from spot_market_controller (condensed methods 
+from spot_market_model).... the HAND of the simulator"""
 
 class SpotEnviornmentGui():
     def __init__(self, root, sec, name, debug=False):
@@ -41,24 +72,18 @@ class SpotEnviornmentGui():
         self.buyer_values = self.build_array(self.num_buyers, self.num_units)
         self.seller_costs = self.build_array(self.num_sellers, self.num_units)
 
-        # self.file_path = "C:\\Users\\Admin\\Desktop\\B04945_02_Code\\icons\\"
-        #self.file_path = "C:\\Users\\Ksquared\\Desktop\\spot_market_environment\\icons\\"
-        self.file_path = "C:\\Users\\Admin\\Desktop\\spot_market\\icons\\"
-        #self.file_path = "C:\\Users\\Admin\\Desktop\\spot_market_environment_v1\\icons\\"
-        #self.file_path ="C:\\Users\\kevin\\Desktop\\spot_market_working\\icons\\"
-        #self.project_path="C:\\Users\\Ksquared\\Desktop\\spot_market_environment\\projects\\"
-        #self.project_path = "C:\\Users\\Admin\\Desktop\\spot_market_environment_v1\\projects\\"
-        #self.project_path = "C:\\Users\\kevin\\Desktop\\spot_market_working\\projects\\"
-        self.project_path = "C:\\Users\\Admin\\Desktop\\spot_market\\projects\\"
+        # have to set file path for icon images and project data
+        self.file_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\icons\\"
+        self.project_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
 
-        self.new_file_icon = tk.PhotoImage(file=self.file_path + 'new_file.gif')
-        self.open_file_icon = tk.PhotoImage(file=self.file_path + 'open_file.gif')
-        self.save_file_icon = tk.PhotoImage(file=self.file_path + 'save.gif')
-        self.cut_icon = tk.PhotoImage(file=self.file_path + 'cut.gif')
-        self.copy_icon = tk.PhotoImage(file=self.file_path + 'copy.gif')
-        self.paste_icon = tk.PhotoImage(file=self.file_path + 'paste.gif')
-        self.undo_icon = tk.PhotoImage(file=self.file_path + 'undo.gif')
-        self.redo_icon = tk.PhotoImage(file=self.file_path + 'redo.gif')
+        self.new_file_icon = tk.PhotoImage(file=self.file_path + 'new.png')
+        self.open_file_icon = tk.PhotoImage(file=self.file_path + 'open.png')
+        self.save_file_icon = tk.PhotoImage(file=self.file_path + 'save.png')
+        self.cut_icon = tk.PhotoImage(file=self.file_path + 'cut.png')
+        self.copy_icon = tk.PhotoImage(file=self.file_path + 'copy.png')
+        self.paste_icon = tk.PhotoImage(file=self.file_path + 'paste.png')
+        self.undo_icon = tk.PhotoImage(file=self.file_path + 'undo.png')
+        self.redo_icon = tk.PhotoImage(file=self.file_path + 'redo.png')
 
         self.show_menu()
         self.show_shortcut()
@@ -81,11 +106,14 @@ class SpotEnviornmentGui():
 
         file_menu = tk.Menu(menu_bar, tearoff=0)
         file_menu.add_command(label='New', accelerator='Ctrl+N',
-                              compound='left', image=self.new_file_icon, underline=0, command=self.process_new_project)
+                              compound='left', image=self.new_file_icon, underline=0,
+                              command=self.process_new_project)
         file_menu.add_command(label='Open', accelerator='Ctrl+O',
-                              compound='left', image=self.open_file_icon, underline=0, command=self.open_file)
+                              compound='left', image=self.open_file_icon, underline=0,
+                              command=self.open_file)
         file_menu.add_command(label='Save', accelerator='Ctrl+S',
-                              compound='left', image=self.save_file_icon, underline=0, command=self.save)
+                              compound='left', image=self.save_file_icon, underline=0,
+                              command=self.save)
         file_menu.add_command(label='Save as', accelerator='Shift+Ctrl+S', command=self.save_as)
         file_menu.add_separator()
         file_menu.add_command(label='Quit', accelerator='Alt+F4', command=self.on_quit_chosen)
@@ -111,42 +139,48 @@ class SpotEnviornmentGui():
     def show_infobar(self):
 
         info_bar = tk.LabelFrame(self.root, height=15, text=str(self.name))
-        info_bar.grid(row=1, column=0, columnspan=4, sticky='W', padx = 5, pady=5)
+        info_bar.grid(row=1, column=0, columnspan=4, sticky='W', padx=5, pady=5)
 
         tk.Label(info_bar, text="Project Name:").grid(row=0, column=0)
-        tk.Entry(info_bar, width=15, justify=tk.LEFT, textvariable=self.string_project_name).grid(row=0, column=1,
-                                                                                                 padx=5)
+        tk.Entry(info_bar, width=15, justify=tk.LEFT,
+                 textvariable=self.string_project_name).grid(row=0, column=1, padx=5)
 
         tk.Label(info_bar, text="Number of Buyers: ").grid(row=0, column=2)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_num_buyers).grid(row=0, column=3,
-                                                                                                 padx=5)
+        tk.Entry(info_bar, width=3, justify=tk.CENTER,
+                 textvariable=self.string_num_buyers).grid(row=0, column=3, padx=5)
         self.string_num_buyers.set(str(self.num_buyers))
 
         tk.Label(info_bar, text="Number of Sellers: ").grid(row=0, column=4, padx=5)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_num_sellers).grid(row=0, column=5)
+        tk.Entry(info_bar, width=3, justify=tk.CENTER,
+                 textvariable=self.string_num_sellers).grid(row=0, column=5)
         self.string_num_sellers.set(str(self.num_sellers))
 
         tk.Label(info_bar, text="Number of Units: ").grid(row=0, column=6, padx=5)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_num_units).grid(row=0, column=7)
+        tk.Entry(info_bar, width=3, justify=tk.CENTER,
+                 textvariable=self.string_num_units).grid(row=0, column=7)
         self.string_num_units.set(str(self.num_units))
 
         info_button = tk.Button(info_bar, text="Set", width=4, command=self.on_set_parms_clicked)
         info_button.grid(row=0, column=8, padx=10, pady=5)
 
         tk.Label(info_bar, text="Equilibrium Q: ").grid(row=1, column=2)
-        tk.Label(info_bar, width=4, justify=tk.CENTER, textvariable=self.string_eq, relief='sunken').grid(row=1, column=3)
+        tk.Label(info_bar, width=4, justify=tk.CENTER,
+                 textvariable=self.string_eq, relief='sunken').grid(row=1, column=3)
         self.string_eq.set("U")
 
         tk.Label(info_bar, text="EQ Price Low: ").grid(row=1, column=4)
-        tk.Label(info_bar, width=4, justify=tk.CENTER, textvariable=self.string_pl, relief='sunken').grid(row=1, column=5)
+        tk.Label(info_bar, width=4, justify=tk.CENTER,
+                 textvariable=self.string_pl, relief='sunken').grid(row=1, column=5)
         self.string_pl.set("U")
 
         tk.Label(info_bar, text="EQ Price High: ").grid(row=1, column=6)
-        tk.Label(info_bar, width=4, justify=tk.CENTER, textvariable=self.string_ph, relief='sunken').grid(row=1, column=7)
+        tk.Label(info_bar, width=4, justify=tk.CENTER,
+                 textvariable=self.string_ph, relief='sunken').grid(row=1, column=7)
         self.string_ph.set("U")
 
         tk.Label(info_bar, text="   Max Surplus: ").grid(row=1, column=8, pady=15)
-        tk.Label(info_bar, width=4, justify=tk.CENTER, textvariable=self.string_ms, relief='sunken').grid(row=1, column=9, padx=15)
+        tk.Label(info_bar, width=4, justify=tk.CENTER,
+                 textvariable=self.string_ms, relief='sunken').grid(row=1, column=9, padx=15)
         self.string_ms.set("U")
 
     def on_quit_chosen(self):
@@ -181,11 +215,7 @@ class SpotEnviornmentGui():
 
     def on_plot_clicked(self):
 
-        """ Plot Supply and Demand
-
-        Plot supply and demand in a frame with toolbar.
-
-        """
+        """ Plot supply and demand in a frame with toolbar."""
         # TODO: Fix axis labels and Title.  Commented out below.  Fail as is.
         if self.debug:
             print("In Gui -> on_plot_clicked --> begin")
@@ -244,15 +274,12 @@ class SpotEnviornmentGui():
             print("In Gui -> on_plot_clicked --> end")
 
     def set_market(self):
-
-        """ Sends all values on screen to model
-        """
-
+        """ Sends all values on screen to model"""
         # Start with name and all that
         if self.debug:
             print("In Gui -> set_market -> begin")
-        self.sec.set_market_parms([self.string_project_name.get(), self.num_buyers, self.num_sellers, self.num_units])
-
+        self.sec.set_market_parms([self.string_project_name.get(), self.num_buyers, self.num_sellers,
+                                   self.num_units])
         make_d = {}
 
         # Now Add Buyer Values and Seller Costs
@@ -297,13 +324,11 @@ class SpotEnviornmentGui():
 
 
     def on_set_parms_clicked(self):
-        """ Set parameters from info_bar
-            Used to initalize a new experiment.  A messagebox allows the user to opt out.
+        """Set parameters from info_bar --> used to initialize a new experiment.
+        A messagebox allows the user to opt out."""
 
-        """
-
-        if not messagebox.askyesno("DESTROY WORK", "This will destoy your work \n Do you wish to continue?"): return
-
+        if not messagebox.askyesno("DESTROY WORK", "This will destroy your work \n Do you wish to continue?"):
+            return
 
         self.num_buyers = int(self.string_num_buyers.get())
         self.num_sellers = int(self.string_num_sellers.get())
@@ -351,7 +376,6 @@ class SpotEnviornmentGui():
                     return
                 for k in range(self.num_units):
                     self.seller_costs[row-self.num_buyers][k].set(self.current_row_contents[k])
-
         return
 
     def show_player_frames(self):
@@ -372,23 +396,27 @@ class SpotEnviornmentGui():
             tk.Label(bf, text=sunit).grid(row=0, column=unit + 1)
         for buyer in range(self.num_buyers):
             buy_ids[buyer] = tk.StringVar()
-            tk.Entry(bf, width=5, justify=tk.CENTER, textvariable=buy_ids[buyer]).grid(row=buyer + 1, column=0)
+            tk.Entry(bf, width=5, justify=tk.CENTER,
+                     textvariable=buy_ids[buyer]).grid(row=buyer + 1, column=0)
             buy_ids[buyer].set(str(buyer + 1))
             for unit in range(self.num_units):
                 self.buyer_values[buyer][unit] = tk.StringVar()
-                tk.Entry(bf, width=5, justify=tk.RIGHT, textvariable=self.buyer_values[buyer][unit]).grid(row=buyer + 1,
+                tk.Entry(bf, width=5, justify=tk.RIGHT,
+                         textvariable=self.buyer_values[buyer][unit]).grid(row=buyer + 1,
                                                                                                           column=unit + 1)
                 self.buyer_values[buyer][unit].set("")
-            self.buttons[buyer][0] = tk.Button(bf, width=2, text="C", command=self.on_button_clicked(buyer, 0))
+            self.buttons[buyer][0] = tk.Button(bf, width=2, text="C",
+                                               command=self.on_button_clicked(buyer, 0))
             self.buttons[buyer][0].grid(row=buyer + 1, column=self.num_units + 2)
-            self.buttons[buyer][1] = tk.Button(bf, width=2, text="R", command=self.on_button_clicked(buyer, 1))
+            self.buttons[buyer][1] = tk.Button(bf, width=2, text="R",
+                                               command=self.on_button_clicked(buyer, 1))
             self.buttons[buyer][1].grid(row=buyer + 1, column=self.num_units + 3)
 
     def show_sellers_frame(self):
         sf = tk.LabelFrame(self.root, text="Seller Entries")
         sf.grid(row=2, column=1, sticky=tk.W +
                                         tk.E + tk.N + tk.S, padx=15, pady=4)
-        if self.num_sellers == 0: return  # Notihing to show
+        if self.num_sellers == 0: return  # Nothing to show
         sell_ids = [k for k in range(self.num_sellers)]
         tk.Label(sf, text="ID").grid(row=0, column=0)
         for unit in range(self.num_units):
@@ -396,18 +424,22 @@ class SpotEnviornmentGui():
             tk.Label(sf, text=sunit).grid(row=0, column=unit + 1)
         for seller in range(self.num_sellers):
             sell_ids[seller] = tk.StringVar()
-            tk.Entry(sf, width=5, justify=tk.CENTER, textvariable=sell_ids[seller]).grid(row=seller + 1, column=0)
+            tk.Entry(sf, width=5, justify=tk.CENTER,
+                     textvariable=sell_ids[seller]).grid(row=seller + 1, column=0)
             sell_ids[seller].set(str(seller + 1))
             for unit in range(self.num_units):
                 self.seller_costs[seller][unit] = tk.StringVar()
-                tk.Entry(sf, width=5, justify=tk.RIGHT, textvariable=self.seller_costs[seller][unit]).grid(
+                tk.Entry(sf, width=5, justify=tk.RIGHT,
+                         textvariable=self.seller_costs[seller][unit]).grid(
                     row=seller + 1,
                     column=unit + 1)
                 self.seller_costs[seller][unit].set("")
             row = self.num_buyers + seller
-            self.buttons[row][0] = tk.Button(sf, width=2, text="C", command=self.on_button_clicked(row, 0))
+            self.buttons[row][0] = tk.Button(sf, width=2, text="C",
+                                             command=self.on_button_clicked(row, 0))
             self.buttons[row][0].grid(row=seller + 1, column=self.num_units + 2)
-            self.buttons[row][1] = tk.Button(sf, width=2, text="R", command=self.on_button_clicked(row, 1))
+            self.buttons[row][1] = tk.Button(sf, width=2, text="R",
+                                             command=self.on_button_clicked(row, 1))
             self.buttons[row][1].grid(row=seller + 1, column=self.num_units + 3)
 
     def show_info_bar_parms(self):
@@ -532,7 +564,7 @@ class SpotEnviornmentGui():
 
     def set_seller_costs(self, seller, costs):
         assert seller < self.num_sellers, "seller {} not in range".format(seller)
-        assert len(costs) == self.num_units, "costs {} shoud have {} cost units".format(costs, self.num_units)
+        assert len(costs) == self.num_units, "costs {} should have {} cost units".format(costs, self.num_units)
         for unit in range(self.num_units):
             self.seller_costs[seller][unit].set(str(costs[unit]))
 

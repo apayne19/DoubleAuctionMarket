@@ -1,7 +1,10 @@
 import spot_environment_model
 
+"""This is basically the control center. All actions here are being condensed and brought in from
+ spot_market_model...... the BRAIN of the simulator"""
+
 class SpotEnvironmentController():
-    def __init__(self, debug=False):
+    def __init__(self, debug=False):  # debug builds an error trap
         self.debug = debug
         if self.debug == True:
             print("... In Controller -> __init__")
