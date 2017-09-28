@@ -11,7 +11,7 @@ class SpotEnvironmentController():
         self.sem = spot_environment_model.SpotEnvironmentModel(self.debug)
 
     def load_file(self, path):
-        self.sem.load_file(path)
+        self.sem.load_file(path)  # loads file by pulling from file path
 
     def save_project(self, path):
         self.sem.save_file(path)
@@ -27,7 +27,7 @@ class SpotEnvironmentController():
 
     def set_market_parms(self, parms):
         if self.debug == True:
-            print("... In Controller -> set_market_parms")
+            print("... In Controller -> set_market_params")
         self.sem.set_market_parms(parms)
 
     def add_buyer(self, bn, values):

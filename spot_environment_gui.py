@@ -11,10 +11,10 @@ from matplotlib.figure import Figure
 # example of time module
 '''start = time.gmtime(0)  # epoch = 1970, "start of time" for computers
 seconds = time.time()  # time measured by seconds from epoch
-print(time.localtime(seconds))'''  # gives time in present year, month, day, hour, min, sec, day of yr
+print(time.localtime(seconds))  # gives time in present year, month, day, hour, min, sec, day of yr'''
 
-# example of tkinter   #
-"""class Application(tk.Frame):
+# example of tkinter app build
+'''class Application(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.pack()
@@ -34,11 +34,11 @@ print(time.localtime(seconds))'''  # gives time in present year, month, day, hou
 
 root = tk.Tk()
 app = Application(master=root)
-app.mainloop()"""
+app.mainloop()'''
 
 # local file imports
 import os  # https://docs.python.org/3.6/library/os.html
-import spot_environment_controller
+import spot_environment_controller  # condensed modules/commands from spot_env_model
 
 """This class is using the control center commands from spot_market_controller (condensed methods 
 from spot_market_model).... the HAND of the simulator"""
@@ -47,50 +47,53 @@ class SpotEnviornmentGui():
     def __init__(self, root, sec, name, debug=False):
         assert name != "", "Gui must have a name"
 
-        self.root = root
-        self.sec = sec
-        self.name = name
-        self.debug = debug
-        root.title(name)
+        self.root = root  # root builds tkinter app
+        self.sec = sec  # will bring in spot_env_model and use debugger
+        self.name = name  # name of gui
+        self.debug = debug  # used as error checker...when false will return errors or warnings
+        root.title(name)  # giving root a name
 
-        self.num_buyers = 0
-        self.num_sellers = 0
-        self.num_units = 0
-        self.string_num_buyers = tk.StringVar()
-        self.string_num_sellers = tk.StringVar()
-        self.string_num_units = tk.StringVar()
-        self.string_project_name = tk.StringVar()
+        self.num_buyers = 0  # setting number of buyers to 0
+        self.num_sellers = 0  # setting number of sellers to 0
+        self.num_units = 0  # setting number of units to 0
+        self.string_num_buyers = tk.StringVar()    # creates a tkinter variable
+        self.string_num_sellers = tk.StringVar()   # StringVar() returns either an ASCII string or Unicode string
+        self.string_num_units = tk.StringVar()     # can also be used to trace when changes made to variables
+        self.string_project_name = tk.StringVar()  # BooleanVar() will return 0 for false and 1 for true...
         self.string_eq = tk.StringVar()
         self.string_pl = tk.StringVar()
         self.string_ph = tk.StringVar()
         self.string_ms = tk.StringVar()
-        self.current_row = 0
+        self.current_row = 0  # setting current read row to 0... self.current_row+1 would read next row
         self.current_row_contents = []
-        self.ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        self.ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]  # is this limiting the amount to 10 buyers and 10 sellers?
+        self.file_name = None  # none is a placeholder to be filled
 
-        self.file_name = None
-        self.buyer_values = self.build_array(self.num_buyers, self.num_units)
-        self.seller_costs = self.build_array(self.num_sellers, self.num_units)
+        # have to build matrices for future tkinter display
+        self.buyer_values = self.build_array(self.num_buyers, self.num_units)  # matrix of buyers and number of units
+        self.seller_costs = self.build_array(self.num_sellers, self.num_units)  # matrix of sellers and number of units
 
-        # have to set file path for icon images and project data
+        # have to set local file path for icon images and project data
         self.file_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\icons\\"
         self.project_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
 
+        # have to create small images for tkinter display... open file, save, etc.
         self.new_file_icon = tk.PhotoImage(file=self.file_path + 'new.png')
         self.open_file_icon = tk.PhotoImage(file=self.file_path + 'open.png')
-        self.save_file_icon = tk.PhotoImage(file=self.file_path + 'save.png')
-        self.cut_icon = tk.PhotoImage(file=self.file_path + 'cut.png')
-        self.copy_icon = tk.PhotoImage(file=self.file_path + 'copy.png')
+        self.save_file_icon = tk.PhotoImage(file=self.file_path + 'save.png')  # calling images from icons folder
+        self.cut_icon = tk.PhotoImage(file=self.file_path + 'cut.png')         # --> pulled from internet images
+        self.copy_icon = tk.PhotoImage(file=self.file_path + 'copy.png')       # --> images edited/shrunk to meet scale
         self.paste_icon = tk.PhotoImage(file=self.file_path + 'paste.png')
         self.undo_icon = tk.PhotoImage(file=self.file_path + 'undo.png')
         self.redo_icon = tk.PhotoImage(file=self.file_path + 'redo.png')
 
-        self.show_menu()
-        self.show_shortcut()
-        self.show_infobar()
+        # have to build menu and start the project
+        self.show_menu()  # executes menu build with toolbar and help/action messages
+        self.show_shortcut()  # executes frame build in tkinter
+        self.show_infobar()  # executes sub-frame for user entering number buyers, number sellers, units
         self.process_new_project()
 
-    def build_array(self, num_1, num_2):
+    def build_array(self, num_1, num_2):  # builds an array for buyers:values and sellers:costs
         x = []
         for j in range(num_1):
             a_row = []
@@ -101,121 +104,130 @@ class SpotEnviornmentGui():
 
     def show_menu(self):
         # getting icons ready for compound menu
-
         menu_bar = tk.Menu(self.root)  # menu begins
 
+        # create file menu item
         file_menu = tk.Menu(menu_bar, tearoff=0)
         file_menu.add_command(label='New', accelerator='Ctrl+N',
-                              compound='left', image=self.new_file_icon, underline=0,
-                              command=self.process_new_project)
+                              compound='left', image=self.new_file_icon, underline=0, command=self.process_new_project)
         file_menu.add_command(label='Open', accelerator='Ctrl+O',
-                              compound='left', image=self.open_file_icon, underline=0,
-                              command=self.open_file)
+                              compound='left', image=self.open_file_icon, underline=0, command=self.open_file)
         file_menu.add_command(label='Save', accelerator='Ctrl+S',
-                              compound='left', image=self.save_file_icon, underline=0,
-                              command=self.save)
+                              compound='left', image=self.save_file_icon, underline=0, command=self.save)
         file_menu.add_command(label='Save as', accelerator='Shift+Ctrl+S', command=self.save_as)
         file_menu.add_separator()
         file_menu.add_command(label='Quit', accelerator='Alt+F4', command=self.on_quit_chosen)
-        menu_bar.add_cascade(label='File', menu=file_menu)
+        menu_bar.add_cascade(label='File', menu=file_menu)  # allows toolbar tab to drop down with multiple choices
 
+        # create show action menu item
         show_menu = tk.Menu(menu_bar, tearoff=0)
-        show_menu.add_command(label='Plot', command=self.on_plot_clicked)
-        show_menu.add_command(label='Show', command=self.on_show_clicked)
-        show_menu.add_command(label='Calc EQ', command=self.on_calc_eq_clicked)
-        menu_bar.add_cascade(label='Market', menu=show_menu)
+        show_menu.add_command(label='Plot', command=self.on_plot_clicked)  # click = plot action
+        show_menu.add_command(label='Show', command=self.on_show_clicked)  # click = show action
+        show_menu.add_command(label='Calc EQ', command=self.on_calc_eq_clicked)  # click = calc action
+        menu_bar.add_cascade(label='Actions', menu=show_menu)  # allows menu to drop down
 
+        # create about/help menu
         about_menu = tk.Menu(menu_bar, tearoff=0)
-        about_menu.add_command(label='About', command=self.display_about_messagebox)
-        about_menu.add_command(label='Help', command=self.display_help_messagebox)
-        menu_bar.add_cascade(label='About', menu=about_menu)
-
-        root.config(menu=menu_bar)  # menu ends
+        about_menu.add_command(label='About', command=self.display_about_messagebox)  # click = display about message
+        about_menu.add_command(label='Help', command=self.display_help_messagebox)  # click = display help message
+        menu_bar.add_cascade(label='Misc', menu=about_menu)  # drop down menu
+        root.config(menu=menu_bar)  # makes menu changes final
 
     def show_shortcut(self):
-        shortcut_bar = tk.Frame(self.root)
-        shortcut_bar.grid(row=0, column=0, columnspan=4, sticky='W')
+        shortcut_bar = tk.Frame(self.root)  # creates a frame within the tkinter object
+        shortcut_bar.grid(row=0, column=0, columnspan=4, sticky='W')  # setting parameters of frame
+        """WARNING: Never use grid and pack in same tkinter master window, will create error --> loop to solve"""
 
     def show_infobar(self):
+        info_bar = tk.LabelFrame(self.root, height=15, text=str(self.name))  # creates a label frame for initial inputs
+        info_bar.grid(row=1, column=0, columnspan=4, sticky='W', padx=5, pady=5)  # set parameters
 
-        info_bar = tk.LabelFrame(self.root, height=15, text=str(self.name))
-        info_bar.grid(row=1, column=0, columnspan=4, sticky='W', padx=5, pady=5)
-
+        # create project name label
         tk.Label(info_bar, text="Project Name:").grid(row=0, column=0)
-        tk.Entry(info_bar, width=15, justify=tk.LEFT,
-                 textvariable=self.string_project_name).grid(row=0, column=1, padx=5)
+        tk.Entry(info_bar, width=15, justify=tk.LEFT, textvariable=self.string_project_name).grid(row=0, column=1, padx=5)
 
+        # create number of buyers label
         tk.Label(info_bar, text="Number of Buyers: ").grid(row=0, column=2)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER,
-                 textvariable=self.string_num_buyers).grid(row=0, column=3, padx=5)
-        self.string_num_buyers.set(str(self.num_buyers))
+        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_num_buyers).grid(row=0, column=3, padx=5)
+        self.string_num_buyers.set(str(self.num_buyers))  # sets initial display value at self.num_buyers = 0
 
+        # create number of sellers label
         tk.Label(info_bar, text="Number of Sellers: ").grid(row=0, column=4, padx=5)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER,
-                 textvariable=self.string_num_sellers).grid(row=0, column=5)
-        self.string_num_sellers.set(str(self.num_sellers))
+        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_num_sellers).grid(row=0, column=5)
+        self.string_num_sellers.set(str(self.num_sellers))  # sets initial display value at self.num_sellers = 0
 
+        # create number of units label
         tk.Label(info_bar, text="Number of Units: ").grid(row=0, column=6, padx=5)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER,
-                 textvariable=self.string_num_units).grid(row=0, column=7)
-        self.string_num_units.set(str(self.num_units))
+        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_num_units).grid(row=0, column=7)
+        self.string_num_units.set(str(self.num_units))  # sets initial display value at self.num_units = 0
 
-        info_button = tk.Button(info_bar, text="Set", width=4, command=self.on_set_parms_clicked)
-        info_button.grid(row=0, column=8, padx=10, pady=5)
+        # create a button with action input (command = click)
+        info_button = tk.Button(info_bar, text="Set", width=4,
+                                command=self.on_set_parms_clicked)
+        '''Click = calls on_set_parms_clicked 
+                    --> calls show_player_frames() 
+                        --> calls show_buyer_frames() and show_seller_frames()
+                            --> builds a frame for each group'''
+        info_button.grid(row=0, column=8, padx=10, pady=5)  # creates grids in both built frames
 
-        tk.Label(info_bar, text="Equilibrium Q: ").grid(row=1, column=2)
+        # create Equilibrium Q label
+        tk.Label(info_bar, text="Equilibrium Q: ").grid(row=1, column=2)  # create/grid location
         tk.Label(info_bar, width=4, justify=tk.CENTER,
-                 textvariable=self.string_eq, relief='sunken').grid(row=1, column=3)
-        self.string_eq.set("U")
+                 textvariable=self.string_eq, relief='sunken').grid(row=1, column=3)  # relief='sunken' = visual depth
+        self.string_eq.set("n/a")  # sets display in box to N/A and makes the box unchangeable
 
+        # create EQ Price low label
         tk.Label(info_bar, text="EQ Price Low: ").grid(row=1, column=4)
         tk.Label(info_bar, width=4, justify=tk.CENTER,
                  textvariable=self.string_pl, relief='sunken').grid(row=1, column=5)
-        self.string_pl.set("U")
+        self.string_pl.set("n/a")  # display to N/A and unchangeable
 
+        # create EQ high price label
         tk.Label(info_bar, text="EQ Price High: ").grid(row=1, column=6)
         tk.Label(info_bar, width=4, justify=tk.CENTER,
                  textvariable=self.string_ph, relief='sunken').grid(row=1, column=7)
-        self.string_ph.set("U")
+        self.string_ph.set("n/a")  # display n/a and unchangeable
 
+        # create Max Surplus label
         tk.Label(info_bar, text="   Max Surplus: ").grid(row=1, column=8, pady=15)
         tk.Label(info_bar, width=4, justify=tk.CENTER,
                  textvariable=self.string_ms, relief='sunken').grid(row=1, column=9, padx=15)
-        self.string_ms.set("U")
+        self.string_ms.set("n/a")  # display n/a and unchangeable
 
     def on_quit_chosen(self):
-        if tkinter.messagebox.askokcancel("Quit?", "Really quit?"):
-            root.destroy()
+        # TODO create similar action for when x clicked in top right corner of window
+        if tkinter.messagebox.askokcancel("Exit?", "Have you saved your work?"):
+            root.destroy()  # closes window and destroys tkinter object
 
     def process_sd_string(self):
         if self.num_buyers == 0:
             return "Empty"
         else:
-            s_d_list = self.sec.get_supply_demand_list()
+            s_d_list = self.sec.get_supply_demand_list()  # calls supply_demand_list from spot_env_model
             return s_d_list
 
     def on_calc_eq_clicked(self):
-        qt, pl, ph, ms = sec.get_equilibrium()
+        qt, pl, ph, ms = sec.get_equilibrium()  # click = calls get_eq() from spot_env_model
         self.string_eq.set(str(qt))
-        self.string_pl.set(str(pl))
+        self.string_pl.set(str(pl))  # these change n/a displays to new calc values
         self.string_ph.set(str(ph))
         self.string_ms.set(str(ms))
 
     def on_show_clicked(self):
-        if self.debug:
+        if self.debug:  # if error trap not tripped and still set to False
             print("In GUI -> on_show_clicked -> begin")
         self.set_market()
         lfr_show = tk.LabelFrame(root, text="List of Supply and Demand")
-        lfr_show.grid(row=2, rowspan=3, column=2, sticky=tk.W +
-                                        tk.E + tk.N + tk.S, padx=15, pady=4)
+        lfr_show.grid(row=2, rowspan=3, column=2, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
         lbl_show = tk.Label(lfr_show, text=self.process_sd_string())
         lbl_show.grid(row=0, column=0)
         if self.debug:
             print("In GUI -> on_show_clicked -> end")
 
     def on_plot_clicked(self):
-
         """ Plot supply and demand in a frame with toolbar."""
+        """Click = calls set_market()
+                    --> which calls methods from spot_env_model to display values in GUI"""
         # TODO: Fix axis labels and Title.  Commented out below.  Fail as is.
         if self.debug:
             print("In Gui -> on_plot_clicked --> begin")
@@ -223,20 +235,22 @@ class SpotEnviornmentGui():
 
         # set up frame to plot in
         fr_plot = tk.LabelFrame(root, text="Plot of Supply and Demand")
-        fr_plot.grid(row=2, rowspan=2, column=3, sticky=tk.W +
-                                        tk.E + tk.N + tk.S, padx=15, pady=4)
+        fr_plot.grid(row=2, rowspan=2, column=3, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
 
-        # set up plot figure
+        # set up graph to plot in frame
+        '''Stack overflow states that using matplotlib.Figure() can cause problems when graphing in GUI... could be
+        causing problems when trying to graph the axes labels and title below'''
         f = Figure(figsize=(5, 5), dpi=100)
         a = f.add_subplot(111)
         if self.num_buyers == 0:
             canvas = FigureCanvasTkAgg(f, fr_plot)
             canvas.get_tk_widget().pack()  # Have to use pack here to work with toolbar.  Not sure why.
-            canvas.show()
+            canvas.draw()                  # -->TODO pack could cause error with grid (warning in init)
             if self.debug:
                 print("In Gui -> on_plot_clicked --> early end")
-            self.set_market()
+            self.set_market()  # why is this called twice?
             return
+
         # get some model information here
         dunits, sunits, munits, demand_values, supply_costs, eq_price_high, eq_price_low = sec.get_supply_demand_plot_info()
         if self.debug:
@@ -245,25 +259,24 @@ class SpotEnviornmentGui():
             print("supply = {}".format(supply_costs))
 
         # do some plotting here
-
         if eq_price_high != eq_price_low:
             a.plot(munits, [eq_price_high for x in munits], label='Price High')  # High Price Line
             a.plot(munits, [eq_price_low for x in munits], label='Price Low')  # Low Price Line
         else:
-            a.plot(munits, [eq_price_high for x in munits], label='Price')  # Just one price
+            a.plot(munits, [eq_price_high for x in munits], label='EQ Price')  # Just one price
 
-        a.step(dunits, demand_values, label='Demand')  # generate the demand plot
-        a.step(sunits, supply_costs, label='Supply')  # generate the supply plot
+        a.step(dunits, demand_values, label='Demand')  # plots the demand step-wise curve
+        a.step(sunits, supply_costs, label='Supply')  # plots the supply step-wise curve
 
         a.legend(bbox_to_anchor=(0.65, 0.98))  # places a legend on the plot
-        #a.title('Supply and Demand')  # add the title
-        #a.xlabel('Units')  # add the x axis label
-        #a.ylabel('$')  # add the y axis label
+        # a.title('Supply and Demand')  # add the title
+        # a.xlabel(str("Units"))  # add the x axis label       -------> These create errors!!
+        # a.ylabel(str("$"))  # add the y axis label
 
         # finish setting up the canvas here
         canvas = FigureCanvasTkAgg(f, fr_plot)
         canvas.get_tk_widget().pack()  # Have to use pack here to work with toolbar.  Not sure why.
-        canvas.show()
+        canvas.draw()
 
         # Add navigation bar:  This adds a toolbar.  This is optional and does not work yet
         toolbar = NavigationToolbar2TkAgg(canvas, fr_plot)
@@ -283,9 +296,9 @@ class SpotEnviornmentGui():
         make_d = {}
 
         # Now Add Buyer Values and Seller Costs
-        make_d["buyers"]={}
+        make_d["buyers"] = {}
         for k in range(self.num_buyers):
-            make_d["buyers"][k]=[]
+            make_d["buyers"][k] = []
             for j in range(self.num_units):
                 make_d["buyers"][k].append(int(self.buyer_values[k][j].get()))
 
@@ -308,8 +321,8 @@ class SpotEnviornmentGui():
 
     def show_market(self, make_d):
 
-        if self.debug: print ("In Gui -> show_market -> begin")
-
+        if self.debug:
+            print("In Gui -> show_market -> begin")
         print("... name = {}".format(self.name))
         print("... num_buyers = {}".format(self.num_buyers))
         print("... num_sellers = {}".format(self.num_sellers))
@@ -320,13 +333,12 @@ class SpotEnviornmentGui():
         for k in range(self.num_sellers):
             print("... make_d[sellers][{}] = {}".format(k, make_d["sellers"][k]))
 
-        if self.debug: print("In Gui -> show_market -> end")
+        if self.debug:
+            print("In Gui -> show_market -> end")
 
 
     def on_set_parms_clicked(self):
-        """Set parameters from info_bar --> used to initialize a new experiment.
-        A messagebox allows the user to opt out."""
-
+        """Set parameters from info_bar, initializes a new experiment. Message box will allow the user to opt out."""
         if not messagebox.askyesno("DESTROY WORK", "This will destroy your work \n Do you wish to continue?"):
             return
 
@@ -335,12 +347,12 @@ class SpotEnviornmentGui():
         self.num_units = int(self.string_num_units.get())
         self.root.title(self.string_project_name.get())
 
-        if self.num_buyers > 0 and self.num_units> 0:  # Build array if useful
+        if self.num_buyers > 0 and self.num_units > 0:  # Build array if useful
             self.buyer_values = self.build_array(self.num_buyers, self.num_units)
         if self.num_sellers > 0 and self.num_units > 0:  # Build array if useful
             self.seller_costs = self.build_array(self.num_sellers, self.num_units)
 
-        self.show_player_frames()
+        self.show_player_frames()  # calls show_player_frames --> builds frame
         self.sec.set_market_parms([self.string_project_name.get(), self.num_buyers, self.num_sellers, self.num_units])
 
 
@@ -474,19 +486,18 @@ class SpotEnviornmentGui():
     def open_file(self, event=None):
         input_file_name = tkinter.filedialog.askopenfilename(defaultextension=".csv",
                                                              filetypes=[("All Files", "*.*"),
-                                                                        ("Text Documents", "*.txt")])
+                                                                        ("Text Documents", "*.txt")])  # accepts chosen file
         if input_file_name:
             # global file_name
             self.file_name = input_file_name
             self.name = os.path.basename(self.file_name)
-            indx = self.name.find(".")   # look for strt of .csv
-            self.name = self.name[:indx] # and remove it from project name
-
+            index = self.name.find(".")   # look for start of .csv
+            self.name = self.name[:index]  # pulls file from directory/file path
             self.root.title('{}'.format(self.name))
             self.sec.load_file(self.file_name)
             self.show_project()
 
-    def write_to_file(self, file_name):
+    def write_to_file(self, file_name):  # creates ability to write directly in file  # can use when users put in info
         pass
         """
         try:
@@ -498,33 +509,33 @@ class SpotEnviornmentGui():
             # we discuss message boxes in the next section so ignored here.
         """
 
-    def save_as(self, event=None):
+    def save_as(self, event=None):  # TODO create ability to save work anywhere on the computer
         pass
 
-    def save(self, event=None):
+    def save(self, event=None):  # saves file in it's path location
         # TODO:  Add existing file check
         self.set_market()
         self.project_path += self.string_project_name.get()
         self.sec.save_project(self.project_path)
 
-    def display_about_messagebox(self, event=None):
-        tkinter.messagebox.showinfo(
-            "About", "{}{}".format(self.name, "\n\n Kevin McCabe \n\n August, 2017"))
+    def display_about_messagebox(self, event=None):  # dispays about message
+        tkinter.messagebox.showinfo("About", "{}{}".format(self.name,
+                                                           "\n\nCenter for the Study of Neuroeconomics\n\nOctober, 2017"))
 
-    def display_help_messagebox(self, event=None):
-        help_msg =  "Quick Help: \n\n"
+    def display_help_messagebox(self, event=None):  # displays help messages when message link clicked
+        help_msg = "Quick Help: \n\n"
         help_msg += "   File Menu \n"
         help_msg += "      New  - Create New Project \n"
         help_msg += "      Load - Load Project \n"
         help_msg += "      Save - Save Project \n\n"
         help_msg += "   Getting Started \n"
-        help_msg += "      Enter unique Project Name\n"
-        help_msg += "      Enter Number of Buyers \n"
-        help_msg += "      Enter Number of Sellers \n"
-        help_msg += "      Enter Number of Units \n"
-        help_msg += "      Click Set Button \n"
-        help_msg += "         Say yes to message box\n"
-        help_msg += "         You will see Buyers and Sellers entries \n"
+        help_msg += "      1). Enter unique Project Name \n"
+        help_msg += "      2). Enter Number of Buyers \n"
+        help_msg += "      3). Enter Number of Sellers \n"
+        help_msg += "      4). Enter Number of Units \n"
+        help_msg += "      5). Click Set Button \n"
+        help_msg += "          a). Say yes to message box \n"
+        help_msg += "          b). Buyers and Sellers entries displayed \n"
         tkinter.messagebox.showinfo("Help", help_msg)
 
     def show_project(self):
@@ -584,7 +595,7 @@ if __name__ == "__main__":
     if debug_test:
         print("In Gui -> START")
     sec = spot_environment_controller.SpotEnvironmentController(debug_test)
-    gui = SpotEnviornmentGui(root, sec, "Spot Market Editor", debug_test)
+    gui = SpotEnviornmentGui(root, sec, "Trading Platform", debug_test)
     root.mainloop()
     if debug_test:
         print("In Gui -> END")

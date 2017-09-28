@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="20ab1217-fded-4f2a-a544-19f32ae10eb8" name="Default" comment="" />
+    <list default="true" id="20ab1217-fded-4f2a-a544-19f32ae10eb8" name="Default" comment="1). Fixed spot_environment_gui to working&#10;2). Obtained understanding of how the environment pieces are linked&#10;3). Cleaned up formatting/typos&#10;4). Started commenting on environment pieces">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spot_environment_controller.py" afterPath="$PROJECT_DIR$/spot_environment_controller.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spot_environment_gui.py" afterPath="$PROJECT_DIR$/spot_environment_gui.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spot_environment_model.py" afterPath="$PROJECT_DIR$/spot_environment_model.py" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -12,72 +17,12 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="build_environment.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/build_environment.py">
+      <file leaf-file-name="spot_environment_model.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/spot_environment_model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="110" column="39" lean-forward="true" selection-start-line="110" selection-start-column="39" selection-end-line="110" selection-end-column="39" />
-              <folding>
-                <marker date="1506365875817" expanded="true" signature="176:12937" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="384:963" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="628:769" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="816:963" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="984:1118" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="1152:1710" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="1319:1454" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="1551:1692" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="1758:1851" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="1898:2050" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="2099:2196" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="2244:2401" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="2429:2739" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="2491:2636" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="2767:3069" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="2831:2980" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="3104:3638" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="3397:3620" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="3673:5147" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="3682:3743" ph="&quot;&quot;&quot;...&quot;&quot;&quot;" />
-                <marker date="1506365875817" expanded="true" signature="4125:4169" ph="&quot;&quot;&quot;...&quot;&quot;&quot;" />
-                <marker date="1506365875817" expanded="true" signature="4564:4763" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="5180:7903" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="5272:5372" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="6094:6206" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="6374:6536" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="6749:7516" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="6846:7236" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="7254:7516" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="7936:8406" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="8438:8632" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="8664:10418" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="9035:9144" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="9237:9351" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="9361:9443" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="9528:9594" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="9730:9796" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="10153:10361" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="10450:12735" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="10490:12647" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="10908:11137" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="11233:11484" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="11689:11816" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="11953:12088" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="12790:12937" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="12965:13642" ph="..." />
-                <marker date="1506365875817" expanded="true" signature="13519:13642" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="spot_environment_gui.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/spot_environment_gui.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#20#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="8517">
+              <caret line="506" column="53" lean-forward="true" selection-start-line="506" selection-start-column="53" selection-end-line="506" selection-end-column="53" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -85,26 +30,49 @@
       <file leaf-file-name="spot_environment_controller.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/spot_environment_controller.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="-334">
+              <caret line="15" column="33" lean-forward="true" selection-start-line="15" selection-start-column="33" selection-end-line="15" selection-end-column="33" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="spot_environment_model.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/spot_environment_model.py">
+      <file leaf-file-name="spot_environment_gui.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/spot_environment_gui.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="4488">
+              <caret line="289" column="50" lean-forward="true" selection-start-line="289" selection-start-column="50" selection-end-line="289" selection-end-column="50" />
               <folding>
-                <element signature="e#0#64#0" expanded="true" />
+                <element signature="e#418#654#1" expanded="false" />
+                <element signature="e#687#1337#1" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="build_environment.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/build_environment.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="408">
+              <caret line="29" column="0" lean-forward="true" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
     </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>\\</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -113,6 +81,14 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/build_environment.py" />
+        <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch.py" />
+        <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch_1.py" />
+        <option value="$PROJECT_DIR$/spot_environment_controller.py" />
+        <option value="$PROJECT_DIR$/spot_environment_model.py" />
+        <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch_2.py" />
+        <option value="$APPLICATION_CONFIG_DIR$/scratches/test.py" />
+        <option value="$PROJECT_DIR$/test.py" />
+        <option value="$PROJECT_DIR$/spot_environment_gui.py" />
       </list>
     </option>
   </component>
@@ -123,7 +99,7 @@
     <option name="height" value="1666" />
   </component>
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1">
+    <navigator proportions="" version="1">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -136,27 +112,11 @@
       <manualOrder />
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes>
-      <pane id="Scratches" />
-      <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="DoubleAuctionMarket" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="DoubleAuctionMarket" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="com.intellij.ide.scratch.LRUPopupBuilder$2/Languages" value="Python" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -170,7 +130,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.build_environment">
+  <component name="RunManager" selected="Python.spot_environment_gui">
     <configuration default="false" name="build_environment" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -184,6 +144,78 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="DoubleAuctionMarket" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/build_environment.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="scratch" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$APPLICATION_CONFIG_DIR$/scratches" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="DoubleAuctionMarket" />
+      <option name="SCRIPT_NAME" value="$APPLICATION_CONFIG_DIR$/scratches/scratch.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="spot_environment_gui" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="DoubleAuctionMarket" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/spot_environment_gui.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="scratch_1" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$APPLICATION_CONFIG_DIR$/scratches" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="DoubleAuctionMarket" />
+      <option name="SCRIPT_NAME" value="$APPLICATION_CONFIG_DIR$/scratches/scratch_1.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="scratch_2" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$APPLICATION_CONFIG_DIR$/scratches" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="DoubleAuctionMarket" />
+      <option name="SCRIPT_NAME" value="$APPLICATION_CONFIG_DIR$/scratches/scratch_2.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -254,12 +286,20 @@
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method />
     </configuration>
-    <list size="1">
+    <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.build_environment" />
+      <item index="1" class="java.lang.String" itemvalue="Python.scratch" />
+      <item index="2" class="java.lang.String" itemvalue="Python.spot_environment_gui" />
+      <item index="3" class="java.lang.String" itemvalue="Python.scratch_1" />
+      <item index="4" class="java.lang.String" itemvalue="Python.scratch_2" />
     </list>
     <recent_temporary>
-      <list size="1">
-        <item index="0" class="java.lang.String" itemvalue="Python.build_environment" />
+      <list size="5">
+        <item index="0" class="java.lang.String" itemvalue="Python.spot_environment_gui" />
+        <item index="1" class="java.lang.String" itemvalue="Python.scratch_2" />
+        <item index="2" class="java.lang.String" itemvalue="Python.scratch_1" />
+        <item index="3" class="java.lang.String" itemvalue="Python.build_environment" />
+        <item index="4" class="java.lang.String" itemvalue="Python.scratch" />
       </list>
     </recent_temporary>
   </component>
@@ -302,22 +342,30 @@
       <option name="project" value="LOCAL" />
       <updated>1506030963877</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="1). Fixed spot_environment_gui to working&#10;2). Obtained understanding of how the environment pieces are linked&#10;3). Cleaned up formatting/typos&#10;4). Started commenting on environment pieces">
+      <created>1506382966435</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1506382966435</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="1592" y="-8" width="1066" height="1666" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2495238" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2495238" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32969153" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32969153" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32969153" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32969153" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -370,80 +418,15 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Final test again lol" />
     <MESSAGE value="Add files" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add files" />
+    <MESSAGE value="1). Fixed spot_environment_gui to working&#10;2). Obtained understanding of how the environment pieces are linked&#10;3). Cleaned up formatting/typos&#10;4). Started commenting on environment pieces" />
+    <option name="LAST_COMMIT_MESSAGE" value="1). Fixed spot_environment_gui to working&#10;2). Obtained understanding of how the environment pieces are linked&#10;3). Cleaned up formatting/typos&#10;4). Started commenting on environment pieces" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/build_environment.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1615">
-          <caret line="95" column="17" lean-forward="true" selection-start-line="95" selection-start-column="17" selection-end-line="95" selection-end-column="17" />
-          <folding>
-            <marker date="1506365875817" expanded="true" signature="176:12937" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="384:963" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="628:769" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="816:963" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="984:1118" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="1152:1710" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="1319:1454" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="1551:1692" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="1758:1851" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="1898:2050" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="2099:2196" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="2244:2401" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="2429:2739" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="2491:2636" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="2767:3069" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="2831:2980" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="3104:3638" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="3397:3620" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="3673:5147" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="3682:3743" ph="&quot;&quot;&quot;...&quot;&quot;&quot;" />
-            <marker date="1506365875817" expanded="true" signature="4125:4169" ph="&quot;&quot;&quot;...&quot;&quot;&quot;" />
-            <marker date="1506365875817" expanded="true" signature="4564:4763" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="5180:7903" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="5272:5372" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="6094:6206" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="6374:6536" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="6749:7516" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="6846:7236" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="7254:7516" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="7936:8406" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="8438:8632" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="8664:10418" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="9035:9144" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="9237:9351" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="9361:9443" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="9528:9594" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="9730:9796" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="10153:10361" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="10450:12735" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="10490:12647" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="10908:11137" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="11233:11484" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="11689:11816" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="11953:12088" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="12790:12937" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="12965:13642" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="13519:13642" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/spot_environment_gui.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#20#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trader.py">
+    <entry file="file://$PROJECT_DIR$/spot_environment_model.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -451,150 +434,229 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build_environment.py">
+    <entry file="file://$PROJECT_DIR$/spot_environment_controller.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="272">
+          <caret line="16" column="32" lean-forward="false" selection-start-line="16" selection-start-column="32" selection-end-line="16" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot_environment_gui.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="8347">
+          <caret line="491" column="11" lean-forward="true" selection-start-line="491" selection-start-column="11" selection-end-line="491" selection-end-column="11" />
           <folding>
-            <marker date="1506365875817" expanded="true" signature="176:12937" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="384:963" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="628:769" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="816:963" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="984:1118" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="1152:1710" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="1319:1454" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="1551:1692" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="1758:1851" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="1898:2050" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="2099:2196" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="2244:2401" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="2429:2739" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="2491:2636" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="2767:3069" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="2831:2980" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="3104:3638" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="3397:3620" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="3673:5147" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="3682:3743" ph="&quot;&quot;&quot;...&quot;&quot;&quot;" />
-            <marker date="1506365875817" expanded="true" signature="4125:4169" ph="&quot;&quot;&quot;...&quot;&quot;&quot;" />
-            <marker date="1506365875817" expanded="true" signature="4564:4763" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="5180:7903" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="5272:5372" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="6094:6206" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="6374:6536" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="6749:7516" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="6846:7236" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="7254:7516" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="7936:8406" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="8438:8632" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="8664:10418" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="9035:9144" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="9237:9351" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="9361:9443" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="9528:9594" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="9730:9796" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="10153:10361" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="10450:12735" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="10490:12647" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="10908:11137" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="11233:11484" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="11689:11816" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="11953:12088" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="12790:12937" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="12965:13642" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="13519:13642" ph="..." />
+            <element signature="e#418#654#1" expanded="false" />
+            <element signature="e#687#1337#1" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/trader.py">
+    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_1.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="34">
+          <caret line="2" column="10" lean-forward="false" selection-start-line="2" selection-start-column="10" selection-end-line="2" selection-end-column="10" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/build_environment.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="110" column="39" lean-forward="true" selection-start-line="110" selection-start-column="39" selection-end-line="110" selection-end-column="39" />
-          <folding>
-            <marker date="1506365875817" expanded="true" signature="176:12937" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="384:963" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="628:769" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="816:963" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="984:1118" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="1152:1710" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="1319:1454" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="1551:1692" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="1758:1851" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="1898:2050" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="2099:2196" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="2244:2401" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="2429:2739" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="2491:2636" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="2767:3069" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="2831:2980" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="3104:3638" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="3397:3620" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="3673:5147" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="3682:3743" ph="&quot;&quot;&quot;...&quot;&quot;&quot;" />
-            <marker date="1506365875817" expanded="true" signature="4125:4169" ph="&quot;&quot;&quot;...&quot;&quot;&quot;" />
-            <marker date="1506365875817" expanded="true" signature="4564:4763" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="5180:7903" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="5272:5372" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="6094:6206" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="6374:6536" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="6749:7516" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="6846:7236" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="7254:7516" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="7936:8406" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="8438:8632" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="8664:10418" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="9035:9144" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="9237:9351" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="9361:9443" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="9528:9594" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="9730:9796" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="10153:10361" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="10450:12735" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="10490:12647" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="10908:11137" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="11233:11484" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="11689:11816" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="11953:12088" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="12790:12937" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="12965:13642" ph="..." />
-            <marker date="1506365875817" expanded="true" signature="13519:13642" ph="..." />
-          </folding>
+        <state relative-caret-position="408">
+          <caret line="29" column="0" lean-forward="true" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build_environment.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1802">
+          <caret line="111" column="39" lean-forward="false" selection-start-line="111" selection-start-column="39" selection-end-line="111" selection-end-column="39" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/spot_environment_gui.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="731">
+          <caret line="43" column="46" lean-forward="false" selection-start-line="43" selection-start-column="46" selection-end-line="43" selection-end-column="46" />
           <folding>
-            <element signature="e#0#20#0" expanded="true" />
+            <element signature="e#418#654#1" expanded="false" />
+            <element signature="e#687#1337#1" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/spot_environment_controller.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="68">
+          <caret line="4" column="0" lean-forward="true" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/spot_environment_model.py">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="29" column="0" lean-forward="true" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build_environment.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1615">
+          <caret line="95" column="17" lean-forward="true" selection-start-line="95" selection-start-column="17" selection-end-line="95" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot_environment_gui.py">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#0#64#0" expanded="true" />
+            <element signature="e#418#654#1" expanded="false" />
+            <element signature="e#687#1337#1" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build_environment.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="16" lean-forward="false" selection-start-line="2" selection-start-column="16" selection-end-line="2" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/doc_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot_market_period.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot_system.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tournament.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/double_auction_institution.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot_market.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="0" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="0" lean-forward="true" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot_environment_controller.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-334">
+          <caret line="15" column="33" lean-forward="true" selection-start-line="15" selection-start-column="33" selection-end-line="15" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build_environment.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="29" column="0" lean-forward="true" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot_environment_model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="8517">
+          <caret line="506" column="53" lean-forward="true" selection-start-line="506" selection-start-column="53" selection-end-line="506" selection-end-column="53" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot_environment_gui.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4488">
+          <caret line="289" column="50" lean-forward="true" selection-start-line="289" selection-start-column="50" selection-end-line="289" selection-end-column="50" />
+          <folding>
+            <element signature="e#418#654#1" expanded="false" />
+            <element signature="e#687#1337#1" expanded="false" />
           </folding>
         </state>
       </provider>

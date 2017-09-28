@@ -112,10 +112,10 @@ class SpotEnvironmentModel(object):
 
         return
 
-    def show_environment(self):
+    def show_environment(self):  # displays all data to user
 
-        print("...... In Model -> show_enviornment")
-        print("......... name = {}".format(self.name))
+        print("...... In Model -> show_environment")
+        print("......... name = {}".format(self.name))  # printing dictionary with values
         print("......... num_buyers = {}".format(self.num_buyers))
         print("......... num_sellers = {}".format(self.num_sellers))
         print("......... num_units = {}\n".format(self.num_units))
@@ -501,7 +501,7 @@ class SpotEnvironmentModel(object):
                 print('...,... data = {}'.format(env_data))
 
 
-            # Process num_buyers and num_sellers  (First)
+            # Process num_buyers and num_sellers(First)
             line = 0
             self.num_buyers = int(env_data[line][0])
             self.num_sellers = int(env_data[line][1])
