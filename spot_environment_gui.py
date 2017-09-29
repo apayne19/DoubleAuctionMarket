@@ -55,10 +55,20 @@ class SpotEnviornmentGui():
 
         self.num_buyers = 0  # setting number of buyers to 0
         self.num_sellers = 0  # setting number of sellers to 0
+
         self.num_units = 0  # setting number of units to 0
+        # self.dem_units = 0
+        # self.sup_units = 0  # TODO change to demand units and supply units
+        #                       --> buyers could demand more units than suppliers have and vice versa...
+
         self.string_num_buyers = tk.StringVar()    # creates a tkinter variable
         self.string_num_sellers = tk.StringVar()   # StringVar() returns either an ASCII string or Unicode string
+
         self.string_num_units = tk.StringVar()     # can also be used to trace when changes made to variables
+        # self.string_dem_units = tk.StringVar()
+        # self.string_sup_units = tk.StringVar()  # TODO if ^todo is agreed then will need to reformat code
+        #                                           --> could cause errors when calling other methods
+
         self.string_project_name = tk.StringVar()  # BooleanVar() will return 0 for false and 1 for true...
         self.string_eq = tk.StringVar()
         self.string_pl = tk.StringVar()
@@ -70,6 +80,8 @@ class SpotEnviornmentGui():
         self.file_name = None  # none is a placeholder to be filled
 
         # have to build matrices for future tkinter display
+        # self.buyer_values = self.build_array(self.num_buyers, self.num_units)  # matrix of buyers and number of units
+        # self.seller_costs = self.build_array(self.num_sellers, self.num_units)  # matrix of sellers and number of units
         self.buyer_values = self.build_array(self.num_buyers, self.num_units)  # matrix of buyers and number of units
         self.seller_costs = self.build_array(self.num_sellers, self.num_units)  # matrix of sellers and number of units
 
@@ -131,12 +143,13 @@ class SpotEnviornmentGui():
         about_menu.add_command(label='About', command=self.display_about_messagebox)  # click = display about message
         about_menu.add_command(label='Help', command=self.display_help_messagebox)  # click = display help message
         menu_bar.add_cascade(label='Misc', menu=about_menu)  # drop down menu
-        root.config(menu=menu_bar)  # makes menu changes final
+        root.config(menu=menu_bar)  # makes menu setup final
 
     def show_shortcut(self):
         shortcut_bar = tk.Frame(self.root)  # creates a frame within the tkinter object
         shortcut_bar.grid(row=0, column=0, columnspan=4, sticky='W')  # setting parameters of frame
-        """WARNING: Never use grid and pack in same tkinter master window, will create error --> loop to solve"""
+        """WARNING: Never use grid and pack in same tkinter master window, will create error --> loop to solve
+        ...according to stackoverflow"""
 
     def show_infobar(self):
         info_bar = tk.LabelFrame(self.root, height=15, text=str(self.name))  # creates a label frame for initial inputs
@@ -160,6 +173,16 @@ class SpotEnviornmentGui():
         tk.Label(info_bar, text="Number of Units: ").grid(row=0, column=6, padx=5)
         tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_num_units).grid(row=0, column=7)
         self.string_num_units.set(str(self.num_units))  # sets initial display value at self.num_units = 0
+
+        # create demand units label
+        # tk.Label(info_bar, text="Demand Units: ").grid(row=0, column=6, padx=5)
+        # tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_dem_units).grid(row=0, column=7)
+        # self.string_dem_units.set(str(self.dem_units))  # sets initial display value at self.num_units = 0
+
+        # create supply units label
+        # tk.Label(info_bar, text="Supply Units: ").grid(row=0, column=8, padx=5)
+        # tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_sup_units).grid(row=0, column=7)
+        # self.string_sup_units.set(str(self.sup_units))  # sets initial display value at self.num_units = 0
 
         # create a button with action input (command = click)
         info_button = tk.Button(info_bar, text="Set", width=4,
@@ -228,7 +251,6 @@ class SpotEnviornmentGui():
         """ Plot supply and demand in a frame with toolbar."""
         """Click = calls set_market()
                     --> which calls methods from spot_env_model to display values in GUI"""
-        # TODO: Fix axis labels and Title.  Commented out below.  Fail as is.
         if self.debug:
             print("In Gui -> on_plot_clicked --> begin")
         self.set_market()
@@ -238,14 +260,12 @@ class SpotEnviornmentGui():
         fr_plot.grid(row=2, rowspan=2, column=3, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
 
         # set up graph to plot in frame
-        '''Stack overflow states that using matplotlib.Figure() can cause problems when graphing in GUI... could be
-        causing problems when trying to graph the axes labels and title below'''
-        f = Figure(figsize=(5, 5), dpi=100)
+        f = Figure(figsize=(7, 7), dpi=100)
         a = f.add_subplot(111)
         if self.num_buyers == 0:
             canvas = FigureCanvasTkAgg(f, fr_plot)
             canvas.get_tk_widget().pack()  # Have to use pack here to work with toolbar.  Not sure why.
-            canvas.draw()                  # -->TODO pack could cause error with grid (warning in init)
+            canvas.draw()
             if self.debug:
                 print("In Gui -> on_plot_clicked --> early end")
             self.set_market()  # why is this called twice?
@@ -269,9 +289,9 @@ class SpotEnviornmentGui():
         a.step(sunits, supply_costs, label='Supply')  # plots the supply step-wise curve
 
         a.legend(bbox_to_anchor=(0.65, 0.98))  # places a legend on the plot
-        # a.title('Supply and Demand')  # add the title
-        # a.xlabel(str("Units"))  # add the x axis label       -------> These create errors!!
-        # a.ylabel(str("$"))  # add the y axis label
+        a.set_title("Supply and Demand")  # add the title
+        a.set_xlabel("Units")  # add the x axis label       -------> WORKS NOW!!
+        a.set_ylabel("$")  # add the y axis label                    --> problem was set_ missing
 
         # finish setting up the canvas here
         canvas = FigureCanvasTkAgg(f, fr_plot)
@@ -280,7 +300,7 @@ class SpotEnviornmentGui():
 
         # Add navigation bar:  This adds a toolbar.  This is optional and does not work yet
         toolbar = NavigationToolbar2TkAgg(canvas, fr_plot)
-        toolbar.pack()  # This is the other pack.  Both go itno frame fr_plot
+        toolbar.pack()  # This is the other pack.  Both go into frame fr_plot
         toolbar.update()
 
         if self.debug:
