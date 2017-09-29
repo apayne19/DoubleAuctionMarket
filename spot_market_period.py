@@ -2,7 +2,7 @@ import spot_system as sys
 import random
 
 class SpotMarketPeriod(object):
-    def __init__(self, session_name, num_periods):
+    def __init__(self, session_name, num_periods):  # creates name and number of periods for market
 
         self.display = True
         self.session_name = session_name
@@ -16,7 +16,7 @@ class SpotMarketPeriod(object):
         self.trader_names = []
         self.traders = []
         self.trader_info = {}
-        self.sys = sys.SpotSystem()
+        self.sys = sys.SpotSystem()  # calls SpotSystem() which prepares market and traders
 
     def init_spot_system(self, name, limits, rounds, input_path, input_file):
         self.sys.init_spot_system(name, limits, rounds, input_path, input_file)

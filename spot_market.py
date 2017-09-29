@@ -4,9 +4,9 @@ import tournament as trna
 import trader as t
 
 # input - output and display options
-input_path = "C:\\Users\\kevin\\Desktop\\spot_market_working\\projects\\"
+input_path = "C:\\Users\\kevin\\Desktop\\spot_market_working\\projects\\"  # TODO change file path
 #input_path = "C:\\Users\\Admin\\Notebooks\\envs\\"
-input_file = "env_0616_4x4w3_sym"
+input_file = "env_0616_4x4w3_sym"  # TODO change file to TEST
 t_name = "REU 2017"
 display = True
 
