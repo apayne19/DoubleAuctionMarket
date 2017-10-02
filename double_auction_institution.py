@@ -7,13 +7,13 @@ class Auction(object):
         self.name = name
         self.ceiling = ceiling
         self.floor = floor
-        self.board["standing"]["bid"] = self.floor  # Start at smallest possible bid
-        self.board["standing"]["bidder"] = self.name
-        self.board["standing"]["ask"] = self.ceiling  # Starts at largest possible ask
-        self.board["standing"]["asker"] = self.name
+        self.board["standing"]["bid"] = self.floor  # Start at smallest possible bid # buyers want low
+        self.board["standing"]["bidder"] = self.name  # displays bidder
+        self.board["standing"]["ask"] = self.ceiling  # Starts at largest possible ask # sellers want high
+        self.board["standing"]["asker"] = self.name  # displays seller
 
     def show(self):
-        print ("I am auction {}, with ceiling {} and floor {}.".format(self.name, self.ceiling, self.floor))
+        print("I am auction {}, with ceiling {} and floor {}.".format(self.name, self.ceiling, self.floor))
 
     def report_standing(self):
         return (self.board["standing"]["bid"], self.board["standing"]["ask"])

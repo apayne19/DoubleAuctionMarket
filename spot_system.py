@@ -9,17 +9,16 @@ import random
 class SpotSystem(object):
     def __init__(self):
         self.name = ""
-        self.display = True
+        self.display = True  # calls function to display board
         self.limits = (0, 0)
         self.num_market_rounds = 0
         self.trader_names = []
         self.traders = []
         self.trader_info = {}
-        self.mkt = None
-        self.da = None
+        self.mkt = None  # function called from spot_environment_model
+        self.da = None  # function called from double_auction_institution
 
     def init_spot_system(self, name, limits, rounds, input_path, input_file):
-
         self.name = name
         self.limits = limits
         self.num_market_rounds = rounds
@@ -35,7 +34,7 @@ class SpotSystem(object):
         self.mkt.prepare_market(input_path, input_file)  # set and show market
 
     def run(self):
-        self.run_system()
+        self.run_system()  # starts market by calling method below
 
     def run_system(self):
         self.da.open_board("tournament official")
@@ -54,18 +53,19 @@ class SpotSystem(object):
                 if len(contracts) > length_old_contracts:
                     length_old_contracts = len(contracts)
                     if self.display:
-                        print (num_contracts, i, contracts[len(contracts) - 1])
+                        print(num_contracts, i, contracts[len(contracts) - 1])
                         num_contracts = num_contracts + 1
         if self.display:
             print()
 
     def trader_handler(self, trader):
         offer = trader.offer(self.da.report_contracts(), self.da.report_standing()[0],self.da.report_standing()[1])
-        if len(offer) == 0: return
-        if offer[0] == "B":
+        if len(offer) == 0:
+            return
+        if offer[0] == "B":  # identifies the bidders and bids
             self.da.bid(offer[1], offer[2])
         else:
-            self.da.ask(offer[1], offer[2])
+            self.da.ask(offer[1], offer[2])  # else identified as sellers and asks
 
     def eval(self):
         # calculate market efficiency
@@ -92,13 +92,13 @@ class SpotSystem(object):
                 self.trader_info[buyer_id]['earn'] += value - price
                 self.trader_info[buyer_id]['units'] += 1
             else:
-                print ("error, buyer id = {}, buyer type = {}".format(buyer_id, self.trader_info[buyer_id]['type']))
+                print("error, buyer id = {}, buyer type = {}".format(buyer_id, self.trader_info[buyer_id]['type']))
             if self.trader_info[seller_id]['type'] == 'S':
                 cost = self.trader_info[seller_id]['costs'][self.trader_info[seller_id]['units']]
                 self.trader_info[seller_id]['earn'] += price - cost
                 self.trader_info[seller_id]['units'] += 1
             else:
-                print ("error in contract {}, seller id = {}, seller type = {}".format(contract, seller_id,
+                print("error in contract {}, seller id = {}, seller type = {}".format(contract, seller_id,
                                                                                        self.trader_info[seller_id]['type']))
             actual_surplus += value - cost
 
@@ -106,15 +106,15 @@ class SpotSystem(object):
 
         result_header.extend([ep_low, ep_high, e_quantity, maximum_surplus, actual_surplus, efficiency])
         if self.display:
-            print ("actual surplus = {}, maximum surplus = {}.".format(actual_surplus, maximum_surplus))
-            print ("market efficiency = {} percent.".format(efficiency))
+            print("actual surplus = {}, maximum surplus = {}.".format(actual_surplus, maximum_surplus))
+            print("market efficiency = {} percent.".format(efficiency))
 
         for k in range(len(self.traders)):
             t_id = "t" + str(k)
             t_strat = self.trader_info[t_id]['strat']
             earn = self.trader_info[t_id]['earn']
             if self.display:
-                print ("Trader {}, using strategy {}, earned {}.".format(t_id, t_strat, earn))
+                print("Trader {}, using strategy {}, earned {}.".format(t_id, t_strat, earn))
             result_header.extend([t_id, t_strat, earn])
         if self.display:
             print()
@@ -131,7 +131,7 @@ class SpotSystem(object):
                 avg_earn = int(strat_earn / count)
                 result_header.extend([k, avg_earn])
             if self.display:
-                print ("Strategy {} earned an average of {}.".format(k, avg_earn))
+                print("Strategy {} earned an average of {}.".format(k, avg_earn))
 
         return result_header
 
@@ -180,13 +180,11 @@ if __name__ == "__main__":
     #zi = "ZeroIntelligenceTrader"
     zi = "UnconstrainedZITrader"
     si = "SimpleTrader"
-    #trader_names = [zi, si, zi, si, zi, si, zi, si]  # Order of trader strategies in generic trader array
-    trader_names = [zi, zi, zi, zi, zi, zi, zi, zi, zi, zi]  # Order of trader strategies in generic trader array
+    trader_names = [zi, si, zi, si, zi, si, zi, si]  # Order of trader strategies in generic trader array
+    # trader_names = [zi, zi, zi, zi, zi, zi, zi, zi, zi, zi]  # Order of trader strategies in generic trader array
     # input - output and display options
-    #input_path = "C:\\Users\\kevin\\Desktop\\spot_market_working\\projects\\"
-    input_path = "C:\\Users\\Admin\\Desktop\\spot_market\\projects\\"
-    #input_file = "env_0616_4x4w3_sym"
-    input_file = "env_mkt2_5x5w5"
+    input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
+    input_file = "TEST"
 
     name = "Trial"
     limits = (999, 0)
