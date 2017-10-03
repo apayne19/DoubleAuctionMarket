@@ -4,17 +4,17 @@ import spot_environment_model as env
 import double_auction_institution as ins
 import tournament as trna
 import trader as t
-import random
+import random  # allows things to be generated randomly
 
 class SpotSystem(object):
     def __init__(self):
         self.name = ""
         self.display = True  # calls function to display board
-        self.limits = (0, 0)
-        self.num_market_rounds = 0
-        self.trader_names = []
-        self.traders = []
-        self.trader_info = {}
+        self.limits = (0, 0)  # creates limits that can be changed
+        self.num_market_rounds = 0  # sets number of market rounds to 0
+        self.trader_names = []  # dictionary for trader names to be logged
+        self.traders = []  # dictionary of trader ids?
+        self.trader_info = {}  # dictionary of keys:values
         self.mkt = None  # function called from spot_environment_model
         self.da = None  # function called from double_auction_institution
 
@@ -24,7 +24,7 @@ class SpotSystem(object):
         self.num_market_rounds = rounds
         self.mkt = env.SpotEnvironmentModel()  # instantiate environment object
         self.da = ins.Auction('da', self.limits[0], self.limits[1]) # instantiate auction
-        self.load_market(input_path, input_file)
+        self.load_market(input_path, input_file)  # loads market file from gui inputs
 
     def init_traders(self, trader_names):
         self.trader_names = trader_names
@@ -39,21 +39,21 @@ class SpotSystem(object):
     def run_system(self):
         self.da.open_board("tournament official")
         num_contracts = 1
-        if self.display:
+        if self.display:  # if display = true
             print()
             print("Auction Open")
             print(self.da.report_standing(), self.da.report_contracts())
         length_old_contracts = 0
         temp_traders = self.traders
         for i in range(self.num_market_rounds):
-            random.shuffle(temp_traders)
+            random.shuffle(temp_traders)  # generates random order of traders each round
             for trader in temp_traders:
                 self.trader_handler(trader)
-                contracts = self.da.report_contracts()
-                if len(contracts) > length_old_contracts:
+                contracts = self.da.report_contracts()  # list of contracts as they happen
+                if len(contracts) > length_old_contracts:  # if len(contracts)>0
                     length_old_contracts = len(contracts)
-                    if self.display:
-                        print(num_contracts, i, contracts[len(contracts) - 1])
+                    if self.display:  # if display still true
+                        print(num_contracts, i, contracts[len(contracts) - 1])  # prints info for each trader
                         num_contracts = num_contracts + 1
         if self.display:
             print()
@@ -77,18 +77,19 @@ class SpotSystem(object):
 
         for trader in self.traders:
             trader_id = trader.name
-            self.trader_info[trader_id]['units'] = 0
-            self.trader_info[trader_id]['earn'] = 0
+            self.trader_info[trader_id]['units'] = 0  # sets units to 0 at every round
+            self.trader_info[trader_id]['earn'] = 0  # sets earned to 0 at every round
 
             # calculate actual surplus and earnings
 
-        actual_surplus = 0
-        for contract in self.da.report_contracts():
-            price = contract[0]
-            buyer_id = contract[1]
-            seller_id = contract[2]
-            if self.trader_info[buyer_id]['type'] == 'B':
+        actual_surplus = 0  # will change as updated
+        for contract in self.da.report_contracts():  # going through list of contracts
+            price = contract[0]  # pulls price from board
+            buyer_id = contract[1]  # pulls buyer id from board
+            seller_id = contract[2]  # pulls seller id from board
+            if self.trader_info[buyer_id]['type'] == 'B':  # type is bid?
                 value = self.trader_info[buyer_id]['values'][self.trader_info[buyer_id]['units']]
+                '''the line above is indexing values and units from trader_info?'''
                 self.trader_info[buyer_id]['earn'] += value - price
                 self.trader_info[buyer_id]['units'] += 1
             else:

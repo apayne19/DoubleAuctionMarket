@@ -39,7 +39,7 @@ class SpotMarketPeriod(object):
         pass
 
 
-
+'''This program iterates through the number of rounds'''
 if __name__ == "__main__":
     num_periods = 10
     limits = (999, 0)
@@ -56,13 +56,10 @@ if __name__ == "__main__":
     si = "SimpleTrader"
     trader_names = [zi, si, zi, si, zi, si, zi, si]  # Order of trader strategies in generic trader array
     # input - output and display options
-    #input_path = "C:\\Users\\kevin\\Desktop\\spot_market_working\\projects\\"
-    input_path = "C:\\Users\\Admin\\Desktop\\spot_market_working\\projects\\"
-    input_file = "env_0616_4x4w3_sym"
-
-    ouput_path = "C:\\Users\\Admin\\Desktop\\spot_market_working\\data\\"
+    input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
+    input_file = "TEST"
+    output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\data\\"
     header = session_name
-
     smp.init_spot_system(name, limits, rounds, input_path, input_file)
     rnd_traders = trader_names    # because shuffle shuffels the list in place, returns none
     for k in range(num_periods):
