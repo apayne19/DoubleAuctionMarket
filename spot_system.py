@@ -2,8 +2,8 @@ from trader import SimpleTrader, ZeroIntelligenceTrader, UnconstrainedZITrader
 #import build_environment as env
 import spot_environment_model as env
 import double_auction_institution as ins
-import tournament as trna
-import trader as t
+import tournament as trna  # imported but unused??
+import trader as t  # imported but unused??
 import random  # allows things to be generated randomly
 
 class SpotSystem(object):

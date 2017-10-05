@@ -3,9 +3,10 @@ import double_auction_institution as ins
 import tournament as trna
 import trader as t
 
+'''This program combines the functionality of build_environment, double_auction_institution, and tournament'''
+
 # input - output and display options
 input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"  # TODO change file path
-#input_path = "C:\\Users\\Admin\\Notebooks\\envs\\"
 input_file = "TEST"  # TODO change file to TEST
 t_name = "testing..testing"
 display = True

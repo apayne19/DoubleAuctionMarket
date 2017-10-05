@@ -174,15 +174,6 @@ class SpotEnviornmentGui():
         tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_num_units).grid(row=0, column=7)
         self.string_num_units.set(str(self.num_units))  # sets initial display value at self.num_units = 0
 
-        # create demand units label
-        # tk.Label(info_bar, text="Demand Units: ").grid(row=0, column=6, padx=5)
-        # tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_dem_units).grid(row=0, column=7)
-        # self.string_dem_units.set(str(self.dem_units))  # sets initial display value at self.num_units = 0
-
-        # create supply units label
-        # tk.Label(info_bar, text="Supply Units: ").grid(row=0, column=8, padx=5)
-        # tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_sup_units).grid(row=0, column=7)
-        # self.string_sup_units.set(str(self.sup_units))  # sets initial display value at self.num_units = 0
 
         # create a button with action input (command = click)
         info_button = tk.Button(info_bar, text="Set", width=4,

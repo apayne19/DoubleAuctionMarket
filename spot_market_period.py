@@ -1,5 +1,12 @@
 import spot_system as sys
 import random
+import csv
+import matplotlib.pyplot as plt
+import numpy as np
+import plotly.offline as py
+import plotly.graph_objs as go
+
+'''This program is a condensed version of spot_system to build the periods of trading'''
 
 class SpotMarketPeriod(object):
     def __init__(self, session_name, num_periods):  # creates name and number of periods for market
@@ -28,20 +35,27 @@ class SpotMarketPeriod(object):
         self.sys.run()
 
     def eval(self):
-        return self.sys.eval()
+        return self.sys.eval()  # runs eval method from spot_system
 
     def run_period(self, period, header):
         self.period = period
         self.run()
 
-    def save_period(self):
-        # TODO:  Save period data file
+    def save_period(self, results):
         pass
+        '''Currently only saves the last periods data'''
+        # period_data_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
+        # output_file = open(period_data_path + 'Book1.csv', 'w', newline='')
+        # output_writer = csv.writer(output_file)
+        # output_writer.writerow(results)
+        # output_file.close()
+        # TODO:  fix to add every periods data in same csv file
+
 
 
 '''This program iterates through the number of rounds'''
 if __name__ == "__main__":
-    num_periods = 10
+    num_periods = 50
     limits = (999, 0)
     rounds = 100
     name = "trial"
@@ -50,6 +64,8 @@ if __name__ == "__main__":
     header = session_name
 
     smp = SpotMarketPeriod(session_name, num_periods)
+
+    '''This will change when we create more programmed agents to add into the model'''
 
     # Put Trader Class Names Here - note traders strategy is named trader class name
     zi = "ZeroIntelligenceTrader"
@@ -62,11 +78,57 @@ if __name__ == "__main__":
     header = session_name
     smp.init_spot_system(name, limits, rounds, input_path, input_file)
     rnd_traders = trader_names    # because shuffle shuffels the list in place, returns none
+    eff = []
+    periods_list = []
+    act_surplus = []
+    maxi_surplus = []
+    earns = []
+    n = 0
     for k in range(num_periods):
-        random.shuffle(rnd_traders)  #  reassign traders each period
+        earns.append({k: None})
+        periods_list.append(k)
+        random.shuffle(rnd_traders)  # reassign traders each period
         print(rnd_traders)
         smp.init_traders(rnd_traders)
         print("**** Running Period {}".format(k))
         smp.run_period(period, header)
         results = smp.eval()
+        eff.append(results[8])
+        act_surplus.append(results[7])
+        maxi_surplus.append(results[6])
+        smp.save_period(results)
         print(results)
+
+    print(earns)
+    print("Market Efficiencies:" + str(eff))
+    print("Actual Surpluses:" + str(act_surplus))
+    print("Maximum Surpluses:" + str(maxi_surplus))
+
+    with plt.style.context('seaborn-dark-palette'):  # added a plot of the market efficiencies
+        x = np.array(periods_list)
+        y = np.array(eff)
+        plt.plot(x, y, marker='s')
+        plt.title("Market Efficiencies")
+        plt.xlabel("Period")
+        plt.ylabel("Efficiency (%)")
+        plt.grid(True)
+        plt.show()
+
+    '''with plt.style.context('seaborn-dark-palette'):  # added a plot of the market efficiencies
+        x = np.array(periods_list)
+        y1 = np.array(act_surplus)
+        y2 = np.array(maxi_surplus)
+        plt.plot(x, y1)
+        plt.plot(x, y2)
+        plt.title("Market Surpluses")
+        plt.xlabel("Period")
+        plt.ylabel("Surplus")
+        plt.grid(True)
+        plt.show()'''
+    data = [go.Bar(
+        x=np.array(periods_list),
+        y=np.array(act_surplus))]
+
+    py.offline.plot(data)
+
+# TODO create graphs of average earnings per period

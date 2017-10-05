@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="20ab1217-fded-4f2a-a544-19f32ae10eb8" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spot_environment_gui.py" afterPath="$PROJECT_DIR$/spot_environment_gui.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spot_market.py" afterPath="$PROJECT_DIR$/spot_market.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spot_market_period.py" afterPath="$PROJECT_DIR$/spot_market_period.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spot_system.py" afterPath="$PROJECT_DIR$/spot_system.py" />
@@ -22,8 +23,8 @@
       <file leaf-file-name="spot_market.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/spot_market.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="12" column="27" lean-forward="true" selection-start-line="12" selection-start-column="27" selection-end-line="12" selection-end-column="27" />
+            <state relative-caret-position="527">
+              <caret line="31" column="9" lean-forward="false" selection-start-line="31" selection-start-column="9" selection-end-line="31" selection-end-column="9" />
               <folding>
                 <element signature="e#0#29#0" expanded="true" />
               </folding>
@@ -31,12 +32,24 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="build_environment.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/build_environment.py">
+      <file leaf-file-name="scratch_3.py" pinned="false" current-in-tab="false">
+        <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_3.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="731">
-              <caret line="48" column="0" lean-forward="true" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
+            <state relative-caret-position="17">
+              <caret line="1" column="26" lean-forward="false" selection-start-line="1" selection-start-column="26" selection-end-line="1" selection-end-column="26" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="tournament.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tournament.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-153">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#55#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -44,8 +57,8 @@
       <file leaf-file-name="spot_market_period.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/spot_market_period.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="10" column="38" lean-forward="true" selection-start-line="10" selection-start-column="38" selection-end-line="10" selection-end-column="38" />
+            <state relative-caret-position="119">
+              <caret line="7" column="0" lean-forward="true" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
               <folding>
                 <element signature="e#0#25#0" expanded="true" />
               </folding>
@@ -53,13 +66,46 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="Linear Utility.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../LinearUtility/Linear Utility.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="735">
+              <caret line="158" column="50" lean-forward="false" selection-start-line="158" selection-start-column="8" selection-end-line="158" selection-end-column="50" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="spot_system.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/spot_system.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1105">
-              <caret line="86" column="49" lean-forward="false" selection-start-line="86" selection-start-column="49" selection-end-line="86" selection-end-column="49" />
+            <state relative-caret-position="1275">
+              <caret line="120" column="19" lean-forward="true" selection-start-line="120" selection-start-column="19" selection-end-line="120" selection-end-column="19" />
               <folding>
                 <element signature="e#0#78#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="spot_environment_model.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/spot_environment_model.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="6039">
+              <caret line="469" column="33" lean-forward="true" selection-start-line="469" selection-start-column="33" selection-end-line="469" selection-end-column="33" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="spot_environment_gui.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/spot_environment_gui.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="646">
+              <caret line="489" column="26" lean-forward="true" selection-start-line="489" selection-start-column="26" selection-end-line="489" selection-end-column="26" />
+              <folding>
+                <element signature="e#418#654#1" expanded="false" />
+                <element signature="e#687#1337#1" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -103,10 +149,11 @@
         <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch_2.py" />
         <option value="$APPLICATION_CONFIG_DIR$/scratches/test.py" />
         <option value="$PROJECT_DIR$/test.py" />
-        <option value="$PROJECT_DIR$/spot_environment_gui.py" />
         <option value="$PROJECT_DIR$/double_auction_institution.py" />
-        <option value="$PROJECT_DIR$/spot_system.py" />
         <option value="$PROJECT_DIR$/spot_market.py" />
+        <option value="$PROJECT_DIR$/spot_system.py" />
+        <option value="$PROJECT_DIR$/spot_environment_gui.py" />
+        <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch_3.py" />
         <option value="$PROJECT_DIR$/spot_market_period.py" />
       </list>
     </option>
@@ -134,7 +181,7 @@
     <panes />
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../LinearUtility" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../LinearUtility/Linear Utility.py" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$2/Languages" value="Python" />
     <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Ignored.Files" />
   </component>
@@ -164,24 +211,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="DoubleAuctionMarket" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/spot_environment_gui.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="double_auction_institution" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="DoubleAuctionMarket" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/double_auction_institution.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -236,6 +265,24 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="DoubleAuctionMarket" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/spot_market_period.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="scratch_3" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$APPLICATION_CONFIG_DIR$/scratches" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="DoubleAuctionMarket" />
+      <option name="SCRIPT_NAME" value="$APPLICATION_CONFIG_DIR$/scratches/scratch_3.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -308,18 +355,18 @@
     </configuration>
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.spot_environment_gui" />
-      <item index="1" class="java.lang.String" itemvalue="Python.double_auction_institution" />
-      <item index="2" class="java.lang.String" itemvalue="Python.spot_system" />
-      <item index="3" class="java.lang.String" itemvalue="Python.spot_market" />
-      <item index="4" class="java.lang.String" itemvalue="Python.spot_market_period" />
+      <item index="1" class="java.lang.String" itemvalue="Python.spot_system" />
+      <item index="2" class="java.lang.String" itemvalue="Python.spot_market" />
+      <item index="3" class="java.lang.String" itemvalue="Python.spot_market_period" />
+      <item index="4" class="java.lang.String" itemvalue="Python.scratch_3" />
     </list>
     <recent_temporary>
       <list size="5">
         <item index="0" class="java.lang.String" itemvalue="Python.spot_market_period" />
-        <item index="1" class="java.lang.String" itemvalue="Python.spot_market" />
-        <item index="2" class="java.lang.String" itemvalue="Python.spot_system" />
-        <item index="3" class="java.lang.String" itemvalue="Python.double_auction_institution" />
-        <item index="4" class="java.lang.String" itemvalue="Python.spot_environment_gui" />
+        <item index="1" class="java.lang.String" itemvalue="Python.scratch_3" />
+        <item index="2" class="java.lang.String" itemvalue="Python.spot_environment_gui" />
+        <item index="3" class="java.lang.String" itemvalue="Python.spot_market" />
+        <item index="4" class="java.lang.String" itemvalue="Python.spot_system" />
       </list>
     </recent_temporary>
   </component>
@@ -397,7 +444,14 @@
       <option name="project" value="LOCAL" />
       <updated>1506984064798</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Updated and commented on code. Fixed spot_market and spot_market_periods to run">
+      <created>1507069439451</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1507069439451</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -413,7 +467,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16902314" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -471,13 +525,60 @@
     <MESSAGE value="1). Fixed TODO: fixed figure title and axis label errors&#10;2). TODO keep commenting and fixing" />
     <MESSAGE value="1). Made some TODOs for spot market period" />
     <MESSAGE value="Commented and looked through spot_system and double_auction_institution. Fixed spot_system to run" />
-    <option name="LAST_COMMIT_MESSAGE" value="Commented and looked through spot_system and double_auction_institution. Fixed spot_system to run" />
+    <MESSAGE value="Updated and commented on code. Fixed spot_market and spot_market_periods to run" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated and commented on code. Fixed spot_market and spot_market_periods to run" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/spot_market.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="12" column="27" lean-forward="false" selection-start-line="12" selection-start-column="27" selection-end-line="12" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build_environment.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="731">
+          <caret line="48" column="0" lean-forward="true" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot_system.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1360">
+          <caret line="86" column="49" lean-forward="false" selection-start-line="86" selection-start-column="49" selection-end-line="86" selection-end-column="49" />
+          <folding>
+            <element signature="e#0#78#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/double_auction_institution.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1853">
+          <caret line="109" column="36" lean-forward="false" selection-start-line="109" selection-start-column="36" selection-end-line="109" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot_market_period.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="10" column="38" lean-forward="true" selection-start-line="10" selection-start-column="38" selection-end-line="10" selection-end-column="38" />
+          <folding>
+            <element signature="e#0#25#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/spot_market.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
@@ -686,13 +787,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tournament.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/trader.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -729,20 +823,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/spot_environment_gui.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="791">
-          <caret line="584" column="21" lean-forward="false" selection-start-line="584" selection-start-column="21" selection-end-line="584" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/spot_environment_model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="344">
-          <caret line="506" column="53" lean-forward="false" selection-start-line="506" selection-start-column="53" selection-end-line="506" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/double_auction_institution.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1853">
@@ -751,38 +831,91 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/build_environment.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="731">
+          <caret line="48" column="0" lean-forward="false" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/OneDrive/Documents/CSN Intern/Holt Laury Project/Data EV.3.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot_environment_gui.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="646">
+          <caret line="489" column="26" lean-forward="true" selection-start-line="489" selection-start-column="26" selection-end-line="489" selection-end-column="26" />
+          <folding>
+            <element signature="e#418#654#1" expanded="false" />
+            <element signature="e#687#1337#1" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot_environment_model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6039">
+          <caret line="469" column="33" lean-forward="true" selection-start-line="469" selection-start-column="33" selection-end-line="469" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/spot_system.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1105">
-          <caret line="86" column="49" lean-forward="false" selection-start-line="86" selection-start-column="49" selection-end-line="86" selection-end-column="49" />
+        <state relative-caret-position="1275">
+          <caret line="120" column="19" lean-forward="true" selection-start-line="120" selection-start-column="19" selection-end-line="120" selection-end-column="19" />
           <folding>
             <element signature="e#0#78#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build_environment.py">
+    <entry file="file://$PROJECT_DIR$/tournament.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="731">
-          <caret line="48" column="0" lean-forward="true" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
+        <state relative-caret-position="-153">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#55#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../LinearUtility/Linear Utility.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="735">
+          <caret line="158" column="50" lean-forward="false" selection-start-line="158" selection-start-column="8" selection-end-line="158" selection-end-column="50" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/spot_market.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="12" column="27" lean-forward="true" selection-start-line="12" selection-start-column="27" selection-end-line="12" selection-end-column="27" />
+        <state relative-caret-position="527">
+          <caret line="31" column="9" lean-forward="false" selection-start-line="31" selection-start-column="9" selection-end-line="31" selection-end-column="9" />
           <folding>
             <element signature="e#0#29#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_3.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="1" column="26" lean-forward="false" selection-start-line="1" selection-start-column="26" selection-end-line="1" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/spot_market_period.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="38" lean-forward="true" selection-start-line="10" selection-start-column="38" selection-end-line="10" selection-end-column="38" />
+        <state relative-caret-position="119">
+          <caret line="7" column="0" lean-forward="true" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
           <folding>
             <element signature="e#0#25#0" expanded="true" />
           </folding>
