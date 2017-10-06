@@ -5,8 +5,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import plotly.offline as py
 import plotly.graph_objs as go
-
+import os
 '''This program is a condensed version of spot_system to build the periods of trading'''
+
+'''There could be a problem in counting traders... when run this program shows 10 traders 
+when the input file only has 8'''
 
 class SpotMarketPeriod(object):
     def __init__(self, session_name, num_periods):  # creates name and number of periods for market
@@ -43,19 +46,10 @@ class SpotMarketPeriod(object):
 
     def save_period(self, results):
         pass
-        '''Currently only saves the last periods data'''
-        # period_data_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
-        # output_file = open(period_data_path + 'Book1.csv', 'w', newline='')
-        # output_writer = csv.writer(output_file)
-        # output_writer.writerow(results)
-        # output_file.close()
-        # TODO:  fix to add every periods data in same csv file
-
-
 
 '''This program iterates through the number of rounds'''
 if __name__ == "__main__":
-    num_periods = 50
+    num_periods = 5
     limits = (999, 0)
     rounds = 100
     name = "trial"
@@ -83,9 +77,14 @@ if __name__ == "__main__":
     act_surplus = []
     maxi_surplus = []
     earns = []
-    n = 0
     for k in range(num_periods):
-        earns.append({k: None})
+        earns.append([[], []])
+    print(earns)
+    n = 0
+    file_check = os.path.isfile('./Experiment' + str(n) + '.csv')  # TODO check files and create new one
+    output_file = open('Experiment' + str(n) + '.csv', 'w', newline='')
+    # t = 0
+    for k in range(num_periods):
         periods_list.append(k)
         random.shuffle(rnd_traders)  # reassign traders each period
         print(rnd_traders)
@@ -96,9 +95,17 @@ if __name__ == "__main__":
         eff.append(results[8])
         act_surplus.append(results[7])
         maxi_surplus.append(results[6])
-        smp.save_period(results)
+        # for i in results:
+        #     if i == "SimpleTrader":
+        #         print(results.index(i)+1)
+        #         earns[t][0].append(results[results.index(i)+1])
+        #     elif i == "ZeroIntelligenceTrader":
+        #         earns[t][1].append(results[results.index(i)+1])
+        output_writer = csv.writer(output_file)
+        output_writer.writerow(results)
+        # t = t + 1
         print(results)
-
+    output_file.close()
     print(earns)
     print("Market Efficiencies:" + str(eff))
     print("Actual Surpluses:" + str(act_surplus))
@@ -131,4 +138,4 @@ if __name__ == "__main__":
 
     py.offline.plot(data)
 
-# TODO create graphs of average earnings per period
+    # TODO create graphs of average earnings per period
