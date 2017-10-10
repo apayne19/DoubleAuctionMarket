@@ -52,22 +52,15 @@ class SpotEnviornmentGui():
         self.name = name  # name of gui
         self.debug = debug  # used as error checker...when false will return errors or warnings
         root.title(name)  # giving root a name
-
+        '''Added a messagebox for when escape button pressed... calls on_escape_chosen()'''
+        root.protocol("WM_DELETE_WINDOW", self.on_quit_chosen)
         self.num_buyers = 0  # setting number of buyers to 0
         self.num_sellers = 0  # setting number of sellers to 0
-
         self.num_units = 0  # setting number of units to 0
-        # self.dem_units = 0
-        # self.sup_units = 0  # TODO change to demand units and supply units
-        #                       --> buyers could demand more units than suppliers have and vice versa...
 
         self.string_num_buyers = tk.StringVar()    # creates a tkinter variable
         self.string_num_sellers = tk.StringVar()   # StringVar() returns either an ASCII string or Unicode string
-
         self.string_num_units = tk.StringVar()     # can also be used to trace when changes made to variables
-        # self.string_dem_units = tk.StringVar()
-        # self.string_sup_units = tk.StringVar()  # TODO if ^todo is agreed then will need to reformat code
-        #                                           --> could cause errors when calling other methods
 
         self.string_project_name = tk.StringVar()  # BooleanVar() will return 0 for false and 1 for true...
         self.string_eq = tk.StringVar()
@@ -80,8 +73,6 @@ class SpotEnviornmentGui():
         self.file_name = None  # none is a placeholder to be filled
 
         # have to build matrices for future tkinter display
-        # self.buyer_values = self.build_array(self.num_buyers, self.num_units)  # matrix of buyers and number of units
-        # self.seller_costs = self.build_array(self.num_sellers, self.num_units)  # matrix of sellers and number of units
         self.buyer_values = self.build_array(self.num_buyers, self.num_units)  # matrix of buyers and number of units
         self.seller_costs = self.build_array(self.num_sellers, self.num_units)  # matrix of sellers and number of units
 
@@ -209,7 +200,7 @@ class SpotEnviornmentGui():
         self.string_ms.set("n/a")  # display n/a and unchangeable
 
     def on_quit_chosen(self):
-        # TODO create similar action for when x clicked in top right corner of window
+        """This gives a messagebox when either quit or escape is chosen"""
         if tkinter.messagebox.askokcancel("Exit?", "Have you saved your work?"):
             root.destroy()  # closes window and destroys tkinter object
 
@@ -425,8 +416,7 @@ class SpotEnviornmentGui():
             for unit in range(self.num_units):
                 self.buyer_values[buyer][unit] = tk.StringVar()
                 tk.Entry(bf, width=5, justify=tk.RIGHT,
-                         textvariable=self.buyer_values[buyer][unit]).grid(row=buyer + 1,
-                                                                                                          column=unit + 1)
+                         textvariable=self.buyer_values[buyer][unit]).grid(row=buyer + 1, column=unit + 1)
                 self.buyer_values[buyer][unit].set("")
             self.buttons[buyer][0] = tk.Button(bf, width=2, text="C",
                                                command=self.on_button_clicked(buyer, 0))
@@ -521,9 +511,11 @@ class SpotEnviornmentGui():
         """
 
     def save_as(self, event=None):  # TODO create ability to save work anywhere on the computer
+        """We want to create a dialog box that will accept a file name, then create that file, then save to that file"""
         pass
 
     def save(self, event=None):  # saves file in it's path location
+        """We want to create a messagebox that asks if the user wants to overwrite the current file"""
         # TODO:  Add existing file check
         self.set_market()
         self.project_path += self.string_project_name.get()

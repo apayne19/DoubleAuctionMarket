@@ -83,7 +83,7 @@ if __name__ == "__main__":
     n = 0
     file_check = os.path.isfile('./Experiment' + str(n) + '.csv')  # TODO check files and create new one
     output_file = open('Experiment' + str(n) + '.csv', 'w', newline='')
-    # t = 0
+    t = 0
     for k in range(num_periods):
         periods_list.append(k)
         random.shuffle(rnd_traders)  # reassign traders each period
@@ -95,18 +95,12 @@ if __name__ == "__main__":
         eff.append(results[8])
         act_surplus.append(results[7])
         maxi_surplus.append(results[6])
-        # for i in results:
-        #     if i == "SimpleTrader":
-        #         print(results.index(i)+1)
-        #         earns[t][0].append(results[results.index(i)+1])
-        #     elif i == "ZeroIntelligenceTrader":
-        #         earns[t][1].append(results[results.index(i)+1])
         output_writer = csv.writer(output_file)
         output_writer.writerow(results)
-        # t = t + 1
+        t = t + 1
         print(results)
     output_file.close()
-    print(earns)
+
     print("Market Efficiencies:" + str(eff))
     print("Actual Surpluses:" + str(act_surplus))
     print("Maximum Surpluses:" + str(maxi_surplus))
@@ -132,10 +126,20 @@ if __name__ == "__main__":
         plt.ylabel("Surplus")
         plt.grid(True)
         plt.show()'''
-    data = [go.Bar(
+    trace1 = go.Scatter(
         x=np.array(periods_list),
-        y=np.array(act_surplus))]
+        y=np.array(act_surplus), name='Actual Surplus')
+    trace2 = go.Scatter(
+        x=np.array(periods_list),
+        y=np.array(maxi_surplus), name='Max Surplus')
+    data = [trace1, trace2]
+    layout = go.Layout(title='Market Surpluses by Period',
+                       xaxis=dict(title='Periods',
+                                  titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')),
+                       yaxis=dict(title='Surplus (units)',
+                                  titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')))
+    fig = go.Figure(data=data, layout=layout)
+    py.offline.plot(fig)
 
-    py.offline.plot(data)
 
     # TODO create graphs of average earnings per period
