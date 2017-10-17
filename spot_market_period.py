@@ -49,7 +49,7 @@ class SpotMarketPeriod(object):
 
 '''This program iterates through the number of rounds'''
 if __name__ == "__main__":
-    num_periods = 5
+    num_periods = 50
     limits = (999, 0)
     rounds = 100
     name = "trial"
@@ -83,7 +83,6 @@ if __name__ == "__main__":
     n = 0
     file_check = os.path.isfile('./Experiment' + str(n) + '.csv')  # TODO check files and create new one
     output_file = open('Experiment' + str(n) + '.csv', 'w', newline='')
-    t = 0
     for k in range(num_periods):
         periods_list.append(k)
         random.shuffle(rnd_traders)  # reassign traders each period
@@ -92,20 +91,20 @@ if __name__ == "__main__":
         print("**** Running Period {}".format(k))
         smp.run_period(period, header)
         results = smp.eval()
-        eff.append(results[8])
-        act_surplus.append(results[7])
-        maxi_surplus.append(results[6])
-        output_writer = csv.writer(output_file)
-        output_writer.writerow(results)
-        t = t + 1
+        eff.append(results[8])  # appends the efficiencies per period
+        act_surplus.append(results[7])  # appends actual surplus per period
+        maxi_surplus.append(results[6])  # appends maximum surplus per period
+        output_writer = csv.writer(output_file)  # prepares new csv file for writing
+        output_writer.writerow(results)  # writes period info to csv row per period
         print(results)
-    output_file.close()
+    output_file.close()  # closes the csv file
 
     print("Market Efficiencies:" + str(eff))
     print("Actual Surpluses:" + str(act_surplus))
     print("Maximum Surpluses:" + str(maxi_surplus))
 
-    with plt.style.context('seaborn-dark-palette'):  # added a plot of the market efficiencies
+    '''Added a plot of the market efficiencies per period'''
+    with plt.style.context('seaborn-dark-palette'):
         x = np.array(periods_list)
         y = np.array(eff)
         plt.plot(x, y, marker='s')
@@ -126,6 +125,7 @@ if __name__ == "__main__":
         plt.ylabel("Surplus")
         plt.grid(True)
         plt.show()'''
+    '''Added a plot of the actual surpluses using plotly'''
     trace1 = go.Scatter(
         x=np.array(periods_list),
         y=np.array(act_surplus), name='Actual Surplus')

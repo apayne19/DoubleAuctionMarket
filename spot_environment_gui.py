@@ -7,7 +7,7 @@ matplotlib.use("TkAgg")
 import time  # https://docs.python.org/3.6/library/time.html  # time functions
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
-
+import random
 # example of time module
 '''start = time.gmtime(0)  # epoch = 1970, "start of time" for computers
 seconds = time.time()  # time measured by seconds from epoch
@@ -48,6 +48,7 @@ class SpotEnviornmentGui():
         assert name != "", "Gui must have a name"
 
         self.root = root  # root builds tkinter app
+        root.geometry("1600x1200")
         self.sec = sec  # will bring in spot_env_model and use debugger
         self.name = name  # name of gui
         self.debug = debug  # used as error checker...when false will return errors or warnings
@@ -124,10 +125,15 @@ class SpotEnviornmentGui():
 
         # create show action menu item
         show_menu = tk.Menu(menu_bar, tearoff=0)
-        show_menu.add_command(label='Plot', command=self.on_plot_clicked)  # click = plot action
-        show_menu.add_command(label='Show', command=self.on_show_clicked)  # click = show action
-        show_menu.add_command(label='Calc EQ', command=self.on_calc_eq_clicked)  # click = calc action
+        show_menu.add_command(label='Show Supply & Demand', command=self.on_show_clicked)  # click = show action
+        show_menu.add_command(label='Calculate Equilibrium', command=self.on_calc_eq_clicked)  # click = calc action
         menu_bar.add_cascade(label='Actions', menu=show_menu)  # allows menu to drop down
+
+        # created a plot menu item
+        plot_menu = tk.Menu(menu_bar, tearoff=0)
+        plot_menu.add_command(label='Plot Supply & Demand', command=self.on_plot_clicked)  # click = plot action
+        plot_menu.add_command(label='Plot Contracts', command=self.on_plot_clicked)
+        menu_bar.add_cascade(label='Plot', menu=plot_menu)  # allows menu to drop down
 
         # create about/help menu
         about_menu = tk.Menu(menu_bar, tearoff=0)
@@ -204,12 +210,20 @@ class SpotEnviornmentGui():
         if tkinter.messagebox.askokcancel("Exit?", "Have you saved your work?"):
             root.destroy()  # closes window and destroys tkinter object
 
-    def process_sd_string(self):
+    def process_sd_string1(self):
         if self.num_buyers == 0:
             return "Empty"
         else:
             s_d_list = self.sec.get_supply_demand_list()  # calls supply_demand_list from spot_env_model
-            return s_d_list
+            return s_d_list[0:(int(len(s_d_list)/2)) + 16]
+
+    '''Added 2nd sd_string process to place the spillover into the other list frame'''
+    def process_sd_string2(self):
+        if self.num_buyers == 0:
+            return "Empty"
+        else:
+            s_d_list = self.sec.get_supply_demand_list()  # calls supply_demand_list from spot_env_model
+            return s_d_list[int(len(s_d_list)/2) + 17:]
 
     def on_calc_eq_clicked(self):
         qt, pl, ph, ms = sec.get_equilibrium()  # click = calls get_eq() from spot_env_model
@@ -222,10 +236,17 @@ class SpotEnviornmentGui():
         if self.debug:  # if error trap not tripped and still set to False
             print("In GUI -> on_show_clicked -> begin")
         self.set_market()
-        lfr_show = tk.LabelFrame(root, text="List of Supply and Demand")
-        lfr_show.grid(row=2, rowspan=3, column=2, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
-        lbl_show = tk.Label(lfr_show, text=self.process_sd_string())
-        lbl_show.grid(row=0, column=0)
+        lfr1_show = tk.LabelFrame(root, text="List of Supply and Demand")
+        lfr1_show.grid(row=1, rowspan=5, column=4, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
+        lbl1_show = tk.Label(lfr1_show, text=self.process_sd_string1())
+        lbl1_show.grid(row=0, column=0)
+
+        '''Added a second frame for supply/demand list to spill over onto'''
+        # TODO maybe add scrollbar feature for one supply/demand list
+        lfr2_show = tk.LabelFrame(root, text="List of Supply and Demand")
+        lfr2_show.grid(row=1, rowspan=5, column=5, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
+        lbl2_show = tk.Label(lfr2_show, text=self.process_sd_string2())
+        lbl2_show.grid(row=0, column=0)
         if self.debug:
             print("In GUI -> on_show_clicked -> end")
 
@@ -239,19 +260,25 @@ class SpotEnviornmentGui():
 
         # set up frame to plot in
         fr_plot = tk.LabelFrame(root, text="Plot of Supply and Demand")
-        fr_plot.grid(row=2, rowspan=2, column=3, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
-
+        fr_plot.grid(row=2, rowspan=1, column=2, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
+        c_plot = tk.LabelFrame(root, text="Plot of Contracts")
+        c_plot.grid(row=3, rowspan=1, column=2, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
         # set up graph to plot in frame
-        f = Figure(figsize=(7, 7), dpi=100)
+        f = Figure(figsize=(4, 4), dpi=100)
         a = f.add_subplot(111)
         if self.num_buyers == 0:
-            canvas = FigureCanvasTkAgg(f, fr_plot)
-            canvas.get_tk_widget().pack()  # Have to use pack here to work with toolbar.  Not sure why.
-            canvas.draw()
+            canvas1 = FigureCanvasTkAgg(f, fr_plot)
+            canvas1.get_tk_widget().pack()  # Have to use pack here to work with toolbar.  Not sure why.
+            canvas1.draw()
+            canvas2 = FigureCanvasTkAgg(f, c_plot)
+            canvas2.get_tk_widget().pack()  # Have to use pack here to work with toolbar.  Not sure why.
+            canvas2.draw()
             if self.debug:
                 print("In Gui -> on_plot_clicked --> early end")
             self.set_market()  # why is this called twice?
             return
+
+
 
         # get some model information here
         dunits, sunits, munits, demand_values, supply_costs, eq_price_high, eq_price_low = sec.get_supply_demand_plot_info()
@@ -276,12 +303,12 @@ class SpotEnviornmentGui():
         a.set_ylabel("$")  # add the y axis label                    --> problem was set_ missing
 
         # finish setting up the canvas here
-        canvas = FigureCanvasTkAgg(f, fr_plot)
-        canvas.get_tk_widget().pack()  # Have to use pack here to work with toolbar.  Not sure why.
-        canvas.draw()
+        canvas1 = FigureCanvasTkAgg(f, fr_plot)
+        canvas1.get_tk_widget().pack()  # Have to use pack here to work with toolbar.  Not sure why.
+        canvas1.draw()
 
         # Add navigation bar:  This adds a toolbar.  This is optional and does not work yet
-        toolbar = NavigationToolbar2TkAgg(canvas, fr_plot)
+        toolbar = NavigationToolbar2TkAgg(canvas1, fr_plot)
         toolbar.pack()  # This is the other pack.  Both go into frame fr_plot
         toolbar.update()
 
@@ -364,7 +391,7 @@ class SpotEnviornmentGui():
 
         return event_handler
 
-    def process_button_clicked(self, row, col):
+    def process_button_clicked(self, row, col):  # maybe want to add buttons that clear entries and random?
         self.target_row = row
         if self.debug == True:
             print("In GUI -> process button click row {} col {}".format(row, col))
@@ -390,6 +417,15 @@ class SpotEnviornmentGui():
                     return
                 for k in range(self.num_units):
                     self.seller_costs[row-self.num_buyers][k].set(self.current_row_contents[k])
+        elif col == 2:
+            '''Created a button for generating random values'''
+            if row < self.num_buyers:  # implement replace on buyers
+                for k in range(self.num_units):
+                    self.buyer_values[row][k].set(random.randrange(1, 30))
+            else:  # implement replace on sellers
+                for k in range(self.num_units):
+                    self.seller_costs[row-self.num_buyers][k].set(random.randrange(1, 30))
+
         return
 
     def show_player_frames(self):
@@ -421,13 +457,16 @@ class SpotEnviornmentGui():
             self.buttons[buyer][0] = tk.Button(bf, width=2, text="C",
                                                command=self.on_button_clicked(buyer, 0))
             self.buttons[buyer][0].grid(row=buyer + 1, column=self.num_units + 2)
-            self.buttons[buyer][1] = tk.Button(bf, width=2, text="R",
+            self.buttons[buyer][1] = tk.Button(bf, width=2, text="P",
                                                command=self.on_button_clicked(buyer, 1))
             self.buttons[buyer][1].grid(row=buyer + 1, column=self.num_units + 3)
+            self.buttons[buyer][2] = tk.Button(bf, width=3, text="Rdm",
+                                               command=self.on_button_clicked(buyer, 2))
+            self.buttons[buyer][2].grid(row=buyer + 1, column=self.num_units + 4)
 
     def show_sellers_frame(self):
         sf = tk.LabelFrame(self.root, text="Seller Entries")
-        sf.grid(row=2, column=1, sticky=tk.W +
+        sf.grid(row=3, column=0, sticky=tk.W +
                                         tk.E + tk.N + tk.S, padx=15, pady=4)
         if self.num_sellers == 0: return  # Nothing to show
         sell_ids = [k for k in range(self.num_sellers)]
@@ -451,9 +490,12 @@ class SpotEnviornmentGui():
             self.buttons[row][0] = tk.Button(sf, width=2, text="C",
                                              command=self.on_button_clicked(row, 0))
             self.buttons[row][0].grid(row=seller + 1, column=self.num_units + 2)
-            self.buttons[row][1] = tk.Button(sf, width=2, text="R",
+            self.buttons[row][1] = tk.Button(sf, width=2, text="P",
                                              command=self.on_button_clicked(row, 1))
             self.buttons[row][1].grid(row=seller + 1, column=self.num_units + 3)
+            self.buttons[row][2] = tk.Button(sf, width=3, text="Rdm",
+                                             command=self.on_button_clicked(row, 2))
+            self.buttons[row][2].grid(row=seller + 1, column=self.num_units + 4)
 
     def show_info_bar_parms(self):
         self.string_num_buyers.set(str(self.num_buyers))
@@ -572,7 +614,7 @@ class SpotEnviornmentGui():
 
     def set_buyer_values(self, buyer, values):
         assert buyer < self.num_buyers, "Buyer {} not in range".format(buyer)
-        assert len(values) == self.num_units, "values {} shoud have {} value units".format(values, self.num_units)
+        assert len(values) == self.num_units, "values {} should have {} value units".format(values, self.num_units)
         for unit in range(self.num_units):
             self.buyer_values[buyer][unit].set(str(values[unit]))
 
