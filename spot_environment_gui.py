@@ -145,8 +145,6 @@ class SpotEnviornmentGui():
     def show_shortcut(self):
         shortcut_bar = tk.Frame(self.root)  # creates a frame within the tkinter object
         shortcut_bar.grid(row=0, column=0, columnspan=4, sticky='W')  # setting parameters of frame
-        """WARNING: Never use grid and pack in same tkinter master window, will create error --> loop to solve
-        ...according to stackoverflow"""
 
     def show_infobar(self):
         info_bar = tk.LabelFrame(self.root, height=15, text=str(self.name))  # creates a label frame for initial inputs
@@ -552,9 +550,20 @@ class SpotEnviornmentGui():
             # we discuss message boxes in the next section so ignored here.
         """
 
+    '''Created tkinter frame for save_as for file naming and creating'''
     def save_as(self, event=None):  # TODO create ability to save work anywhere on the computer
         """We want to create a dialog box that will accept a file name, then create that file, then save to that file"""
-        pass
+        top = tk.Toplevel(self.root)
+        top.geometry("100x100")
+        frm = tk.Frame(top, borderwidth=4, relief='ridge')
+        frm.pack(fill='both', expand=True)
+        label = tk.Label(frm, text="Name your file")
+        label.pack()
+        entry = tk.Entry(frm)
+        entry.pack(pady=4)
+        b_submit = tk.Button(frm, text='Save As', command=open(self.project_path + entry.get() + '.csv', 'w', newline=''))
+        '''opening the file before the button is pressed...how to fix??'''
+        b_submit.pack()
 
     def save(self, event=None):  # saves file in it's path location
         """We want to create a messagebox that asks if the user wants to overwrite the current file"""
@@ -563,7 +572,8 @@ class SpotEnviornmentGui():
         self.project_path += self.string_project_name.get()
         self.sec.save_project(self.project_path)
 
-    def display_about_messagebox(self, event=None):  # dispays about message
+    def display_about_messagebox(self, event=None):
+        # displays about message
         tkinter.messagebox.showinfo("About", "{}{}".format(self.name,
                                                            "\n\nCenter for the Study of Neuroeconomics\n\nOctober, 2017"))
 

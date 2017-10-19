@@ -84,6 +84,7 @@ class SpotSystem(object):
 
         actual_surplus = 0  # will change as updated
         for contract in self.da.report_contracts():  # going through list of contracts
+
             price = contract[0]  # pulls price from board
             buyer_id = contract[1]  # pulls buyer id from board
             seller_id = contract[2]  # pulls seller id from board

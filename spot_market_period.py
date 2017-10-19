@@ -10,7 +10,8 @@ import os
 
 '''There could be a problem in counting traders... when run this program shows 10 traders 
 when the input file only has 8'''
-
+all_prices = []
+all_ends = []
 class SpotMarketPeriod(object):
     def __init__(self, session_name, num_periods):  # creates name and number of periods for market
 
@@ -40,6 +41,50 @@ class SpotMarketPeriod(object):
     def eval(self):
         return self.sys.eval()  # runs eval method from spot_system
 
+    '''Accessing contracts to obtain prices'''
+    def get_contracts(self):
+        self.prices = []
+        self.ends = []
+        for contract in self.sys.da.report_contracts():
+            price = contract[0]
+            self.prices.append(price)
+        end = len(self.prices)
+        self.ends.append(end)
+        for p in self.prices:
+            all_prices.append(p)
+        for e in self.ends:
+            all_ends.append(e)
+
+    '''Testing dictionary contents'''
+    def test(self):
+        print(all_prices)
+        print(all_ends)
+
+    '''Graphs the contracts from all periods'''
+    def graph_contracts(self):
+        trace1 = go.Scatter(
+            x=np.array(range(len(all_prices))),
+            y=np.array(all_prices), mode='markers', marker=dict(size=10, color='rgba(152, 0, 0, .8)'))
+        data = [trace1]
+        layout = go.Layout(title='Market Contracts by Period',
+                           xaxis=dict(title='Contract #',
+                                      titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')),
+                           yaxis=dict(title='Prices ($)',
+                                      titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')))
+        fig = go.Figure(data=data, layout=layout)
+        py.offline.plot(fig)
+
+        '''Will use in spot_environment_gui'''
+        # with plt.style.context('seaborn-dark-palette'):
+        #     xv = np.array(range(len(all_prices)))
+        #     yv = np.array(all_prices)
+        #     plt.scatter(xv, yv, marker='s')
+        #     plt.title("Contracts per Period")
+        #     plt.xlabel("Contract #")
+        #     plt.ylabel("Price ($)")
+        #     plt.grid(True)
+        #     plt.show()
+
     def run_period(self, period, header):
         self.period = period
         self.run()
@@ -49,7 +94,7 @@ class SpotMarketPeriod(object):
 
 '''This program iterates through the number of rounds'''
 if __name__ == "__main__":
-    num_periods = 50
+    num_periods = 5
     limits = (999, 0)
     rounds = 100
     name = "trial"
@@ -82,8 +127,10 @@ if __name__ == "__main__":
     print(earns)
     n = 0
     file_check = os.path.isfile('./Experiment' + str(n) + '.csv')  # TODO check files and create new one
+    '''Still need to make file check here'''
     output_file = open('Experiment' + str(n) + '.csv', 'w', newline='')
     for k in range(num_periods):
+        smp.get_contracts()
         periods_list.append(k)
         random.shuffle(rnd_traders)  # reassign traders each period
         print(rnd_traders)
@@ -97,6 +144,8 @@ if __name__ == "__main__":
         output_writer = csv.writer(output_file)  # prepares new csv file for writing
         output_writer.writerow(results)  # writes period info to csv row per period
         print(results)
+    smp.graph_contracts()  # graphs contracts per period
+    smp.test()  # prints dictionary contents
     output_file.close()  # closes the csv file
 
     print("Market Efficiencies:" + str(eff))
