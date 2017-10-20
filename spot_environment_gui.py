@@ -48,6 +48,7 @@ class SpotEnviornmentGui():
         assert name != "", "Gui must have a name"
 
         self.root = root  # root builds tkinter app
+        '''Can maybe add an os function for resolutions to adapt'''
         root.geometry("1600x1200")
         self.sec = sec  # will bring in spot_env_model and use debugger
         self.name = name  # name of gui

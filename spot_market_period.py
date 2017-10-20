@@ -12,6 +12,7 @@ import os
 when the input file only has 8'''
 all_prices = []
 all_ends = []
+
 class SpotMarketPeriod(object):
     def __init__(self, session_name, num_periods):  # creates name and number of periods for market
 
@@ -43,6 +44,7 @@ class SpotMarketPeriod(object):
 
     '''Accessing contracts to obtain prices'''
     def get_contracts(self):
+        n = 0
         self.prices = []
         self.ends = []
         for contract in self.sys.da.report_contracts():
@@ -55,10 +57,15 @@ class SpotMarketPeriod(object):
         for e in self.ends:
             all_ends.append(e)
 
-    '''Testing dictionary contents'''
-    def test(self):
-        print(all_prices)
-        print(all_ends)
+
+    '''Obtains end of period for plot'''
+    def get_endpoints(self):
+        self.endpoints = []
+        for i in all_ends:
+            if bool(self.endpoints) == False:
+                self.endpoints.append(i)
+            else:
+                self.endpoints.append(i + self.endpoints[-1])
 
     '''Graphs the contracts from all periods'''
     def graph_contracts(self):
@@ -66,7 +73,17 @@ class SpotMarketPeriod(object):
             x=np.array(range(len(all_prices))),
             y=np.array(all_prices), mode='markers', marker=dict(size=10, color='rgba(152, 0, 0, .8)'))
         data = [trace1]
-        layout = go.Layout(title='Market Contracts by Period',
+        shapes = list()
+        for i in self.endpoints:
+            shapes.append({'type': 'line',
+                           'xref': 'x',
+                           'yref': 'y',
+                           'x0': i,
+                           'y0': 0,
+                           'x1': i,
+                           'y1': 16})
+
+        layout = go.Layout(shapes=shapes, title='Market Contracts by Period',
                            xaxis=dict(title='Contract #',
                                       titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')),
                            yaxis=dict(title='Prices ($)',
@@ -94,7 +111,7 @@ class SpotMarketPeriod(object):
 
 '''This program iterates through the number of rounds'''
 if __name__ == "__main__":
-    num_periods = 5
+    num_periods = 15
     limits = (999, 0)
     rounds = 100
     name = "trial"
@@ -144,8 +161,8 @@ if __name__ == "__main__":
         output_writer = csv.writer(output_file)  # prepares new csv file for writing
         output_writer.writerow(results)  # writes period info to csv row per period
         print(results)
+    smp.get_endpoints()  # obtains endpoints of periods for graph
     smp.graph_contracts()  # graphs contracts per period
-    smp.test()  # prints dictionary contents
     output_file.close()  # closes the csv file
 
     print("Market Efficiencies:" + str(eff))
@@ -153,15 +170,15 @@ if __name__ == "__main__":
     print("Maximum Surpluses:" + str(maxi_surplus))
 
     '''Added a plot of the market efficiencies per period'''
-    with plt.style.context('seaborn-dark-palette'):
-        x = np.array(periods_list)
-        y = np.array(eff)
-        plt.plot(x, y, marker='s')
-        plt.title("Market Efficiencies")
-        plt.xlabel("Period")
-        plt.ylabel("Efficiency (%)")
-        plt.grid(True)
-        plt.show()
+    # with plt.style.context('seaborn-dark-palette'):
+    #     x = np.array(periods_list)
+    #     y = np.array(eff)
+    #     plt.plot(x, y, marker='s')
+    #     plt.title("Market Efficiencies")
+    #     plt.xlabel("Period")
+    #     plt.ylabel("Efficiency (%)")
+    #     plt.grid(True)
+    #     plt.show()
 
     '''with plt.style.context('seaborn-dark-palette'):  # added a plot of the market efficiencies
         x = np.array(periods_list)
@@ -175,20 +192,20 @@ if __name__ == "__main__":
         plt.grid(True)
         plt.show()'''
     '''Added a plot of the actual surpluses using plotly'''
-    trace1 = go.Scatter(
-        x=np.array(periods_list),
-        y=np.array(act_surplus), name='Actual Surplus')
-    trace2 = go.Scatter(
-        x=np.array(periods_list),
-        y=np.array(maxi_surplus), name='Max Surplus')
-    data = [trace1, trace2]
-    layout = go.Layout(title='Market Surpluses by Period',
-                       xaxis=dict(title='Periods',
-                                  titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')),
-                       yaxis=dict(title='Surplus (units)',
-                                  titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')))
-    fig = go.Figure(data=data, layout=layout)
-    py.offline.plot(fig)
+    # trace1 = go.Scatter(
+    #     x=np.array(periods_list),
+    #     y=np.array(act_surplus), name='Actual Surplus')
+    # trace2 = go.Scatter(
+    #     x=np.array(periods_list),
+    #     y=np.array(maxi_surplus), name='Max Surplus')
+    # data = [trace1, trace2]
+    # layout = go.Layout(title='Market Surpluses by Period',
+    #                    xaxis=dict(title='Periods',
+    #                               titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')),
+    #                    yaxis=dict(title='Surplus (units)',
+    #                               titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')))
+    # fig = go.Figure(data=data, layout=layout)
+    # py.offline.plot(fig)
 
 
     # TODO create graphs of average earnings per period
