@@ -1,4 +1,4 @@
-from trader import SimpleTrader, ZeroIntelligenceTrader, UnconstrainedZITrader
+from trader import SimpleTrader, ZeroIntelligenceTrader
 #import build_environment as env
 import spot_environment_model as env
 import double_auction_institution as ins
@@ -42,18 +42,20 @@ class SpotSystem(object):
         if self.display:  # if display = true
             print()
             print("Auction Open")
-            print(self.da.report_standing(), self.da.report_contracts())
+            print(self.da.report_orders())
+            #print(self.da.report_standing(), self.da.report_contracts())
         length_old_contracts = 0
         temp_traders = self.traders
         for i in range(self.num_market_rounds):
             random.shuffle(temp_traders)  # generates random order of traders each round
             for trader in temp_traders:
                 self.trader_handler(trader)
+                print("Standing Bid, Standing Ask:" + str(self.da.report_standing()))
                 contracts = self.da.report_contracts()  # list of contracts as they happen
                 if len(contracts) > length_old_contracts:  # if len(contracts)>0
                     length_old_contracts = len(contracts)
                     if self.display:  # if display still true
-                        print(num_contracts, i, contracts[len(contracts) - 1])  # prints info for each trader
+                        print("--> Contract #" + str(num_contracts), "|", "Round #" + str(i), "|", contracts[len(contracts) - 1]) # prints info for each trader
                         num_contracts = num_contracts + 1
         if self.display:
             print()

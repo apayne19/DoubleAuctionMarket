@@ -560,11 +560,14 @@ class SpotEnviornmentGui():
         frm.pack(fill='both', expand=True)
         label = tk.Label(frm, text="Name your file")
         label.pack()
-        entry = tk.Entry(frm)
-        entry.pack(pady=4)
-        b_submit = tk.Button(frm, text='Save As', command=open(self.project_path + entry.get() + '.csv', 'w', newline=''))
+        self.entry = tk.Entry(frm)
+        self.entry.pack(pady=4)
+        b_submit = tk.Button(frm, label='Save As', command=self.save_as_file())
         '''opening the file before the button is pressed...how to fix??'''
         b_submit.pack()
+
+    def save_as_file(self):
+        open(self.project_path + self.entry.get() + '.csv', 'w', newline='')
 
     def save(self, event=None):  # saves file in it's path location
         """We want to create a messagebox that asks if the user wants to overwrite the current file"""

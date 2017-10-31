@@ -12,7 +12,8 @@ import os
 when the input file only has 8'''
 all_prices = []
 all_ends = []
-
+avg_prices = []
+endpoints = []
 class SpotMarketPeriod(object):
     def __init__(self, session_name, num_periods):  # creates name and number of periods for market
 
@@ -44,18 +45,24 @@ class SpotMarketPeriod(object):
 
     '''Accessing contracts to obtain prices'''
     def get_contracts(self):
-        n = 0
-        self.prices = []
-        self.ends = []
+        self.prices = []  # temp dictionary for contract prices
+        self.ends = []  # temp dictionary for end of period (end of contracts)
         for contract in self.sys.da.report_contracts():
-            price = contract[0]
-            self.prices.append(price)
-        end = len(self.prices)
-        self.ends.append(end)
+            price = contract[0]  # pulls price from contracts
+            self.prices.append(price)  # appends to temp dict
+        try:
+            avg = sum(self.prices)/len(self.prices)  # gets avg of all contract prices in period
+        except ZeroDivisionError:  # if no contracts avg = 0
+            avg = 0
+        print("Transaction Avg: " + str(avg))
+        avg_prices.append(avg)  # appends avg to global dict
+        print("Transaction Avg List: " + str(avg_prices))
+        end = len(self.prices)  # finds end of contracts for period
+        self.ends.append(end)  # appends end int to temp dict
         for p in self.prices:
-            all_prices.append(p)
+            all_prices.append(p)  # appends all prices in temp dict to global dict
         for e in self.ends:
-            all_ends.append(e)
+            all_ends.append(e)  # appends all ends in temp dict to global dict
 
 
     '''Obtains end of period for plot'''
@@ -69,27 +76,34 @@ class SpotMarketPeriod(object):
 
     '''Graphs the contracts from all periods'''
     def graph_contracts(self):
+        # graph all transactions per period
         trace1 = go.Scatter(
             x=np.array(range(len(all_prices))),
-            y=np.array(all_prices), mode='markers', marker=dict(size=10, color='rgba(152, 0, 0, .8)'))
-        data = [trace1]
+            y=np.array(all_prices), name='All Transactions')
+        # graph avg transaction per period
+        trace2 = go.Scatter(
+            x=np.array(self.endpoints),
+            y=np.array(avg_prices), name='Avg Transaction'
+        )
+        data = [trace1, trace2]
         shapes = list()
+        # graph period cutoff lines
         for i in self.endpoints:
             shapes.append({'type': 'line',
                            'xref': 'x',
-                           'yref': 'y',
+                           'yref': 'paper',
                            'x0': i,
                            'y0': 0,
                            'x1': i,
-                           'y1': 16})
+                           'y1': 20})
 
         layout = go.Layout(shapes=shapes, title='Market Contracts by Period',
                            xaxis=dict(title='Contract #',
                                       titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')),
                            yaxis=dict(title='Prices ($)',
                                       titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')))
-        fig = go.Figure(data=data, layout=layout)
-        py.offline.plot(fig)
+        fig1 = go.Figure(data=data, layout=layout)
+        py.offline.plot(fig1)
 
         '''Will use in spot_environment_gui'''
         # with plt.style.context('seaborn-dark-palette'):
@@ -111,9 +125,9 @@ class SpotMarketPeriod(object):
 
 '''This program iterates through the number of rounds'''
 if __name__ == "__main__":
-    num_periods = 15
+    num_periods = 6
     limits = (999, 0)
-    rounds = 100
+    rounds = 50
     name = "trial"
     period = 1
     session_name = "session_test"
@@ -126,7 +140,10 @@ if __name__ == "__main__":
     # Put Trader Class Names Here - note traders strategy is named trader class name
     zi = "ZeroIntelligenceTrader"
     si = "SimpleTrader"
-    trader_names = [zi, si, zi, si, zi, si, zi, si]  # Order of trader strategies in generic trader array
+    uzi = "UnconstrainedZITrader"
+    trader_names = [zi, zi, zi, zi, zi, zi, zi, zi]  # Order of trader strategies in generic trader array
+    #trader_names = [zi, si, zi, si, zi, si, zi, si]
+    #trader_names = [uzi, zi, uzi, zi, uzi, zi, uzi, zi]
     # input - output and display options
     input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
     input_file = "TEST"
@@ -138,10 +155,6 @@ if __name__ == "__main__":
     periods_list = []
     act_surplus = []
     maxi_surplus = []
-    earns = []
-    for k in range(num_periods):
-        earns.append([[], []])
-    print(earns)
     n = 0
     file_check = os.path.isfile('./Experiment' + str(n) + '.csv')  # TODO check files and create new one
     '''Still need to make file check here'''
@@ -161,24 +174,10 @@ if __name__ == "__main__":
         output_writer = csv.writer(output_file)  # prepares new csv file for writing
         output_writer.writerow(results)  # writes period info to csv row per period
         print(results)
-    smp.get_endpoints()  # obtains endpoints of periods for graph
-    smp.graph_contracts()  # graphs contracts per period
     output_file.close()  # closes the csv file
-
     print("Market Efficiencies:" + str(eff))
     print("Actual Surpluses:" + str(act_surplus))
     print("Maximum Surpluses:" + str(maxi_surplus))
-
-    '''Added a plot of the market efficiencies per period'''
-    # with plt.style.context('seaborn-dark-palette'):
-    #     x = np.array(periods_list)
-    #     y = np.array(eff)
-    #     plt.plot(x, y, marker='s')
-    #     plt.title("Market Efficiencies")
-    #     plt.xlabel("Period")
-    #     plt.ylabel("Efficiency (%)")
-    #     plt.grid(True)
-    #     plt.show()
 
     '''with plt.style.context('seaborn-dark-palette'):  # added a plot of the market efficiencies
         x = np.array(periods_list)
@@ -192,20 +191,34 @@ if __name__ == "__main__":
         plt.grid(True)
         plt.show()'''
     '''Added a plot of the actual surpluses using plotly'''
-    # trace1 = go.Scatter(
-    #     x=np.array(periods_list),
-    #     y=np.array(act_surplus), name='Actual Surplus')
-    # trace2 = go.Scatter(
-    #     x=np.array(periods_list),
-    #     y=np.array(maxi_surplus), name='Max Surplus')
-    # data = [trace1, trace2]
-    # layout = go.Layout(title='Market Surpluses by Period',
-    #                    xaxis=dict(title='Periods',
-    #                               titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')),
-    #                    yaxis=dict(title='Surplus (units)',
-    #                               titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')))
-    # fig = go.Figure(data=data, layout=layout)
-    # py.offline.plot(fig)
+    trace3 = go.Scatter(
+        x=np.array(periods_list),
+        y=np.array(act_surplus), name='Actual Surplus')
+    trace4 = go.Scatter(
+        x=np.array(periods_list),
+        y=np.array(maxi_surplus), name='Max Surplus')
+    data = [trace3, trace4]
+    layout = go.Layout(title='Market Surpluses by Period',
+                       xaxis=dict(title='Periods',
+                                  titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')),
+                       yaxis=dict(title='Surplus (units)',
+                                  titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')))
+    fig = go.Figure(data=data, layout=layout)
+    py.offline.plot(fig)
+
+    '''Added a plot of the market efficiencies per period'''
+    with plt.style.context('seaborn-dark-palette'):
+        x = np.array(periods_list)
+        y = np.array(eff)
+        plt.plot(x, y, marker='s')
+        plt.title("Market Efficiencies")
+        plt.xlabel("Period")
+        plt.ylabel("Efficiency (%)")
+        plt.grid(True)
+        plt.show()
+
+    smp.get_endpoints()  # obtains endpoints of periods for graph
+    smp.graph_contracts()  # graphs contracts per period
 
 
     # TODO create graphs of average earnings per period

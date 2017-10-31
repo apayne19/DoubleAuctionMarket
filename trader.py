@@ -91,7 +91,7 @@ class ZeroIntelligenceTrader(object):
             else:
                 return []
 
-class UnconstrainedZITrader(object):
+class ZIPTrader(object):
     """ A class that makes a trader"""
 
     def __init__(self):
@@ -114,8 +114,8 @@ class UnconstrainedZITrader(object):
 
             # TODO Put in bidding or buying strategy
 
-            if cur_value > 0:
-                bid = random.randint(0 + 1, cur_value)  # random number between standing_bid and cur_value
+            if cur_value > standing_bid:
+                bid = random.randint(standing_bid + 1, cur_value)  # random number between standing_bid and cur_value
                 return ["B", self.name, bid]
             else:
                 return []
@@ -130,11 +130,13 @@ class UnconstrainedZITrader(object):
 
             # TODO Put in asking or selling strategy
 
-            if cur_cost < 999:
-                ask = random.randint(cur_cost, 999 - 1)  # random number between cost and standing ask
+            if cur_cost < standing_ask:
+                ask = random.randint(cur_cost, standing_ask - 1)  # random number between cost and standing ask
                 return ["S", self.name, ask]
             else:
                 return []
+
+
 
 
 if __name__ == "__main__":

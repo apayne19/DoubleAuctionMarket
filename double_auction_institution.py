@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 class Auction(object):
     """ A class that makes a market"""
     board = {"is_open": False, "orders": [], "contracts": [], "standing": {}}
@@ -26,10 +27,14 @@ class Auction(object):
 
     def bid(self, player_id, amt):
         # TODO add time index instead of time.time() to bid, ask, buy, sell orders
+        '''May be impossible to measure time if we are not adding any deliberation time between offers.
+        program is executing instantly'''
         if self.board["is_open"]:
-            self.board["orders"].append((time.time(), player_id, "bid", amt))
+            dt = datetime.now()
+            self.board["orders"].append((dt.microsecond, player_id, "bid", amt))
         else:
             return "closed"
+        # TODO potential problem in transaction price of contracts
         if amt > self.board["standing"]["bid"] and amt < self.ceiling:  # check for valid amount
             if amt > self.board["standing"]["ask"]:
                 status = "contract"  # contract = (price, buyer, seller) price = standing ask
@@ -123,4 +128,4 @@ class Auction(object):
 
 if __name__ == "__main__":
     da = Auction('da', 0, 999)
-    print(self.board['orders'])
+    print(da.board['orders'])
