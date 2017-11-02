@@ -1,5 +1,4 @@
-import time
-from datetime import datetime
+from timeit import default_timer as timer
 class Auction(object):
     """ A class that makes a market"""
     board = {"is_open": False, "orders": [], "contracts": [], "standing": {}}
@@ -12,6 +11,7 @@ class Auction(object):
         self.board["standing"]["bidder"] = self.name  # displays bidder
         self.board["standing"]["ask"] = self.ceiling  # Starts at largest possible ask # sellers want high
         self.board["standing"]["asker"] = self.name  # displays seller
+        self.srt = timer()
 
     def show(self):
         print("I am auction {}, with ceiling {} and floor {}.".format(self.name, self.ceiling, self.floor))
@@ -25,13 +25,14 @@ class Auction(object):
     def report_orders(self):
         return self.board["orders"]
 
+    def time_index(self):
+        stp = timer()
+        t = (round(stp - self.srt, 5))
+        return t
+
     def bid(self, player_id, amt):
-        # TODO add time index instead of time.time() to bid, ask, buy, sell orders
-        '''May be impossible to measure time if we are not adding any deliberation time between offers.
-        program is executing instantly'''
         if self.board["is_open"]:
-            dt = datetime.now()
-            self.board["orders"].append((dt.microsecond, player_id, "bid", amt))
+            self.board["orders"].append((self.time_index(), player_id, "bid", amt))
         else:
             return "closed"
         # TODO potential problem in transaction price of contracts
@@ -55,7 +56,7 @@ class Auction(object):
 
     def ask(self, player_id, amt):
         if self.board["is_open"]:
-            self.board["orders"].append((time.time(), player_id, "ask", amt))
+            self.board["orders"].append((self.time_index(), player_id, "ask", amt))
         else:
             return "closed"
         if amt < self.board["standing"]["ask"] and amt > self.floor:  # check for valid ask
@@ -78,7 +79,7 @@ class Auction(object):
 
     def buy(self, player_id):
         if self.board["is_open"]:
-            self.board["orders"].append((time.time(), player_id, "buy", "null"))
+            self.board["orders"].append((self.time_index(), player_id, "buy", "null"))
         else:
             return "closed"
         if self.board["standing"]["asker"] != self.name:  # Buying from  true seller
@@ -96,7 +97,7 @@ class Auction(object):
 
     def sell(self, player_id):
         if self.board["is_open"]:
-            self.board["orders"].append((time.time(), player_id, "sell", "null"))
+            self.board["orders"].append((self.time_index(), player_id, "sell", "null"))
         else:
             return "closed"
         if self.board["standing"]["bidder"] != self.name:  # Buying from  true seller
