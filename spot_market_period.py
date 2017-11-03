@@ -107,6 +107,7 @@ class SpotMarketPeriod(object):
                             yaxis=dict(title='Efficiency (%)',
                                        titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')))
         fig3 = go.Figure(data=data3, layout=layout3)
+
         py.offline.plot(fig3)
 
     '''Graphs the contracts from all periods'''
@@ -138,6 +139,7 @@ class SpotMarketPeriod(object):
                            yaxis=dict(title='Prices ($)',
                                       titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')))
         fig1 = go.Figure(data=data1, layout=layout1)
+
         py.offline.plot(fig1)
 
         '''Will use in spot_environment_gui'''
@@ -160,9 +162,9 @@ class SpotMarketPeriod(object):
 
 '''This program iterates through the number of rounds'''
 if __name__ == "__main__":
-    num_periods = 10
-    limits = (400, 0)
-    rounds = 50
+    num_periods = 20
+    limits = (999, 0)
+    rounds = 100
     name = "trial"
     period = 1
     session_name = "session_test"
@@ -179,12 +181,12 @@ if __name__ == "__main__":
     kp = "KaplanTrader"
     si = "SimpleTrader"
     uzi = "UnconstrainedZITrader"
-    trader_names = [zi, zi, zi, zi, zi, zi, zi, kp]  # Order of trader strategies in generic trader array
+    trader_names = [zi, zi, zi, zi, zi, zi]  # Order of trader strategies in generic trader array
 
     #trader_names = [uzi, zi, uzi, zi, uzi, zi, uzi, zi]
     # input - output and display options
     input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
-    input_file = "TEST"
+    input_file = "TestVS"
     output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\data\\"
     header = session_name
     smp.init_spot_system(name, limits, rounds, input_path, input_file)
@@ -269,8 +271,8 @@ if __name__ == "__main__":
     #     plt.grid(True)
     #     plt.show()
 
-    # smp.graph_surplus()  # graphs surplus
-    # smp.graph_efficiency()  # graphs efficiencies
+    smp.graph_surplus()  # graphs surplus
+    smp.graph_efficiency()  # graphs efficiencies
     smp.get_endpoints()  # obtains endpoints of periods for graph
     smp.graph_contracts()  # graphs contracts per period
 

@@ -66,11 +66,25 @@ class KaplanTrader(object):
                 return []  # You can't bid anymore
             cur_value = self.values[num_contracts]  # this is the current value working on
 
-            if standing_bid/standing_ask >= 0.90 and cur_value > standing_bid:
-                bid = standing_ask
-                return ["B", self.name, bid]
+            if standing_bid:
+                if standing_ask:
+                    if standing_bid/standing_ask >= 0.85 and cur_value > standing_bid:
+                        bid = standing_ask - 1
+                        return ["B", self.name, bid]
+                    else:
+                        return []
+                else:
+                    if cur_value > standing_bid:
+                        bid = standing_bid + 1
+                        return ["B", self.name, bid]
+                    else:
+                        return []
             else:
-                return []
+                if cur_value > 0:
+                    bid = 1
+                    return ["B", self.name, bid]
+                else:
+                    return []
 
         else:
             # find out how many contracts you have
@@ -81,11 +95,25 @@ class KaplanTrader(object):
                 return []  # You can't ask anymore
             cur_cost = self.costs[num_contracts]  # this is the current value working on
 
-            if standing_bid/standing_ask >= 0.90 and cur_cost < standing_ask:
-                ask = standing_bid  # random number between cost and standing ask
-                return ["S", self.name, ask]
+            if standing_ask:
+                if standing_bid:
+                    if standing_bid/standing_ask >= 0.85 and cur_cost < standing_ask:
+                        ask = standing_bid + 1  # random number between cost and standing ask
+                        return ["S", self.name, ask]
+                    else:
+                        return []
+                else:
+                    if cur_cost < 999:
+                        ask = standing_ask - 1
+                        return ["S", self.name, ask]
+                    else:
+                        return []
             else:
-                return []
+                if cur_cost > 0:
+                    ask = 999
+                    return ["S", self.name, ask]
+                else:
+                    return []
 
 
 class ZeroIntelligenceTrader(object):
