@@ -5,6 +5,10 @@ import double_auction_institution as ins
 import tournament as trna  # imported but unused??
 import trader as t  # imported but unused??
 import random  # allows things to be generated randomly
+import plotly.offline as py
+import plotly.graph_objs as go
+import plotly.figure_factory as ff
+import numpy as np
 
 class SpotSystem(object):
     def __init__(self):
@@ -42,7 +46,7 @@ class SpotSystem(object):
         if self.display:  # if display = true
             print()
             print("Auction Open")
-            print(self.da.report_orders())  # prints list of orders per period (time, trader, bid/ask)
+            #print(self.da.report_orders())  # prints list of orders per period (time, trader, bid/ask)
         length_old_contracts = 0
         temp_traders = self.traders
         for i in range(self.num_market_rounds):
@@ -58,7 +62,41 @@ class SpotSystem(object):
                         # prints info for each trader
                         num_contracts = num_contracts + 1
         if self.display:
-            print()
+            print(self.da.report_orders())
+            #self.graph_table()
+
+    def graph_table(self):
+        '''Graph tables of Time, Trader, Ask/Bid, Offer Amt in real time per period'''
+        time_list = []  # dictionary of time values from self.da.report_standing()
+        trader_list = []  # dictionary of trader ids from self.da.report_standing()
+        ask_bid_list = []  # dictionary of ask/bid from self.da.report_standing()
+        offer_list = []  # dictionary of offers from self.da.report_standing()
+        table = []  # created to make info enter table plot as columns
+        for i in self.da.report_orders():
+            time = i[0]  # pulls each time value
+            time_list.append(time)  # appends to own dictionary
+            trader = i[1]  # pulls each trader id
+            trader_list.append(trader)  # append to own dict
+            ask_bid = i[2]  # pulls each ask/bid
+            ask_bid_list.append(ask_bid)  # appends to own dict
+            offer = i[3]  # pulls each offer value
+            offer_list.append(offer)  # appends to own dict
+        for i in range(len(time_list)):
+            table.append([])  # used to create columns in data plot
+        table.append([])  # append an extra for column titles
+        table[0].append('Time')
+        table[0].append('Trader')  # creates column titles
+        table[0].append('Ask/Bid')
+        table[0].append('Offer Amt')
+        for i in range(len(trader_list)):
+            table[i + 1].append(time_list[i])  # appends data in data array
+            table[i + 1].append(trader_list[i])
+            table[i + 1].append(ask_bid_list[i])
+            table[i + 1].append(offer_list[i])
+        table_data = table  # calls data from table dictionary
+        # Initialize a figure with ff.create_table(table_data)
+        figure = ff.create_table(table_data)  # creates a table using plotly
+        py.offline.plot(figure)  # plots into web browser
 
     def trader_handler(self, trader):
         offer = trader.offer(self.da.report_contracts(), self.da.report_standing()[0],self.da.report_standing()[1])
