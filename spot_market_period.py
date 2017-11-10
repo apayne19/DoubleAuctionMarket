@@ -9,8 +9,7 @@ import plotly.figure_factory as ff
 import os
 '''This program is a condensed version of spot_system to build the periods of trading'''
 
-'''There could be a problem in counting traders... when running this program shows 10 traders 
-when the input file only has 8'''
+'''Problem with graphing multiple plotly graphs... trying to fix'''
 all_prices = []
 all_ends = []
 avg_prices = []
@@ -79,7 +78,7 @@ class SpotMarketPeriod(object):
             else:
                 self.endpoints.append(i + self.endpoints[-1])
 
-    '''Graphs avg and max surpluses by period'''
+    '''Graphs avg and max surpluses by period.. use matplotlib until plot error fixed'''
     def graph_surplus(self):
         trace3 = go.Scatter(
             x=np.array(periods_list),
@@ -96,7 +95,7 @@ class SpotMarketPeriod(object):
         fig2 = go.Figure(data=data2, layout=layout2)
         py.offline.plot(fig2)
 
-    '''Graphs market efficiencies by period'''
+    '''Graphs market efficiencies by period.. use matplotlib until plot error fixed'''
     def graph_efficiency(self):
         trace5 = go.Scatter(
             x=np.array(periods_list),
@@ -143,28 +142,19 @@ class SpotMarketPeriod(object):
 
         py.offline.plot(fig1)
 
+    '''Obtains Time, Trader, Ask/Bid, Offer Amt for table graph'''
     def get_table(self):
-        '''Graph tables of Time, Trader, Ask/Bid, Offer Amt in real time per period'''
         self.table = []  # created to make info enter table plot as columns
         for i in self.sys.da.report_orders():
             self.table.append(np.array(i))
 
+    '''Graphs a table in plotly of Time, Trader, Ask/Bid, Offer Amt for all periods
+     function can't be called with graph contracts called.. until plot error fixed'''
     def graph_table(self):
         table_data = self.table  # calls data from table dictionary
         # Initialize a figure with ff.create_table(table_data)
         figure = ff.create_table(table_data)  # creates a table using plotly
         py.offline.plot(figure)  # plots into web browser
-
-        '''Will use in spot_environment_gui'''
-        # with plt.style.context('seaborn-dark-palette'):
-        #     xv = np.array(range(len(all_prices)))
-        #     yv = np.array(all_prices)
-        #     plt.scatter(xv, yv, marker='s')
-        #     plt.title("Contracts per Period")
-        #     plt.xlabel("Contract #")
-        #     plt.ylabel("Price ($)")
-        #     plt.grid(True)
-        #     plt.show()
 
     def run_period(self, period, header):
         self.period = period
@@ -194,22 +184,10 @@ if __name__ == "__main__":
     kp = "KaplanTrader"
     si = "SimpleTrader"
 
-    '''Vernon Smith data traders'''
-    #trader_names = [zi, zi, zi, zi, zi, zi]  # Order of trader strategies in generic trader array
-    #trader_names = [zi, zi, zi, zi, zi, kp]
-    #trader_names = [kp, zi, kp, zi, kp, zi]
-    #trader_names = [kp, si, si, si, si, si]
-    trader_names = [kp, zi, zi, zi, zi, zi]
-
-    '''Santa Fe data traders'''
-    #trader_names = [zi, zi, zi, zi, zi, zi, zi, zi]  # Order of trader strategies in generic trader array
-    #trader_names = [kp, zi, zi, zi, zi, zi, zi, zi]
-    #trader_names = [kp, zi, kp, zi, kp, zi, kp, zi]
-    #trader_names = [kp, si, si, si, si, si, si, si]
-
+    trader_names = [zi, kp, zi, zi, zi, zi, zi, zi]  # have to change according to data file used
     # input - output and display options
     input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
-    input_file = "TestVS"
+    input_file = "TestSF"  # data file plugged in SF = santa fe VS = vernon smith
     output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\data\\"
     header = session_name
     smp.init_spot_system(name, limits, rounds, input_path, input_file)
@@ -221,7 +199,7 @@ if __name__ == "__main__":
     for k in range(num_periods):
         smp.get_contracts()
         periods_list.append(k)
-        #random.shuffle(rnd_traders)  # reassign traders each period
+        random.shuffle(rnd_traders)  # reassign traders each period
         print(rnd_traders)
         smp.init_traders(rnd_traders)
         print("**** Running Period {}".format(k))
@@ -233,12 +211,12 @@ if __name__ == "__main__":
         output_writer = csv.writer(output_file)  # prepares new csv file for writing
         output_writer.writerow(results)  # writes period info to csv row per period
         print(results)
-        #smp.get_table()  # builds table of bids/asks etc
+        #smp.get_table()  # see function doc_string
     output_file.close()  # closes the csv file
     print("Market Efficiencies:" + str(eff))  # print market efficiencies
     print("Actual Surpluses:" + str(act_surplus))  # print actual surpluses
     print("Maximum Surpluses:" + str(maxi_surplus))  # print max surpluses
-    #smp.graph_table()  # graphs table in plotly
+    #smp.graph_table()  # see function doc_string
     '''Plot surpluses using matplotlib'''
     with plt.style.context('seaborn-dark-palette'):  # added a plot of the market efficiencies
         x = np.array(periods_list)

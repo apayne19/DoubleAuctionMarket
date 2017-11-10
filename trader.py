@@ -24,7 +24,7 @@ class SimpleTrader(object):
             # TODO Put in bidding or buying strategy
             if standing_bid:
                 if cur_value > standing_bid:
-                    bid = standing_bid + 1  # 10 is an arbitrary increment
+                    bid = max(cur_value, standing_bid + 10)  # 10 is an arbitrary increment
                     return ["B", self.name, bid]
                 else:
                     return []
@@ -46,7 +46,7 @@ class SimpleTrader(object):
             # TODO Put in asking or selling strategy
             if standing_ask:
                 if cur_cost < standing_ask:
-                    ask = standing_ask - 1  # 10 is an arbitrary decrement
+                    ask = max(standing_ask - 10, cur_cost)  # 10 is an arbitrary decrement
                     return ["S", self.name, ask]
                 else:
                     return []
@@ -56,7 +56,8 @@ class SimpleTrader(object):
                     return["B", self.name, ask]
 
 class KaplanTrader(object):
-    """Kaplan Sniping Trader"""
+    """Trader based on Kaplan's Sniping Trader, waits in background until certain threshold met then
+    places last minute bid/ask to steal trade"""
 
     def __init__(self):
         self.name = ""
@@ -128,7 +129,7 @@ class KaplanTrader(object):
 
 
 class ZeroIntelligenceTrader(object):
-    """ A class that makes a trader"""
+    """ A trader that bids and asks based on random amount"""
 
     def __init__(self):
         self.name = ""
@@ -151,11 +152,11 @@ class ZeroIntelligenceTrader(object):
             # TODO Put in bidding or buying strategy
             if standing_bid:
                 if cur_value > standing_bid:
-                    bid = random.randint(standing_bid + 1, cur_value)  # random number between
-                    # standing_bid + 10 used to be cur_value
-                    return ["B", self.name, bid]
+                        bid = random.randint(standing_bid + 1, cur_value)  # random number between
+                        return ["B", self.name, bid]
                 else:
                     return []
+
             else:
                 if cur_value > 0:
                     bid = 1
@@ -174,11 +175,11 @@ class ZeroIntelligenceTrader(object):
             # TODO Put in asking or selling strategy
             if standing_ask:
                 if cur_cost < standing_ask:
-                    ask = random.randint(cur_cost, standing_ask - 1)  # random number between
-                    # standing_ask - 10 used to be cur_cost
-                    return ["S", self.name, ask]
+                        ask = random.randint(cur_cost, standing_ask - 1)  # random number between
+                        return ["S", self.name, ask]
                 else:
                     return []
+
             else:
                 if cur_cost < 999:
                     ask = 999
@@ -187,7 +188,8 @@ class ZeroIntelligenceTrader(object):
                     return[]
 
 class HaveToWin(object):
-    """ A class that makes a trader"""
+    """ A class always increases bid by 3, decreases ask by 3, does not take cur_value or cur_cost into account
+    makes a trader that is subject to Winner's Curse"""
 
     def __init__(self):
         self.name = ""
