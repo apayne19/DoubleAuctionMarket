@@ -143,6 +143,18 @@ class SpotMarketPeriod(object):
 
         py.offline.plot(fig1)
 
+    def get_table(self):
+        '''Graph tables of Time, Trader, Ask/Bid, Offer Amt in real time per period'''
+        self.table = []  # created to make info enter table plot as columns
+        for i in self.sys.da.report_orders():
+            self.table.append(np.array(i))
+
+    def graph_table(self):
+        table_data = self.table  # calls data from table dictionary
+        # Initialize a figure with ff.create_table(table_data)
+        figure = ff.create_table(table_data)  # creates a table using plotly
+        py.offline.plot(figure)  # plots into web browser
+
         '''Will use in spot_environment_gui'''
         # with plt.style.context('seaborn-dark-palette'):
         #     xv = np.array(range(len(all_prices)))
@@ -163,9 +175,9 @@ class SpotMarketPeriod(object):
 
 '''This program iterates through the number of rounds'''
 if __name__ == "__main__":
-    num_periods = 3
+    num_periods = 6
     limits = (999, 0)
-    rounds = 100
+    rounds = 50
     name = "trial"
     period = 1
     session_name = "session_test"
@@ -181,10 +193,20 @@ if __name__ == "__main__":
     win = "HaveToWin"
     kp = "KaplanTrader"
     si = "SimpleTrader"
-    uzi = "UnconstrainedZITrader"
-    trader_names = [zi, zi, zi, zi, zi, zi]  # Order of trader strategies in generic trader array
 
-    #trader_names = [uzi, zi, uzi, zi, uzi, zi, uzi, zi]
+    '''Vernon Smith data traders'''
+    #trader_names = [zi, zi, zi, zi, zi, zi]  # Order of trader strategies in generic trader array
+    #trader_names = [zi, zi, zi, zi, zi, kp]
+    #trader_names = [kp, zi, kp, zi, kp, zi]
+    #trader_names = [kp, si, si, si, si, si]
+    trader_names = [kp, zi, zi, zi, zi, zi]
+
+    '''Santa Fe data traders'''
+    #trader_names = [zi, zi, zi, zi, zi, zi, zi, zi]  # Order of trader strategies in generic trader array
+    #trader_names = [kp, zi, zi, zi, zi, zi, zi, zi]
+    #trader_names = [kp, zi, kp, zi, kp, zi, kp, zi]
+    #trader_names = [kp, si, si, si, si, si, si, si]
+
     # input - output and display options
     input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
     input_file = "TestVS"
@@ -192,10 +214,6 @@ if __name__ == "__main__":
     header = session_name
     smp.init_spot_system(name, limits, rounds, input_path, input_file)
     rnd_traders = trader_names    # because shuffle shuffels the list in place, returns none
-    # eff = []
-    # periods_list = []
-    # act_surplus = []   # commented out when using graph functions
-    # maxi_surplus = []
     n = 0  # used in file creation
     file_check = os.path.isfile('./Experiment' + str(n) + '.csv')  # checks directory for existing file
     # TODO check for existing file before creating new one
@@ -203,7 +221,7 @@ if __name__ == "__main__":
     for k in range(num_periods):
         smp.get_contracts()
         periods_list.append(k)
-        random.shuffle(rnd_traders)  # reassign traders each period
+        #random.shuffle(rnd_traders)  # reassign traders each period
         print(rnd_traders)
         smp.init_traders(rnd_traders)
         print("**** Running Period {}".format(k))
@@ -215,11 +233,12 @@ if __name__ == "__main__":
         output_writer = csv.writer(output_file)  # prepares new csv file for writing
         output_writer.writerow(results)  # writes period info to csv row per period
         print(results)
+        #smp.get_table()  # builds table of bids/asks etc
     output_file.close()  # closes the csv file
     print("Market Efficiencies:" + str(eff))  # print market efficiencies
     print("Actual Surpluses:" + str(act_surplus))  # print actual surpluses
     print("Maximum Surpluses:" + str(maxi_surplus))  # print max surpluses
-
+    #smp.graph_table()  # graphs table in plotly
     '''Plot surpluses using matplotlib'''
     with plt.style.context('seaborn-dark-palette'):  # added a plot of the market efficiencies
         x = np.array(periods_list)
@@ -246,7 +265,7 @@ if __name__ == "__main__":
         pass  # trying to make the graph a background task
 
     #smp.graph_surplus()  # graphs surplus
-    #smp.graph_efficiency()  # uses plotly
+    #smp.graph_efficiency()  # uses plot
     smp.get_endpoints()  # obtains endpoints of periods for graph
     smp.graph_contracts()  # graphs contracts per period
 

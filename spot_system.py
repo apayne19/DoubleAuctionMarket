@@ -1,4 +1,4 @@
-from trader import SimpleTrader, ZeroIntelligenceTrader, ZeroIntelligenceTraderPlus, HaveToWin, KaplanTrader
+from trader import SimpleTrader, ZeroIntelligenceTrader, HaveToWin, KaplanTrader
 #import build_environment as env
 import spot_environment_model as env
 import double_auction_institution as ins
@@ -10,6 +10,8 @@ import plotly.graph_objs as go
 import plotly.figure_factory as ff
 import numpy as np
 
+
+# noinspection PyUnboundLocalVariable,PyUnboundLocalVariable
 class SpotSystem(object):
     def __init__(self):
         self.name = ""
@@ -63,43 +65,12 @@ class SpotSystem(object):
                         num_contracts = num_contracts + 1
         if self.display:
             print(self.da.report_orders())
-            #self.graph_table()
 
-    def graph_table(self):
-        '''Graph tables of Time, Trader, Ask/Bid, Offer Amt in real time per period'''
-        time_list = []  # dictionary of time values from self.da.report_standing()
-        trader_list = []  # dictionary of trader ids from self.da.report_standing()
-        ask_bid_list = []  # dictionary of ask/bid from self.da.report_standing()
-        offer_list = []  # dictionary of offers from self.da.report_standing()
-        table = []  # created to make info enter table plot as columns
-        for i in self.da.report_orders():
-            time = i[0]  # pulls each time value
-            time_list.append(time)  # appends to own dictionary
-            trader = i[1]  # pulls each trader id
-            trader_list.append(trader)  # append to own dict
-            ask_bid = i[2]  # pulls each ask/bid
-            ask_bid_list.append(ask_bid)  # appends to own dict
-            offer = i[3]  # pulls each offer value
-            offer_list.append(offer)  # appends to own dict
-        for i in range(len(time_list)):
-            table.append([])  # used to create columns in data plot
-        table.append([])  # append an extra for column titles
-        table[0].append('Time')
-        table[0].append('Trader')  # creates column titles
-        table[0].append('Ask/Bid')
-        table[0].append('Offer Amt')
-        for i in range(len(trader_list)):
-            table[i + 1].append(time_list[i])  # appends data in data array
-            table[i + 1].append(trader_list[i])
-            table[i + 1].append(ask_bid_list[i])
-            table[i + 1].append(offer_list[i])
-        table_data = table  # calls data from table dictionary
-        # Initialize a figure with ff.create_table(table_data)
-        figure = ff.create_table(table_data)  # creates a table using plotly
-        py.offline.plot(figure)  # plots into web browser
+
+
 
     def trader_handler(self, trader):
-        offer = trader.offer(self.da.report_contracts(), self.da.report_standing()[0],self.da.report_standing()[1])
+        offer = trader.offer(self.da.report_contracts(), self.da.report_standing()[0], self.da.report_standing()[1])
         if len(offer) == 0:
             return
         if offer[0] == "B":  # identifies the bidders and bids
@@ -142,6 +113,7 @@ class SpotSystem(object):
             else:
                 print("error in contract {}, seller id = {}, seller type = {}".format(contract, seller_id,
                                                                                        self.trader_info[seller_id]['type']))
+            # noinspection PyUnboundLocalVariable,PyUnboundLocalVariable
             actual_surplus += value - cost
 
         efficiency = int((actual_surplus / maximum_surplus) * 100)
@@ -173,6 +145,7 @@ class SpotSystem(object):
                 avg_earn = int(strat_earn / count)
                 result_header.extend([k, avg_earn])
             if self.display:
+                # noinspection PyUnboundLocalVariable
                 print("Strategy {} earned an average of {}.".format(k, avg_earn))
 
         return result_header
