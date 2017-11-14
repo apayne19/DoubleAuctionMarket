@@ -1,4 +1,4 @@
-from trader import SimpleTrader, ZeroIntelligenceTrader, HaveToWin, KaplanTrader
+from trader import SimpleTrader, ZI_Utrader, ZI_Ctrader, KaplanTrader
 #import build_environment as env
 import spot_environment_model as env
 import double_auction_institution as ins
@@ -19,7 +19,7 @@ class SpotSystem(object):
         self.limits = (0, 0)  # creates limits that can be changed
         self.num_market_rounds = 0  # sets number of market rounds to 0
         self.trader_names = []  # dictionary for trader names to be logged
-        self.traders = []  # dictionary of trader ids?
+        self.traders = [] # dictionary of trader ids?
         self.trader_info = {}  # dictionary of keys:values
         self.mkt = None  # function called from spot_environment_model
         self.da = None  # function called from double_auction_institution
@@ -127,8 +127,15 @@ class SpotSystem(object):
             t_id = "t" + str(k)
             t_strat = self.trader_info[t_id]['strat']
             earn = self.trader_info[t_id]['earn']
+            if ep_high == ep_low:  # if high and low eqs the same
+                t_eff = (earn/maximum_surplus)*100  # trader's efficiency in %
+            elif ep_high != ep_low:  # if eqs different
+                avg_eq = (ep_high + ep_low)/2  # take avg of eqs
+                t_eff = (earn/avg_eq)*100  # trader's efficiency in %
+            else:
+                t_eff = "error"
             if self.display:
-                print("Trader {}, using strategy {}, earned {}.".format(t_id, t_strat, earn))
+                print("Trader {}, using strategy {}, earned {}, had efficiency {} %.".format(t_id, t_strat, earn, round(t_eff, 1)))
             result_header.extend([t_id, t_strat, earn])
         if self.display:
             print()

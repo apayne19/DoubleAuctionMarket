@@ -8,6 +8,9 @@ import time  # https://docs.python.org/3.6/library/time.html  # time functions
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
 import random
+
+'''1). set input/output url paths to local computer'''
+
 # example of time module
 '''start = time.gmtime(0)  # epoch = 1970, "start of time" for computers
 seconds = time.time()  # time measured by seconds from epoch

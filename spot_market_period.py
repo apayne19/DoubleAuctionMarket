@@ -9,6 +9,9 @@ import plotly.figure_factory as ff
 import os
 '''This program is a condensed version of spot_system to build the periods of trading'''
 
+'''1). import plotly
+2). change input/ouput url paths to local computer'''
+
 '''Problem with graphing multiple plotly graphs... trying to fix'''
 all_prices = []
 all_ends = []
@@ -178,16 +181,16 @@ if __name__ == "__main__":
     '''This will change when we create more programmed agents to add into the model'''
 
     # Put Trader Class Names Here - note traders strategy is named trader class name
-    zi = "ZeroIntelligenceTrader"
+    zic = "ZI_Ctrader"
     #zip = "ZeroIntelligenceTraderPlus"
-    win = "HaveToWin"
+    ziu = "ZI_Utrader"
     kp = "KaplanTrader"
     si = "SimpleTrader"
 
-    trader_names = [zi, kp, zi, zi, zi, zi, zi, zi]  # have to change according to data file used
+    trader_names = [kp, zic, zic, zic, zic, zic, zic, zic, zic, zic]  # have to change according to data file used
     # input - output and display options
     input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
-    input_file = "TestSF"  # data file plugged in SF = santa fe VS = vernon smith
+    input_file = "GSZIpg127"  # data file plugged in SF = santa fe VS = vernon smith
     output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\data\\"
     header = session_name
     smp.init_spot_system(name, limits, rounds, input_path, input_file)

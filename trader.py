@@ -128,7 +128,7 @@ class KaplanTrader(object):
                     return []
 
 
-class ZeroIntelligenceTrader(object):
+class ZI_Ctrader(object):
     """ A trader that bids and asks based on random amount"""
 
     def __init__(self):
@@ -187,7 +187,7 @@ class ZeroIntelligenceTrader(object):
                 else:
                     return[]
 
-class HaveToWin(object):
+class ZI_Utrader(object):
     """ A class always increases bid by 3, decreases ask by 3, does not take cur_value or cur_cost into account
     makes a trader that is subject to Winner's Curse"""
 
@@ -212,10 +212,11 @@ class HaveToWin(object):
             # TODO Put in bidding or buying strategy
 
             if standing_bid:
-                bid = standing_bid + 3  # random number between standing_bid and cur_value
+                bid = random.randint(standing_bid + 1, 999)  # random number between standing_bid and cur_value
                 return ["B", self.name, bid]
             else:
-                return []
+                bid = 1
+                return ["B", self.name, bid]
         else:
             # find out how many contracts you have
             for contract in contracts:
@@ -228,10 +229,82 @@ class HaveToWin(object):
             # TODO Put in asking or selling strategy
 
             if standing_ask:
-                ask = standing_ask - 3  # random number between cost and standing ask
+                ask = random.randint(1, standing_ask - 1)  # random number between cost and standing ask
                 return ["S", self.name, ask]
             else:
-                return []
+                ask = 999
+                return ["S", self.name, ask]
+
+class GDtrader(object):
+    """Trader using belief function of order histories to predict prob"""
+
+    def __init__(self):
+        self.name = ""
+        self.type = ""
+        self.values = []
+        self.costs = []
+
+    def offer(self, contracts, standing_bid, standing_ask):
+        num_contracts = 0  # intialize number of contracts
+
+        if self.type == "buyer":
+            # find out how many contracts you have
+            for contract in contracts:
+                if contract[1] == self.name:  # second position is buyer_id
+                    num_contracts = num_contracts + 1
+            if num_contracts >= len(self.values):
+                return []  # You can't bid anymore
+            cur_value = self.values[num_contracts]  # this is the current value working on
+
+            if standing_bid:
+                if standing_ask:
+                    if standing_bid/standing_ask >= 0.98 and cur_value > standing_bid:
+                        bid = standing_ask - 1
+                        return ["B", self.name, bid]
+                    else:
+                        return []
+                else:
+                    if cur_value > standing_bid:
+                        bid = standing_bid + 1
+                        return ["B", self.name, bid]
+                    else:
+                        return []
+            else:
+                if cur_value > 0:
+                    bid = 1
+                    return ["B", self.name, bid]
+                else:
+                    return []
+
+        else:
+            # find out how many contracts you have
+            for contract in contracts:
+                if contract[2] == self.name:  # third position is seller id
+                    num_contracts = num_contracts + 1
+            if num_contracts >= len(self.costs):
+                return []  # You can't ask anymore
+            cur_cost = self.costs[num_contracts]  # this is the current value working on
+
+            if standing_ask:
+                if standing_bid:
+                    if standing_bid/standing_ask >= 0.98 and cur_cost < standing_ask:
+                        ask = standing_bid + 1  # random number between cost and standing ask
+                        return ["S", self.name, ask]
+                    else:
+                        return []
+
+                else:
+                    if cur_cost < 999:
+                        ask = standing_ask - 1
+                        return ["S", self.name, ask]
+                    else:
+                        return []
+            else:
+                if cur_cost > 0:
+                    ask = 999
+                    return ["S", self.name, ask]
+                else:
+                    return []
 
 if __name__ == "__main__":
     zi = ZeroIntelligenceTrader()
