@@ -20,6 +20,8 @@ class SpotSystem(object):
         self.num_market_rounds = 0  # sets number of market rounds to 0
         self.trader_names = []  # dictionary for trader names to be logged
         self.traders = [] # dictionary of trader ids?
+        self.eff_list = []
+        self.t_list = []
         self.trader_info = {}  # dictionary of keys:values
         self.mkt = None  # function called from spot_environment_model
         self.da = None  # function called from double_auction_institution
@@ -137,6 +139,8 @@ class SpotSystem(object):
             if self.display:
                 print("Trader {}, using strategy {}, earned {}, had efficiency {} %.".format(t_id, t_strat, earn, round(t_eff, 1)))
             result_header.extend([t_id, t_strat, earn])
+            self.eff_list.append(round(t_eff, 1))
+            self.t_list.append(k)
         if self.display:
             print()
 
