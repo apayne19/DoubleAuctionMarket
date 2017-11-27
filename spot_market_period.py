@@ -29,8 +29,8 @@ class SpotMarketPeriod(object):
         self.session_name = session_name
         self.period = 0
         self.num_periods = num_periods
-        self.num_buyers = 8  # number of buyers
-        self.num_sellers = 5  # number of sellers
+        self.num_buyers = 10  # number of buyers
+        self.num_sellers = 10  # number of sellers
         self.limits = (999, 0)  # ceiling and floor for bidding
         self.num_market_periods = 100  # number of periods auction run
         self.trader_names = []
@@ -249,7 +249,7 @@ class SpotMarketPeriod(object):
 
 '''This program iterates through the number of rounds'''
 if __name__ == "__main__":
-    num_periods = 10
+    num_periods = 6
     limits = (999, 0)
     rounds = 50
     name = "trial"
@@ -268,10 +268,11 @@ if __name__ == "__main__":
     kp = "KaplanTrader"  # sniping strategy
     si = "SimpleTrader"
 
-    trader_names = [zic, zic, zic, zic, zic, zic, zic, zic, zic, zic]  # have to change according to data file used
+    #trader_names = [zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic]  # have to change according to data file used
+    trader_names = [zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic]
     # input - output and display options
     input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
-    input_file = "GSZIpg127"  # data file plugged in SF = santa fe VS = vernon smith
+    input_file = "Das Data v3"  # data file plugged in SF = santa fe VS = vernon smith
     output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\data\\"
     header = session_name
     smp.init_spot_system(name, limits, rounds, input_path, input_file)
@@ -298,6 +299,8 @@ if __name__ == "__main__":
         #smp.get_table()  # see function doc_string
     output_file.close()  # closes the csv file
     print("Market Efficiencies:" + str(eff))  # print market efficiencies
+    print("Avg. Efficiency:" + str(sum(eff)/num_periods))
+    print("Total Avg. Transaction Price:" + str(sum(avg_prices[1:])/(num_periods - 1)))
     print("Actual Surpluses:" + str(act_surplus))  # print actual surpluses
     print("Maximum Surpluses:" + str(maxi_surplus))  # print max surpluses
 

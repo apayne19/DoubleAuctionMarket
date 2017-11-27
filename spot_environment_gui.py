@@ -423,10 +423,10 @@ class SpotEnviornmentGui():
             '''Created a button for generating random values'''
             if row < self.num_buyers:  # implement replace on buyers
                 for k in range(self.num_units):
-                    self.buyer_values[row][k].set(random.randrange(1, 50))
+                    self.buyer_values[row][k].set(random.randrange(100, 200))
             else:  # implement replace on sellers
                 for k in range(self.num_units):
-                    self.seller_costs[row-self.num_buyers][k].set(random.randrange(1, 50))
+                    self.seller_costs[row-self.num_buyers][k].set(random.randrange(100, 200))
 
         return
 
