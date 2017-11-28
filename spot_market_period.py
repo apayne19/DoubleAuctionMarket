@@ -7,6 +7,8 @@ import plotly.offline as py
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
 import os
+import time
+import math
 '''This program is a condensed version of spot_system to build the periods of trading'''
 
 '''1). import plotly
@@ -14,6 +16,7 @@ import os
 
 '''Problem with graphing multiple plotly graphs... trying to fix'''
 all_prices = []
+theoretical_transactions = []
 all_ends = []
 avg_prices = []
 endpoints = []
@@ -71,7 +74,6 @@ class SpotMarketPeriod(object):
         for e in self.ends:
             all_ends.append(e)  # appends all ends in temp dict to global dict
 
-
     '''Obtains end of period for plot'''
     def get_endpoints(self):
         self.endpoints = []
@@ -83,44 +85,63 @@ class SpotMarketPeriod(object):
 
     '''Graphs avg and max surpluses by period.. use matplotlib until plot error fixed'''
     def graph_surplus(self):
-        trace3 = go.Scatter(
+        trace1 = go.Scatter(
             x=np.array(periods_list),
             y=np.array(act_surplus), name='Actual Surplus')
-        trace4 = go.Scatter(
+        trace2 = go.Scatter(
             x=np.array(periods_list),
             y=np.array(maxi_surplus), name='Max Surplus')
-        data2 = [trace3, trace4]
-        layout2 = go.Layout(title='Market Surpluses by Period',
+        data = [trace1, trace2]
+        layout = go.Layout(title='Market Surpluses by Period',
                             xaxis=dict(title='Periods',
                                        titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')),
                             yaxis=dict(title='Surplus (units)',
                                        titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')))
-        fig2 = go.Figure(data=data2, layout=layout2)
-        py.offline.plot(fig2)
+        fig = go.Figure(data=data, layout=layout)
+        py.offline.plot(fig)
 
     '''Graphs market efficiencies by period.. use matplotlib until plot error fixed'''
     def graph_efficiency(self):
-        trace5 = go.Scatter(
+        trace = go.Scatter(
             x=np.array(periods_list),
-            y=np.array(eff), name='Efficiency')
-        data3 = [trace5]
-        layout3 = go.Layout(title='Market Efficiencies by Period',
-                            xaxis=dict(title='Periods',
-                                       titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')),
-                            yaxis=dict(title='Efficiency (%)',
-                                       titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')))
-        fig3 = go.Figure(data=data3, layout=layout3)
-
-        py.offline.plot(fig3)
+            y=np.array(eff), name='Efficiency',
+            mode='lines+markers',
+            line=dict(color='rgb(131, 90, 241)', width=4),
+            marker=dict(size=10, color='rgb(143, 19, 131)')
+        )
+        data = [trace]
+        layout = go.Layout(plot_bgcolor='rgb(229,229,229)',
+                           paper_bgcolor='rgb(255,255,255)',
+                           title='Market Efficiency by Period',
+                           xaxis=dict(title='Period #',
+                                      gridcolor='rgb(255,255,255)',
+                                      showgrid=True,
+                                      showline=False,
+                                      showticklabels=True,
+                                      tickcolor='rgb(127,127,127)',
+                                      ticks='outside',
+                                      zeroline=False,
+                                      titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')),
+                           yaxis=dict(title='Efficiency (%)',
+                                      gridcolor='rgb(255,255,255)',
+                                      showgrid=True,
+                                      showline=False,
+                                      showticklabels=True,
+                                      tickcolor='rgb(127,127,127)',
+                                      ticks='outside',
+                                      zeroline=False,
+                                      titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')))
+        fig = go.Figure(data=data, layout=layout)
+        py.offline.plot(fig)
 
     '''Graphs the contracts from all periods'''
     def graph_contracts(self):
         eq_low = self.sys.trader_info['equilibrium'][1]
         eq_high = self.sys.trader_info['equilibrium'][2]
         if eq_low == eq_high:
-            eq = eq_high
+            self.eq = eq_high
         elif eq_low != eq_high:
-            eq = (eq_low + eq_high)/2
+            self.eq = (eq_low + eq_high)/2
         else:
             print("error")
         # graph all transactions per period
@@ -137,7 +158,7 @@ class SpotMarketPeriod(object):
             mode='lines+markers',
             line=dict(color='rgba(200, 150, 150, .9)', width=4),
             marker=dict(size=10, color='rgba(200, 150, 150, .9)'))
-        data1 = [trace1, trace2]
+        data = [trace1, trace2]
         shapes = list()
         # graph period cutoff lines
         for i in self.endpoints:
@@ -155,11 +176,10 @@ class SpotMarketPeriod(object):
                            'xref': 'grid',
                            'yref': 'y',
                            'x0': 0,
-                           'y0': eq,
+                           'y0': self.eq,
                            'x1': max(self.endpoints),
-                           'y1': eq})
-
-        layout1 = go.Layout(shapes=shapes,
+                           'y1': self.eq})
+        layout = go.Layout(shapes=shapes,
                             plot_bgcolor='rgb(229,229,229)',
                            paper_bgcolor='rgb(255,255,255)',
                            title='Market Transactions by Period',
@@ -181,19 +201,43 @@ class SpotMarketPeriod(object):
                                       ticks='outside',
                                       zeroline=False,
                                       titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')))
+        fig = go.Figure(data=data, layout=layout)
+        py.offline.plot(fig)
 
-        fig1 = go.Figure(data=data1, layout=layout1)
+    '''Obtains Smith's Alpha of Convergence: shows converge level to eq price'''
+    def get_alpha(self):
+        eq_low = self.sys.trader_info['equilibrium'][1]
+        eq_high = self.sys.trader_info['equilibrium'][2]
+        if eq_low == eq_high:
+            self.eq = eq_high
+        elif eq_low != eq_high:
+            self.eq = (eq_low + eq_high) / 2
+        else:
+            print("error")
+        self.alpha = []
+        for i in all_prices:
+            p_i = i
+            p_o = self.eq
+            summation = (((p_i - p_o)**2)/len(all_prices))
+            denom = math.sqrt(summation)
+            sd = denom/p_o
+            self.alpha.append(sd)
+        return sum(self.alpha)
 
-        py.offline.plot(fig1)
+    '''Obtains Avg trade ratio for all periods: actual transactions/equilibrium quantity'''
+    def get_avg_trade_ratio(self):
+        trade_ratio_list = self.sys.trade_ratio_list
+        trade_ratio_avg = sum(trade_ratio_list)/len(trade_ratio_list)
+        print("Avg. Trade Ratio:" + str(trade_ratio_avg))
 
     '''Obtains Time, Trader, Ask/Bid, Offer Amt for table graph'''
     def get_table(self):
         self.table = []  # created to make info enter table plot as columns
+        self.table.append(['Time', 'Trader', 'Bid/Ask', 'Offer'])
         for i in self.sys.da.report_orders():
             self.table.append(np.array(i))
 
-    '''Graphs a table in plotly of Time, Trader, Ask/Bid, Offer Amt for all periods
-     function can't be called with graph contracts called.. until plot error fixed'''
+    '''Graphs a table in plotly of Time, Trader, Ask/Bid, Offer Amt for all periods'''
     def graph_table(self):
         table_data = self.table  # calls data from table dictionary
         # Initialize a figure with ff.create_table(table_data)
@@ -212,9 +256,7 @@ class SpotMarketPeriod(object):
                 size=10,
                 color='rgb(0,176,246)',
                 line=dict(width=2,)))
-
         data = [trace]
-
         layout = go.Layout(plot_bgcolor='rgb(229,229,229)',
                            paper_bgcolor='rgb(255,255,255)',
                            title='Individual Efficiency by Trader',
@@ -236,7 +278,6 @@ class SpotMarketPeriod(object):
                                        ticks='outside',
                                        zeroline=False,
                                        titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')))
-
         fig = go.Figure(data=data, layout=layout)
         py.offline.plot(fig)
 
@@ -256,19 +297,15 @@ if __name__ == "__main__":
     period = 0
     session_name = "session_test"
     header = session_name
-
     smp = SpotMarketPeriod(session_name, num_periods)
-
     '''This will change when we create more programmed agents to add into the model'''
-
     # Put Trader Class Names Here - note traders strategy is named trader class name
     zic = "ZI_Ctrader"  # zero intelligence constrained
     #zip = "ZeroIntelligenceTraderPlus"
     ziu = "ZI_Utrader"  # zero intelligence unconstrained
     kp = "KaplanTrader"  # sniping strategy
     si = "SimpleTrader"
-
-    #trader_names = [zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic]  # have to change according to data file used
+    # trader_names = [zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic]
     trader_names = [zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic]
     # input - output and display options
     input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
@@ -276,16 +313,17 @@ if __name__ == "__main__":
     output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\data\\"
     header = session_name
     smp.init_spot_system(name, limits, rounds, input_path, input_file)
-    rnd_traders = trader_names    # because shuffle shuffels the list in place, returns none
+    rnd_traders = trader_names    # because shuffle shuffles the list in place, returns none
     n = 0  # used in file creation
     file_check = os.path.isfile('./Experiment' + str(n) + '.csv')  # checks directory for existing file
     # TODO check for existing file before creating new one
+    # TODO fix so that saves period/experiment data for each run
     output_file = open('Experiment' + str(n) + '.csv', 'w', newline='')  # creates a new file
     for k in range(num_periods):
-        smp.get_contracts()
+        smp.get_contracts()  # gets transaction prices and period endpoints
         periods_list.append(k)
         random.shuffle(rnd_traders)  # reassign traders each period
-        print(rnd_traders)
+        # print(rnd_traders)  # prints list of trader strategy
         smp.init_traders(rnd_traders)
         print("**** Running Period {}".format(k))
         smp.run_period(period, header)
@@ -295,42 +333,22 @@ if __name__ == "__main__":
         maxi_surplus.append(results[6])  # appends maximum surplus per period
         output_writer = csv.writer(output_file)  # prepares new csv file for writing
         output_writer.writerow(results)  # writes period info to csv row per period
-        print(results)
-        #smp.get_table()  # see function doc_string
+        smp.get_table()  # see function doc_string
     output_file.close()  # closes the csv file
     print("Market Efficiencies:" + str(eff))  # print market efficiencies
-    print("Avg. Efficiency:" + str(sum(eff)/num_periods))
+    print("Avg. Efficiency:" + str(sum(eff)/num_periods))  # print avg efficiency
     print("Total Avg. Transaction Price:" + str(sum(avg_prices[1:])/(num_periods - 1)))
+    print("Smith's Convergence Alpha:" + str(smp.get_alpha()))  # print smiths alpha
     print("Actual Surpluses:" + str(act_surplus))  # print actual surpluses
     print("Maximum Surpluses:" + str(maxi_surplus))  # print max surpluses
-
-    #smp.graph_table()  # see function doc_string
-    '''Plot surpluses using matplotlib'''
-    with plt.style.context('seaborn-dark-palette'):  # added a plot of the market efficiencies
-        x = np.array(periods_list)
-        y1 = np.array(act_surplus)
-        y2 = np.array(maxi_surplus)
-        plt.plot(x, y1)
-        plt.plot(x, y2)
-        plt.title("Market Surpluses")
-        plt.xlabel("Period")
-        plt.ylabel("Surplus")
-        plt.grid(True)
-        plt.show()
-        pass  # trying to make the graph a background task
-    '''Plot efficiencies using matplotlib'''
-    with plt.style.context('seaborn-dark-palette'):
-        x = np.array(periods_list)
-        y = np.array(eff)
-        plt.plot(x, y, marker='s')
-        plt.title("Market Efficiencies")
-        plt.xlabel("Period")
-        plt.ylabel("Efficiency (%)")
-        plt.grid(True)
-        plt.show()
-        pass  # trying to make the graph a background task
-    #smp.graph_trader_eff()
-    #smp.graph_surplus()  # graphs surplus
-    #smp.graph_efficiency()  # uses plot
+    smp.get_avg_trade_ratio()  # prints avg trade ratio for all periods
+    smp.graph_trader_eff()  # plots individual efficiency
+    time.sleep(0.5)  # program waits half second
+    smp.graph_efficiency()  # plots period efficiency
+    time.sleep(0.5)  # wait
     smp.get_endpoints()  # obtains endpoints of periods for graph
-    smp.graph_contracts()  # graphs contracts per period
+    smp.graph_contracts()  # graphs contract transactions and avg transaction per period
+    time.sleep(0.5)  # wait
+    smp.graph_surplus()  # graphs actual and max surplus
+    time.sleep(0.5)  # wait
+    smp.graph_table()  # graphs a table of Time, Trader, Bid/Ask, Offer

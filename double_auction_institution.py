@@ -129,4 +129,3 @@ class Auction(object):
 
 if __name__ == "__main__":
     da = Auction('da', 0, 999)
-    print(da.board['orders'])

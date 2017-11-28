@@ -22,6 +22,7 @@ class SpotSystem(object):
         self.traders = [] # dictionary of trader ids?
         self.eff_list = []
         self.t_list = []
+        self.trade_ratio_list = []
         self.trader_info = {}  # dictionary of keys:values
         self.mkt = None  # function called from spot_environment_model
         self.da = None  # function called from double_auction_institution
@@ -66,7 +67,7 @@ class SpotSystem(object):
                         # prints info for each trader
                         num_contracts = num_contracts + 1
         if self.display:
-            print(self.da.report_orders())
+            print()
 
 
 
@@ -83,9 +84,9 @@ class SpotSystem(object):
     def eval(self):
         # calculate market efficiency
         result_header = [" ", " ", len(self.traders)]
-        ep_low = self.trader_info['equilibrium'][0]
-        ep_high = self.trader_info['equilibrium'][1]
-        e_quantity = self.trader_info['equilibrium'][2]
+        ep_low = self.trader_info['equilibrium'][1]
+        ep_high = self.trader_info['equilibrium'][2]
+        e_quantity = self.trader_info['equilibrium'][0]
         maximum_surplus = self.trader_info['equilibrium'][3]
 
         for trader in self.traders:
@@ -96,8 +97,9 @@ class SpotSystem(object):
             # calculate actual surplus and earnings
 
         actual_surplus = 0  # will change as updated
+        count = 0
         for contract in self.da.report_contracts():  # going through list of contracts
-
+            count = count + 1
             price = contract[0]  # pulls price from board
             buyer_id = contract[1]  # pulls buyer id from board
             seller_id = contract[2]  # pulls seller id from board
@@ -119,11 +121,13 @@ class SpotSystem(object):
             actual_surplus += value - cost
 
         efficiency = int((actual_surplus / maximum_surplus) * 100)
-
+        trade_ratio = count/e_quantity
+        self.trade_ratio_list.append(trade_ratio)
         result_header.extend([ep_low, ep_high, e_quantity, maximum_surplus, actual_surplus, efficiency])
         if self.display:
             print("actual surplus = {}, maximum surplus = {}.".format(actual_surplus, maximum_surplus))
             print("market efficiency = {} percent.".format(efficiency))
+            print("trade ratio = {}.".format(trade_ratio))
 
         for k in range(len(self.traders)):
             t_id = "t" + str(k)
@@ -167,7 +171,7 @@ class SpotSystem(object):
         t = {}
         if len(tn) != mkt.num_buyers + mkt.num_sellers:
             print ("tn = {} does not have the right length".format(tn))
-        print ("Number = {}, {}, {}".format(mkt.num_buyers, mkt.num_sellers, len(tn)))
+        print ("Buyers = {}, Sellers = {}, Total = {}".format(mkt.num_buyers, mkt.num_sellers, len(tn)))
         for k in range(mkt.num_buyers + mkt.num_sellers):
             t_id = "t" + str(k)  # make trader id
             t[t_id] = globals()[tn[k]]()  # create object
@@ -211,15 +215,11 @@ if __name__ == "__main__":
     # input - output and display options
     input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
     input_file = "TEST"
-
     name = "Trial"
     limits = (999, 0)
     rounds = 100
-
     spot_system = SpotSystem()
     spot_system.init_spot_system(name, limits, rounds, input_path, input_file)
     spot_system.init_traders(trader_names)
-    print(spot_system.trader_info)
     spot_system.run()
     results = spot_system.eval()
-    print(results)
