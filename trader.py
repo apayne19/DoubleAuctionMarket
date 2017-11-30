@@ -235,8 +235,8 @@ class ZI_Utrader(object):
                 ask = 999
                 return ["S", self.name, ask]
 
-class GDtrader(object):
-    """Trader using belief function of order histories to predict prob"""
+class PStrader(object):
+    """Trader using learning rule to get target price to bid/ask"""
 
     def __init__(self):
         self.name = ""
@@ -255,23 +255,29 @@ class GDtrader(object):
             if num_contracts >= len(self.values):
                 return []  # You can't bid anymore
             cur_value = self.values[num_contracts]  # this is the current value working on
-
+            beta = 0.3  # learning rate... adjustment speed
+            gamma = 0.05  # momentum... damps oscillation
+            r_1 = random.randint(0, 20)  # random variable between 0 and 20
+            r_2 = random.randint(0, 20)
             if standing_bid:
-                if standing_ask:
-                    if standing_bid/standing_ask >= 0.98 and cur_value > standing_bid:
-                        bid = standing_ask - 1
+                if standing_ask and cur_value > standing_bid:
+                    if standing_ask > standing_bid:  # ask greater than bid
+                        sigma = r_1*standing_bid + r_2  # bidders price change
+                        target = standing_bid + sigma  # target valuation
+                        bid = gamma*cur_value + (1-gamma)*beta*(target-cur_value)  # learning rule
+                        return ["B", self.name, bid]
+                    elif standing_ask <= standing_bid:  # ask less than or equal to bid
+                        sigma = r_1*standing_ask + r_2  # bidders price change
+                        target = standing_ask - sigma  # target valuation
+                        bid = gamma*cur_value + (1-gamma)*beta*(target-cur_value)  # learning rule
                         return ["B", self.name, bid]
                     else:
-                        return []
+                        raise ValueError  # thrown if code not executing right
                 else:
-                    if cur_value > standing_bid:
-                        bid = standing_bid + 1
-                        return ["B", self.name, bid]
-                    else:
                         return []
             else:
                 if cur_value > 0:
-                    bid = 1
+                    bid = random.randint(1, 20)  # place first bid
                     return ["B", self.name, bid]
                 else:
                     return []
@@ -284,24 +290,30 @@ class GDtrader(object):
             if num_contracts >= len(self.costs):
                 return []  # You can't ask anymore
             cur_cost = self.costs[num_contracts]  # this is the current value working on
-
+            beta = 0.3  # learning rate... adjustment speed
+            gamma = 0.05  # momentum... damps oscillation
+            r_1 = random.randint(0, 20)  # random variable between 0 and 20
+            r_2 = random.randint(0, 20)
             if standing_ask:
-                if standing_bid:
-                    if standing_bid/standing_ask >= 0.98 and cur_cost < standing_ask:
-                        ask = standing_bid + 1  # random number between cost and standing ask
+                if standing_bid and cur_cost < 400:
+                    if standing_ask > standing_bid:  # ask greater than bid
+                        sigma = r_1*standing_ask + r_2  # sellers price change
+                        target = standing_ask - sigma  # sellers target valuation
+                        ask = gamma*cur_cost + (1-gamma)*beta*(target-cur_cost)  # learning rule
+                        return ["S", self.name, ask]
+                    elif standing_ask <= standing_bid:  # ask less than or equal to bid
+                        sigma = r_1*standing_bid + r_2  # sellers price change
+                        target = standing_bid + sigma  # sellers target valuation
+                        ask = gamma*cur_cost + (1-gamma)*beta*(target-cur_cost)  # learning rule
                         return ["S", self.name, ask]
                     else:
-                        return []
+                        raise ValueError  # thrown if code not executing right
 
                 else:
-                    if cur_cost < 999:
-                        ask = standing_ask - 1
-                        return ["S", self.name, ask]
-                    else:
-                        return []
+                        return []  # wait for first bid
             else:
                 if cur_cost > 0:
-                    ask = 999
+                    ask = 400 - random.randint(1, 20)  # place first ask
                     return ["S", self.name, ask]
                 else:
                     return []

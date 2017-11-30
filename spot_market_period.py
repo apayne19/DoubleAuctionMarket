@@ -32,8 +32,8 @@ class SpotMarketPeriod(object):
         self.session_name = session_name
         self.period = 0
         self.num_periods = num_periods
-        self.num_buyers = 10  # number of buyers
-        self.num_sellers = 10  # number of sellers
+        self.num_buyers = 11  # number of buyers
+        self.num_sellers = 11  # number of sellers
         self.limits = (999, 0)  # ceiling and floor for bidding
         self.num_market_periods = 100  # number of periods auction run
         self.trader_names = []
@@ -222,7 +222,7 @@ class SpotMarketPeriod(object):
             denom = math.sqrt(summation)
             sd = denom/p_o
             self.alpha.append(sd)
-        return sum(self.alpha)
+        return sum(self.alpha)*100
 
     '''Obtains Avg trade ratio for all periods: actual transactions/equilibrium quantity'''
     def get_avg_trade_ratio(self):
@@ -290,7 +290,7 @@ class SpotMarketPeriod(object):
 
 '''This program iterates through the number of rounds'''
 if __name__ == "__main__":
-    num_periods = 6
+    num_periods = 10
     limits = (999, 0)
     rounds = 50
     name = "trial"
@@ -305,11 +305,12 @@ if __name__ == "__main__":
     ziu = "ZI_Utrader"  # zero intelligence unconstrained
     kp = "KaplanTrader"  # sniping strategy
     si = "SimpleTrader"
-    # trader_names = [zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic]
-    trader_names = [zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic]
+    ps = "PStrader"
+    trader_names = [ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps]
+    # trader_names = [zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic]
     # input - output and display options
     input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
-    input_file = "Das Data v3"  # data file plugged in SF = santa fe VS = vernon smith
+    input_file = "Preist_Tol"  # data file plugged in SF = santa fe VS = vernon smith
     output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\data\\"
     header = session_name
     smp.init_spot_system(name, limits, rounds, input_path, input_file)

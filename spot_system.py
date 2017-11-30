@@ -1,4 +1,4 @@
-from trader import SimpleTrader, ZI_Utrader, ZI_Ctrader, KaplanTrader
+from trader import SimpleTrader, ZI_Utrader, ZI_Ctrader, KaplanTrader, PStrader
 #import build_environment as env
 import spot_environment_model as env
 import double_auction_institution as ins
