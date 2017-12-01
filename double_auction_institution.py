@@ -128,4 +128,4 @@ class Auction(object):
             self.board["is_open"] = False
 
 if __name__ == "__main__":
-    da = Auction('da', 0, 999)
+    da = Auction('da', 0, 400)

@@ -34,8 +34,8 @@ class SpotMarketPeriod(object):
         self.num_periods = num_periods
         self.num_buyers = 11  # number of buyers
         self.num_sellers = 11  # number of sellers
-        self.limits = (999, 0)  # ceiling and floor for bidding
-        self.num_market_periods = 100  # number of periods auction run
+        self.limits = (400, 0)  # ceiling and floor for bidding
+        self.num_market_periods = 10  # number of periods auction run
         self.trader_names = []
         self.traders = []
         self.trader_info = {}
@@ -204,25 +204,59 @@ class SpotMarketPeriod(object):
         fig = go.Figure(data=data, layout=layout)
         py.offline.plot(fig)
 
-    '''Obtains Smith's Alpha of Convergence: shows converge level to eq price'''
-    def get_alpha(self):
-        eq_low = self.sys.trader_info['equilibrium'][1]
-        eq_high = self.sys.trader_info['equilibrium'][2]
-        if eq_low == eq_high:
-            self.eq = eq_high
-        elif eq_low != eq_high:
-            self.eq = (eq_low + eq_high) / 2
-        else:
-            print("error")
-        self.alpha = []
-        for i in all_prices:
-            p_i = i
-            p_o = self.eq
-            summation = (((p_i - p_o)**2)/len(all_prices))
-            denom = math.sqrt(summation)
-            sd = denom/p_o
-            self.alpha.append(sd)
-        return sum(self.alpha)*100
+    # '''Obtains Smith's Alpha of Convergence: shows converge level to eq price'''
+    # def get_alpha(self):
+    #     eq_low = self.sys.trader_info['equilibrium'][1]
+    #     eq_high = self.sys.trader_info['equilibrium'][2]
+    #     if eq_low == eq_high:
+    #         self.eq = eq_high
+    #     elif eq_low != eq_high:
+    #         self.eq = (eq_low + eq_high) / 2
+    #     else:
+    #         print("error")
+    #     self.alpha = []
+    #     for i in all_prices:
+    #         p_i = i
+    #         p_o = self.eq
+    #         summation = (((p_i - p_o)**2)/len(all_prices))
+    #         denom = math.sqrt(summation)
+    #         sd = denom/p_o
+    #         self.alpha.append(sd)
+    #     return sum(self.alpha)*100
+
+    def graph_alphas(self):
+        alphas = self.sys.alphas
+        trace = go.Scatter(
+            x=np.array(periods_list),
+            y=np.array(alphas), name='Convergence Alpha',
+            mode='lines+markers',
+            line=dict(color='rgb(131, 90, 241)', width=4),
+            marker=dict(size=10, color='rgb(143, 19, 131)')
+        )
+        data = [trace]
+        layout = go.Layout(plot_bgcolor='rgb(229,229,229)',
+                           paper_bgcolor='rgb(255,255,255)',
+                           title='Smith Alphas by Period',
+                           xaxis=dict(title='Period #',
+                                      gridcolor='rgb(255,255,255)',
+                                      showgrid=True,
+                                      showline=False,
+                                      showticklabels=True,
+                                      tickcolor='rgb(127,127,127)',
+                                      ticks='outside',
+                                      zeroline=False,
+                                      titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')),
+                           yaxis=dict(title='Convergence Alpha',
+                                      gridcolor='rgb(255,255,255)',
+                                      showgrid=True,
+                                      showline=False,
+                                      showticklabels=True,
+                                      tickcolor='rgb(127,127,127)',
+                                      ticks='outside',
+                                      zeroline=False,
+                                      titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')))
+        fig = go.Figure(data=data, layout=layout)
+        py.offline.plot(fig)
 
     '''Obtains Avg trade ratio for all periods: actual transactions/equilibrium quantity'''
     def get_avg_trade_ratio(self):
@@ -231,6 +265,7 @@ class SpotMarketPeriod(object):
         print("Avg. Trade Ratio:" + str(trade_ratio_avg))
 
     '''Obtains Time, Trader, Ask/Bid, Offer Amt for table graph'''
+    # TODO look at problems of np.arrays in regular dictionaries... better if np.array(np.array)?
     def get_table(self):
         self.table = []  # created to make info enter table plot as columns
         self.table.append(['Time', 'Trader', 'Bid/Ask', 'Offer'])
@@ -290,8 +325,8 @@ class SpotMarketPeriod(object):
 
 '''This program iterates through the number of rounds'''
 if __name__ == "__main__":
-    num_periods = 10
-    limits = (999, 0)
+    num_periods = 11
+    limits = (400, 0)
     rounds = 50
     name = "trial"
     period = 0
@@ -306,7 +341,7 @@ if __name__ == "__main__":
     kp = "KaplanTrader"  # sniping strategy
     si = "SimpleTrader"
     ps = "PStrader"
-    trader_names = [ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps]
+    trader_names = [ps, zic, ps, zic, ps, zic, ps, zic, ps, zic, ps, zic, ps, zic, ps, zic, ps, zic, ps, zic, ps, zic]
     # trader_names = [zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic]
     # input - output and display options
     input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
@@ -329,6 +364,7 @@ if __name__ == "__main__":
         print("**** Running Period {}".format(k))
         smp.run_period(period, header)
         results = smp.eval()
+        print(results)
         eff.append(results[8])  # appends the efficiencies per period
         act_surplus.append(results[7])  # appends actual surplus per period
         maxi_surplus.append(results[6])  # appends maximum surplus per period
@@ -339,10 +375,10 @@ if __name__ == "__main__":
     print("Market Efficiencies:" + str(eff))  # print market efficiencies
     print("Avg. Efficiency:" + str(sum(eff)/num_periods))  # print avg efficiency
     print("Total Avg. Transaction Price:" + str(sum(avg_prices[1:])/(num_periods - 1)))
-    print("Smith's Convergence Alpha:" + str(smp.get_alpha()))  # print smiths alpha
     print("Actual Surpluses:" + str(act_surplus))  # print actual surpluses
     print("Maximum Surpluses:" + str(maxi_surplus))  # print max surpluses
     smp.get_avg_trade_ratio()  # prints avg trade ratio for all periods
+    time.sleep(0.5)
     smp.graph_trader_eff()  # plots individual efficiency
     time.sleep(0.5)  # program waits half second
     smp.graph_efficiency()  # plots period efficiency
@@ -352,4 +388,5 @@ if __name__ == "__main__":
     time.sleep(0.5)  # wait
     smp.graph_surplus()  # graphs actual and max surplus
     time.sleep(0.5)  # wait
-    smp.graph_table()  # graphs a table of Time, Trader, Bid/Ask, Offer
+    smp.graph_alphas()
+    #smp.graph_table()  # graphs a table of Time, Trader, Bid/Ask, Offer

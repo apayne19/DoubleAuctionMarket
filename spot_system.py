@@ -9,7 +9,7 @@ import plotly.offline as py
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
 import numpy as np
-
+import math
 
 # noinspection PyUnboundLocalVariable,PyUnboundLocalVariable
 class SpotSystem(object):
@@ -22,6 +22,7 @@ class SpotSystem(object):
         self.traders = [] # dictionary of trader ids?
         self.eff_list = []
         self.t_list = []
+        self.alphas = []
         self.trade_ratio_list = []
         self.trader_info = {}  # dictionary of keys:values
         self.mkt = None  # function called from spot_environment_model
@@ -69,9 +70,6 @@ class SpotSystem(object):
         if self.display:
             print()
 
-
-
-
     def trader_handler(self, trader):
         offer = trader.offer(self.da.report_contracts(), self.da.report_standing()[0], self.da.report_standing()[1])
         if len(offer) == 0:
@@ -98,9 +96,17 @@ class SpotSystem(object):
 
         actual_surplus = 0  # will change as updated
         count = 0
+        act_p = []  # actual transactions
+
+        if ep_low == ep_high:
+            theor_p = ep_high
+        else:
+            theor_p = (ep_low + ep_high)/2
+
         for contract in self.da.report_contracts():  # going through list of contracts
             count = count + 1
             price = contract[0]  # pulls price from board
+            act_p.append(price)
             buyer_id = contract[1]  # pulls buyer id from board
             seller_id = contract[2]  # pulls seller id from board
             if self.trader_info[buyer_id]['type'] == 'B':  # type is bid?
@@ -119,12 +125,21 @@ class SpotSystem(object):
                                                                                        self.trader_info[seller_id]['type']))
             # noinspection PyUnboundLocalVariable,PyUnboundLocalVariable
             actual_surplus += value - cost
-
+        summation = []
+        for i in act_p:
+            s_step = (i-theor_p)**2
+            summation.append(s_step)
+        if len(act_p) != 0:
+            smith_alpha = (math.sqrt(sum(summation)/len(act_p))/theor_p)*100
+        else:
+            smith_alpha = 0
+        self.alphas.append(smith_alpha)
         efficiency = int((actual_surplus / maximum_surplus) * 100)
         trade_ratio = count/e_quantity
         self.trade_ratio_list.append(trade_ratio)
         result_header.extend([ep_low, ep_high, e_quantity, maximum_surplus, actual_surplus, efficiency])
         if self.display:
+            print("Smith_alpha:" + str(smith_alpha))
             print("actual surplus = {}, maximum surplus = {}.".format(actual_surplus, maximum_surplus))
             print("market efficiency = {} percent.".format(efficiency))
             print("trade ratio = {}.".format(trade_ratio))

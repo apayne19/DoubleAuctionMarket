@@ -255,32 +255,34 @@ class PStrader(object):
             if num_contracts >= len(self.values):
                 return []  # You can't bid anymore
             cur_value = self.values[num_contracts]  # this is the current value working on
-            beta = 0.3  # learning rate... adjustment speed
-            gamma = 0.05  # momentum... damps oscillation
-            r_1 = random.randint(0, 20)  # random variable between 0 and 20
-            r_2 = random.randint(0, 20)
-            if standing_bid:
-                if standing_ask and cur_value > standing_bid:
-                    if standing_ask > standing_bid:  # ask greater than bid
-                        sigma = r_1*standing_bid + r_2  # bidders price change
-                        target = standing_bid + sigma  # target valuation
-                        bid = gamma*cur_value + (1-gamma)*beta*(target-cur_value)  # learning rule
-                        return ["B", self.name, bid]
-                    elif standing_ask <= standing_bid:  # ask less than or equal to bid
-                        sigma = r_1*standing_ask + r_2  # bidders price change
-                        target = standing_ask - sigma  # target valuation
-                        bid = gamma*cur_value + (1-gamma)*beta*(target-cur_value)  # learning rule
-                        return ["B", self.name, bid]
-                    else:
-                        raise ValueError  # thrown if code not executing right
-                else:
-                        return []
-            else:
-                if cur_value > 0:
-                    bid = random.randint(1, 20)  # place first bid
+            # beta = 0.3  # learning rate... adjustment speed
+            # gamma = 0.05  # momentum... damps oscillation
+            r_1 = random.uniform(0, 0.2)  # random variable between 0 and 20
+            r_2 = random.uniform(0, 0.2)
+            if standing_bid and standing_ask and cur_value > standing_bid:
+                if standing_ask > standing_bid:  # ask greater than bid
+                    sigma = r_1*standing_bid + r_2  # bidders price change
+                    target = standing_bid + sigma  # target valuation
+                    bid = round(target, 0)
+                    # bid = gamma*cur_value + (1-gamma)*beta*(target-cur_value)  # learning rule
+                    return ["B", self.name, bid]
+                elif standing_ask <= standing_bid:  # ask less than or equal to bid
+                    sigma = r_1*standing_ask + r_2  # bidders price change
+                    target = standing_ask - sigma  # target valuation
+                    bid = round(target, 0)
+                    # bid = gamma*cur_value + (1-gamma)*beta*(target-cur_value)  # learning rule
+                    return ["B", self.name, bid]
+                elif standing_ask == cur_value:
+                    bid = cur_value
                     return ["B", self.name, bid]
                 else:
-                    return []
+                    print("ERROR")
+                    raise ValueError
+            elif standing_bid == 0:
+                bid = standing_bid + random.randint(1, 20)
+                return ["B", self.name, bid]
+            else:
+                return []
 
         else:
             # find out how many contracts you have
@@ -290,33 +292,34 @@ class PStrader(object):
             if num_contracts >= len(self.costs):
                 return []  # You can't ask anymore
             cur_cost = self.costs[num_contracts]  # this is the current value working on
-            beta = 0.3  # learning rate... adjustment speed
-            gamma = 0.05  # momentum... damps oscillation
-            r_1 = random.randint(0, 20)  # random variable between 0 and 20
-            r_2 = random.randint(0, 20)
-            if standing_ask:
-                if standing_bid and cur_cost < 400:
-                    if standing_ask > standing_bid:  # ask greater than bid
-                        sigma = r_1*standing_ask + r_2  # sellers price change
-                        target = standing_ask - sigma  # sellers target valuation
-                        ask = gamma*cur_cost + (1-gamma)*beta*(target-cur_cost)  # learning rule
-                        return ["S", self.name, ask]
-                    elif standing_ask <= standing_bid:  # ask less than or equal to bid
-                        sigma = r_1*standing_bid + r_2  # sellers price change
-                        target = standing_bid + sigma  # sellers target valuation
-                        ask = gamma*cur_cost + (1-gamma)*beta*(target-cur_cost)  # learning rule
-                        return ["S", self.name, ask]
-                    else:
-                        raise ValueError  # thrown if code not executing right
-
-                else:
-                        return []  # wait for first bid
-            else:
-                if cur_cost > 0:
-                    ask = 400 - random.randint(1, 20)  # place first ask
+            # beta = 0.3  # learning rate... adjustment speed
+            # gamma = 0.05  # momentum... damps oscillation
+            r_1 = random.uniform(0, 0.2)  # random variable between 0 and 20
+            r_2 = random.uniform(0, 0.2)
+            if standing_ask and standing_bid and cur_cost < standing_ask:
+                if standing_ask > standing_bid:  # ask greater than bid
+                    sigma = r_1*standing_ask + r_2  # sellers price change
+                    target = standing_ask - sigma  # sellers target valuation
+                    ask = round(target, 0)
+                    # ask = gamma*cur_cost + (1-gamma)*beta*(target-cur_cost)  # learning rule
+                    return ["S", self.name, ask]
+                elif standing_ask <= standing_bid:  # ask less than or equal to bid
+                    sigma = r_1*standing_bid + r_2  # sellers price change
+                    target = standing_bid + sigma  # sellers target valuation
+                    ask = round(target, 0)
+                    # ask = gamma*cur_cost + (1-gamma)*beta*(target-cur_cost)  # learning rule
+                    return ["S", self.name, ask]
+                elif standing_bid == cur_cost:
+                    ask = cur_cost
                     return ["S", self.name, ask]
                 else:
-                    return []
+                    print("ERROR")
+                    raise ValueError  # thrown if code not executing right
+            elif standing_ask == 400:
+                ask = standing_ask - random.randint(1, 20)
+                return ["S", self.name, ask]
+            else:
+                return []
 
 if __name__ == "__main__":
     zi = ZeroIntelligenceTrader()
