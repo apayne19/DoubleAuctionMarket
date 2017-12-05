@@ -341,7 +341,8 @@ if __name__ == "__main__":
     kp = "KaplanTrader"  # sniping strategy
     si = "SimpleTrader"
     ps = "PStrader"
-    trader_names = [ps, zic, ps, zic, ps, zic, ps, zic, ps, zic, ps, zic, ps, zic, ps, zic, ps, zic, ps, zic, ps, zic]
+    aa = "Trader_AA"
+    trader_names = [aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa]
     # trader_names = [zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic]
     # input - output and display options
     input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
@@ -358,7 +359,7 @@ if __name__ == "__main__":
     for k in range(num_periods):
         smp.get_contracts()  # gets transaction prices and period endpoints
         periods_list.append(k)
-        random.shuffle(rnd_traders)  # reassign traders each period
+        #random.shuffle(rnd_traders)  # reassign traders each period
         # print(rnd_traders)  # prints list of trader strategy
         smp.init_traders(rnd_traders)
         print("**** Running Period {}".format(k))

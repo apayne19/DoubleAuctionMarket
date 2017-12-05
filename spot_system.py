@@ -1,4 +1,4 @@
-from trader import SimpleTrader, ZI_Utrader, ZI_Ctrader, KaplanTrader, PStrader
+from trader import SimpleTrader, ZI_Utrader, ZI_Ctrader, KaplanTrader, PStrader, Trader_AA
 #import build_environment as env
 import spot_environment_model as env
 import double_auction_institution as ins
@@ -139,6 +139,8 @@ class SpotSystem(object):
         self.trade_ratio_list.append(trade_ratio)
         result_header.extend([ep_low, ep_high, e_quantity, maximum_surplus, actual_surplus, efficiency])
         if self.display:
+            print("actP:" + str(act_p) + "length:" + str(len(act_p)) + "theorP:" + str(theor_p))
+            print("summations:" + str(summation))
             print("Smith_alpha:" + str(smith_alpha))
             print("actual surplus = {}, maximum surplus = {}.".format(actual_surplus, maximum_surplus))
             print("market efficiency = {} percent.".format(efficiency))
