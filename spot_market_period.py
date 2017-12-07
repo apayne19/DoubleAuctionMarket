@@ -8,6 +8,7 @@ import plotly.graph_objs as go
 import plotly.figure_factory as ff
 import os
 import time
+import trader as tdr
 import math
 '''This program is a condensed version of spot_system to build the periods of trading'''
 
@@ -57,6 +58,7 @@ class SpotMarketPeriod(object):
     def get_contracts(self):
         self.prices = []  # temp dictionary for contract prices
         self.ends = []  # temp dictionary for end of period (end of contracts)
+        print(self.sys.da.report_contracts())
         for contract in self.sys.da.report_contracts():
             price = contract[0]  # pulls price from contracts
             self.prices.append(price)  # appends to temp dict
@@ -316,6 +318,21 @@ class SpotMarketPeriod(object):
         fig = go.Figure(data=data, layout=layout)
         py.offline.plot(fig)
 
+    # TODO create normal distribution graph of trader efficiencies
+    # def graph_distribution(self):
+    #     t_effs = self.sys.eff_list
+    #     mean = np.mean(t_effs)
+    #     std_dev = np.std(t_effs)
+    #     print("np calc u:" + str(mean))
+    #     print("np calc sd:" + str(std_dev))
+    #     y = t_effs
+    #     trace = go.Box(
+    #         y=y
+    #     )
+    #     data = [trace]
+    #
+    #     py.offline.plot(data)
+
     def run_period(self, period, header):
         self.period = period
         self.run()
@@ -325,7 +342,7 @@ class SpotMarketPeriod(object):
 
 '''This program iterates through the number of rounds'''
 if __name__ == "__main__":
-    num_periods = 11
+    num_periods = 10
     limits = (400, 0)
     rounds = 50
     name = "trial"
@@ -357,9 +374,8 @@ if __name__ == "__main__":
     # TODO fix so that saves period/experiment data for each run
     output_file = open('Experiment' + str(n) + '.csv', 'w', newline='')  # creates a new file
     for k in range(num_periods):
-        smp.get_contracts()  # gets transaction prices and period endpoints
         periods_list.append(k)
-        #random.shuffle(rnd_traders)  # reassign traders each period
+        random.shuffle(rnd_traders)  # reassign traders each period
         # print(rnd_traders)  # prints list of trader strategy
         smp.init_traders(rnd_traders)
         print("**** Running Period {}".format(k))
@@ -371,6 +387,7 @@ if __name__ == "__main__":
         maxi_surplus.append(results[6])  # appends maximum surplus per period
         output_writer = csv.writer(output_file)  # prepares new csv file for writing
         output_writer.writerow(results)  # writes period info to csv row per period
+        smp.get_contracts()  # gets transaction prices and period endpoints
         smp.get_table()  # see function doc_string
     output_file.close()  # closes the csv file
     print("Market Efficiencies:" + str(eff))  # print market efficiencies
@@ -378,16 +395,21 @@ if __name__ == "__main__":
     print("Total Avg. Transaction Price:" + str(sum(avg_prices[1:])/(num_periods - 1)))
     print("Actual Surpluses:" + str(act_surplus))  # print actual surpluses
     print("Maximum Surpluses:" + str(maxi_surplus))  # print max surpluses
+    print(all_prices)
+    print(range(len(all_prices)))
     smp.get_avg_trade_ratio()  # prints avg trade ratio for all periods
-    time.sleep(0.5)
+    time.sleep(0.75)
     smp.graph_trader_eff()  # plots individual efficiency
-    time.sleep(0.5)  # program waits half second
+    time.sleep(0.75)  # program waits half second
     smp.graph_efficiency()  # plots period efficiency
-    time.sleep(0.5)  # wait
+    time.sleep(0.75)  # wait
     smp.get_endpoints()  # obtains endpoints of periods for graph
+    time.sleep(0.75)
     smp.graph_contracts()  # graphs contract transactions and avg transaction per period
-    time.sleep(0.5)  # wait
+    time.sleep(0.75)  # wait
     smp.graph_surplus()  # graphs actual and max surplus
-    time.sleep(0.5)  # wait
+    time.sleep(0.75)  # wait
     smp.graph_alphas()
+    time.sleep(0.75)
+    #smp.graph_distribution()
     #smp.graph_table()  # graphs a table of Time, Trader, Bid/Ask, Offer

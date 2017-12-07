@@ -1,5 +1,6 @@
 import random
 import math
+alphas = []
 class SimpleTrader(object):
     """ A class that makes a trader"""
 
@@ -353,9 +354,9 @@ class Trader_AA(object):
         # Parameters describing what the market looks like and it's contstraints
         self.marketMax = 400  # hardcoded
         self.prev_best_bid_p = None
-        self.prev_best_bid_q = 6  # hardcoded
+        self.prev_best_bid_q = None  # hardcoded
         self.prev_best_ask_p = None
-        self.prev_best_ask_q = 6  # hardcoded
+        self.prev_best_ask_q = None  # hardcoded
 
         # Internal parameters (spin up time need to get values for some of these)
         self.eqlbm = 200
@@ -509,6 +510,7 @@ class Trader_AA(object):
         else:
             if self.smithsAlpha < self.smithsAlphaMin: self.smithsAlphaMin = self.smithsAlpha
             if self.smithsAlpha > self.smithsAlphaMax: self.smithsAlphaMax = self.smithsAlpha
+        alphas.append(self.smithsAlpha)
 
     def updateTheta(self):
         alphaBar = (self.smithsAlpha - self.smithsAlphaMin) / (self.smithsAlphaMax - self.smithsAlphaMin)
@@ -527,10 +529,12 @@ class Trader_AA(object):
                 if contract[1] == self.name:  # second position is buyer_id
                     num_contracts = num_contracts + 1
             if num_contracts >= len(self.values):
+                self.active = False
                 return []  # You can't bid anymore
             cur_value = self.values[num_contracts]  # this is the current value working on
             self.limit = self.values[0]
             self.job = self.type
+            self.active = True
             self.updateTarget()
             # currently a buyer (working a bid order)
             if self.spin_up_time > 0:
@@ -549,6 +553,7 @@ class Trader_AA(object):
             cur_cost = self.costs[num_contracts]  # this is the current value working on
             self.limit = self.costs[0]
             self.job = self.type
+            self.active = True
             self.updateTarget()
             # currently a seller (working a sell order)
             if self.spin_up_time > 0:
@@ -608,9 +613,9 @@ class Trader_AA(object):
 
         if self.spin_up_time > 0: self.spin_up_time -= 1
         if deal:
-            self.price = trade['price']
-            self.updateEq(self.price)
-            self.updateSmithsAlpha(self.price)
+            price = trade['price']
+            #self.updateEq(price)
+            self.updateSmithsAlpha(price)
             self.updateTheta()
 
         # The lines below represent the rules in fig(7) in AIJ08. The if statements have not
@@ -618,19 +623,21 @@ class Trader_AA(object):
 
         # For buying
         if deal:
-            if self.target_buy >= self.price:
-                self.aggressiveness_buy = self.updateAgg(False, True, self.price)
+            price = trade['price']
+            if self.target_buy >= price:
+                self.aggressiveness_buy = self.updateAgg(False, True, price)
             else:
-                self.aggressiveness_buy = self.updateAgg(True, True, self.price)
-        elif bid_improved and (self.target_buy <= self.price):
+                self.aggressiveness_buy = self.updateAgg(True, True, price)
+        elif bid_improved and self.target_buy <= trade['price']:
             self.aggressiveness_buy = self.updateAgg(True, True, self.prev_best_bid_p)
         # For selling
         if deal:
-            if self.target_sell <= self.price:
-                self.aggressiveness_sell = self.updateAgg(False, False, self.price)
+            price = trade['price']
+            if self.target_sell <= price:
+                self.aggressiveness_sell = self.updateAgg(False, False, price)
             else:
-                self.aggressiveness_sell = self.updateAgg(True, False, self.price)
-        elif ask_improved and (self.target_sell >= self.price):
+                self.aggressiveness_sell = self.updateAgg(True, False, price)
+        elif ask_improved and (self.target_sell >= trade['price']):
             self.aggressiveness_sell = self.updateAgg(True, False, self.prev_best_ask_p)
 
         self.updateTarget()
