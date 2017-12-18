@@ -642,5 +642,258 @@ class Trader_AA(object):
 
         self.updateTarget()
 
+class Trader_GD(object):
+        def __init__(self):
+            self.name = ""
+            self.type = ""
+            self.bidbestprice = None
+            self.askbestprice = None
+            self.values = []
+            self.costs = []
+            self.blotter = []
+            self.orders = []
+            # this is the transaction history recorded by this trader
+            # only trading price will be recorded for each transaction
+            # most recent trading price will be inserted at the begining
+            # of the list
+            self.history_transac = []
+
+        def offer(self, contracts, standing_bid, standing_ask):
+            # Get the acceptance possibility of a price existing
+            # in the transaction history.
+            # Params. price: target price
+            self.bidbestprice = standing_bid
+            self.askbestprice = standing_ask
+            num_contracts = 0
+            if self.type == "buyer":
+                for contract in contracts:
+                    if contract[1] == self.name:  # second position is buyer_id
+                        num_contracts = num_contracts + 1
+            else:
+                for contract in contracts:
+                    if contract[2] == self.name:  # third position is seller id
+                        num_contracts = num_contracts + 1
+
+            def getP(price):
+                # History limitation is set to 100
+                m = 100
+                # if the length of history is lower than 100
+                # then set history limitation to the length
+                # of history until the length is greater than
+                # 100
+                if len(self.history_transac) < 100:
+                    m = len(self.history_transac)
+                if self.type == 'buyer':
+                    success = 0.0
+                    for i in range(0, m):
+                        value = self.history_transac[i]
+                        if value <= price:
+                            success += 1
+                    if m == 0.0:
+                        return 0.0
+                    else:
+                        return success / m
+
+                else:
+                    success = 0.0
+                    for i in range(0, m):
+                        value = self.history_transac[i]
+                        if value >= price:
+                            success += 1
+
+                    if m == 0.0:
+                        return 0.0
+                    else:
+                        return success / m
+
+            # Calculate expectation of a price
+            # Params. price: target price
+            #         profit: the profit gains by target price
+            #         profit_rate: the profit rate (profit/limit price) of a target price
+            def getE(price, profit, profit_rate):
+                possibility = getP(price)
+                return possibility ** 3 * profit * profit_rate
+
+            # Calculate the best-guess price based on known expectation
+            # of each price in transaction history
+            # Params. knownlist: a list of [expectation,price] for each target price
+            #                    i.e. [[e1,p1],[e2,p2]...]
+            #         knownbest: the highest expectation with its price in knownlist
+            #                    i.e. [e,p]
+            def getbgprice(knownlist, knownbest):
+                knownlist.sort(key=lambda x: x[1])  # sort by price
+                position = knownlist.index(knownbest)  # position of known best price
+                #                        print 'kb position',position,'list len',len(knownlist)
+                kbprice = knownbest[1]  # get price of know best E-price item
+                kbE = knownbest[0]  # get E of know best E-price item
+                bgprice = kbprice  # initialize the hidden best price to known best price
+                if position != 0 and position != len(
+                        knownlist) - 1:  # if known-best price is not at first and last position in list
+                    left = knownlist[position - 1]  # get E-price item by shifting left of 1
+                    right = knownlist[position + 1]  # get E-price item by shifting right of 1
+                    leftprice = left[1]  # get price of left E-price item
+                    leftE = left[0]  # get E of left E-price item
+                    rightprice = right[1]  # get price of right E-price item
+                    rightE = right[0]  # get E of right E-price item
+
+                    # now calculate the best guess price (bgprice)
+                    part1 = (kbE - rightE) * (leftprice ** 2 - kbprice ** 2) - (leftE - kbE) * (
+                    kbprice ** 2 - rightprice ** 2)
+                    part2 = 2.0 * ((leftE - kbE) * (rightprice - kbprice) - (kbE - rightE) * (kbprice - leftprice))
+
+                    if part2 != 0:
+                        bgprice = part1 / part2
+                        # according to assumption, bgprice should be between leftprice and rightprice
+                        if not (bgprice > leftprice and bgprice < rightprice):
+                            raise ValueError
+
+                return bgprice
+
+            # Calculate the quote price using geometric mean method
+            # a gmprice will be returned if there was a best price
+            # in LOB, otherwise the quote price will remain the same
+            # Params. price: the quote price we have got so far
+            def getgmprice(price):
+                # limit price of the order
+                # quote price calculated by gemotric mean method
+                gmprice = 0
+                if self.type == 'buyer':
+                    # best bid price in LOB at present
+                    if standing_bid != None:
+                        if standing_bid < cur_value:
+                            gmprice = (standing_bid * price) ** (0.5)
+                        if standing_bid > cur_value:
+                            gmprice = (cur_value * price) ** (0.5)
+                        return gmprice
+                    else:
+                        return price
+                else:
+                    # best ask price in LOB at present
+                    if standing_ask != None:
+                        if standing_ask > cur_cost:
+                            gmprice = (standing_ask * price) ** (0.5)
+                        if standing_ask < cur_cost:
+                            gmprice = (cur_cost * price) ** (0.5)
+                        return gmprice
+                    else:
+                        return price
+
+            # Calculate the quote price
+            def getquoteprice():
+                # if the type of oder is to bid..
+                if self.type == 'buyer':
+                    profit_price = []  # structure: a list of [expectation,price]
+                    temp = []  # temp list to avoid adding expectation of same price to profit_price list
+                    # get each target price from transaction history
+                    for price in self.history_transac:
+                        # ensure a target price produces profit and its expection
+                        # has not been calculated yet
+                        if price < cur_value and price not in temp:
+                            temp.append(price)
+                            profit = cur_value - price  # profit made by target price
+                            profit_rate = float(profit) / float(cur_value)  # profit rate of the target price
+                            E = getE(price, profit, profit_rate)  # expectation of the target price
+                            if E != 0:
+                                profit_price.append([E, price])  # add [E,price] to the list
+                    profit_price.sort(reverse=True)  # sort list from higher E to lower E
+
+                    # if profit_price contains elements, which means there existing some
+                    #  price in history that can make profit
+                    if len(profit_price) != 0:
+                        # get the first element in the list, which contains the highest E
+                        # and corresponding price
+                        knownbest = profit_price[0]
+                        # price with the highest E we have got so far, if best-guess
+                        # method not applied
+                        kbprice = knownbest[1]
+
+                        # calculate the best-guess price
+                        bgprice = getbgprice(profit_price, knownbest)
+
+                        # calculate the geometric mean price
+                        gmprice = getgmprice(bgprice)
+                        return gmprice
+
+                    # if there was nothing in the list, that means none of existing price
+                    # can make profit, then we quote same price as limit price
+                    else:
+                        return cur_value
+
+                # if the type of order is to ask, similar as 'Bid' above
+                else:
+                    profit_price = []  # [profit expectation,price]
+                    temp = []
+                    for price in self.history_transac:
+                        if price > cur_cost and price not in temp:
+                            temp.append(price)
+                            profit = price - cur_cost
+                            profit_rate = float(profit) / float(cur_cost)
+                            E = getE(price, profit, profit_rate)
+                            if E != 0:
+                                profit_price.append([E, price])
+                    profit_price.sort(reverse=True)
+                    if len(profit_price) != 0:
+                        knownbest = profit_price[0]
+                        kbprice = knownbest[1]
+
+                        # calculate the best-guess price
+                        bgprice = getbgprice(profit_price, knownbest)
+
+                        # calculate the geometric mean price
+                        gmprice = getgmprice(bgprice)
+                        return gmprice
+                    else:
+                        return cur_cost
+
+            if self.type == "buyer":
+                if num_contracts >= len(self.values):
+                    return []  # You can't bid anymore
+                else:
+                    cur_value = self.values[num_contracts]
+                    bid = getquoteprice()
+                    return["B", self.name, round(bid, 0)]
+            else:
+                if num_contracts >= len(self.costs):
+                    return []  # You can't ask anymore
+                else:
+                    cur_cost = self.costs[num_contracts]
+                    ask = getquoteprice()
+                    return["S", self.name, ask]
+            # if len(self.orders) < 1:
+            #     # no orders: return NULL
+            #     order = None
+            # else:
+            #     # get quote price
+            #     quoteprice = getquoteprice()
+            #     # pass order to LOB with quote price
+            #     return[self.type, self]
+            #
+            # return order
+
+        # Every time a new order was placed in LOB, market_session() will invoke
+        # respond() function of each trader. Therefore our trader will update
+        # transaction history here using the LOB passed by market_session()
+        # This methond is rewrite from Trader class
+        def respond(self, time, lob, trade, verbose):
+
+            # update transaction history
+            def updatehistory():
+                # trading price
+                price = trade['price']
+                # trading quantity
+                count = trade['qty']
+                # each transaction will be recored multiple times
+                # if the quantity > 0. However in BSE, the quantity
+                # of transaction will always be 1
+                while count != 0:
+                    # most recent transaction will be inserted at the beginning
+                    self.history_transac.insert(0, price)
+                    count -= 1
+
+            # if there was a transaction occurred in the market, then
+            # we update transaction history
+            if trade != None:
+                updatehistory()
+
 if __name__ == "__main__":
     zi = ZeroIntelligenceTrader()

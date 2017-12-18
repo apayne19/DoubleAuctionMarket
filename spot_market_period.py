@@ -33,10 +33,10 @@ class SpotMarketPeriod(object):
         self.session_name = session_name
         self.period = 0
         self.num_periods = num_periods
-        self.num_buyers = 11  # number of buyers
-        self.num_sellers = 11  # number of sellers
+        self.num_buyers = 10  # number of buyers
+        self.num_sellers = 10  # number of sellers
         self.limits = (400, 0)  # ceiling and floor for bidding
-        self.num_market_periods = 10  # number of periods auction run
+        self.num_market_periods = 9  # number of periods auction run
         self.trader_names = []
         self.traders = []
         self.trader_info = {}
@@ -319,19 +319,43 @@ class SpotMarketPeriod(object):
         py.offline.plot(fig)
 
     # TODO create normal distribution graph of trader efficiencies
-    # def graph_distribution(self):
-    #     t_effs = self.sys.eff_list
-    #     mean = np.mean(t_effs)
-    #     std_dev = np.std(t_effs)
-    #     print("np calc u:" + str(mean))
-    #     print("np calc sd:" + str(std_dev))
-    #     y = t_effs
-    #     trace = go.Box(
-    #         y=y
-    #     )
-    #     data = [trace]
-    #
-    #     py.offline.plot(data)
+    def graph_distribution(self):
+        t_effs = self.sys.eff_list
+        mean = np.mean(t_effs)
+        std_dev = np.std(t_effs)
+        median = np.median(t_effs)
+        max = np.max(t_effs)
+        min = np.min(t_effs)
+        print("Trader Efficiency Mean:" + str(mean))
+        print("Trader Efficiency Std. Deviation:" + str(std_dev))
+        print("Trader Efficiency Median:" + str(median))
+        print("Trader Efficiency Max:" + str(max))
+        print("Trader Efficiency Min:" + str(min))
+        y = t_effs
+        '''Graph boxplot of trader efficiency'''
+        # trace = go.Box(
+        #     y=y,
+        #     name='Trader Efficiency',
+        #     boxpoints='all',
+        #     jitter=0.3,
+        #     marker=dict(
+        #         color='rgb(214,12,140)',
+        #     ),
+        # )
+        # layout = go.Layout(
+        #     width=1000,
+        #     yaxis=dict(
+        #         title='Trader Efficiency Boxplot',
+        #         zeroline=False
+        #     ),
+        # )
+        #
+        # data = [trace]
+        # fig = go.Figure(data=data, layout=layout)
+        '''Graph violin plot of trader efficiency'''
+        fig = ff.create_violin(y, colors='rgb(214,12,140)', height=700, width=1000,
+                               title="Trader Efficiency Violin Plot")
+        py.offline.plot(fig)
 
     def run_period(self, period, header):
         self.period = period
@@ -342,9 +366,9 @@ class SpotMarketPeriod(object):
 
 '''This program iterates through the number of rounds'''
 if __name__ == "__main__":
-    num_periods = 10
+    num_periods = 9
     limits = (400, 0)
-    rounds = 50
+    rounds = 30
     name = "trial"
     period = 0
     session_name = "session_test"
@@ -359,11 +383,14 @@ if __name__ == "__main__":
     si = "SimpleTrader"
     ps = "PStrader"
     aa = "Trader_AA"
-    trader_names = [aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa]
+    gd = "Trader_GD"
+    trader_names = [gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
+    # trader_names = [aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa]
+    # trader_names = [ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps]
     # trader_names = [zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic]
     # input - output and display options
     input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
-    input_file = "Preist_Tol"  # data file plugged in SF = santa fe VS = vernon smith
+    input_file = "Das Data v3"  # data file plugged in SF = santa fe VS = vernon smith
     output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\data\\"
     header = session_name
     smp.init_spot_system(name, limits, rounds, input_path, input_file)
@@ -381,7 +408,6 @@ if __name__ == "__main__":
         print("**** Running Period {}".format(k))
         smp.run_period(period, header)
         results = smp.eval()
-        print(results)
         eff.append(results[8])  # appends the efficiencies per period
         act_surplus.append(results[7])  # appends actual surplus per period
         maxi_surplus.append(results[6])  # appends maximum surplus per period
@@ -395,8 +421,6 @@ if __name__ == "__main__":
     print("Total Avg. Transaction Price:" + str(sum(avg_prices[1:])/(num_periods - 1)))
     print("Actual Surpluses:" + str(act_surplus))  # print actual surpluses
     print("Maximum Surpluses:" + str(maxi_surplus))  # print max surpluses
-    print(all_prices)
-    print(range(len(all_prices)))
     smp.get_avg_trade_ratio()  # prints avg trade ratio for all periods
     time.sleep(0.75)
     smp.graph_trader_eff()  # plots individual efficiency
@@ -411,5 +435,5 @@ if __name__ == "__main__":
     time.sleep(0.75)  # wait
     smp.graph_alphas()
     time.sleep(0.75)
-    #smp.graph_distribution()
+    smp.graph_distribution()
     #smp.graph_table()  # graphs a table of Time, Trader, Bid/Ask, Offer
