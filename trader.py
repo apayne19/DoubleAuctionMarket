@@ -1,7 +1,7 @@
 import random
 import math
 alphas = []
-class SimpleTrader(object):
+class Trader_Simple(object):
     """ A class that makes a trader"""
 
     def __init__(self):
@@ -57,10 +57,11 @@ class SimpleTrader(object):
                     ask = 999
                     return["B", self.name, ask]
 
-class KaplanTrader(object):
-    """Trader based on Kaplan's Sniping Trader, waits in background until certain threshold met then
-    places last minute bid/ask to steal trade"""
-
+class Trader_Kaplan(object):
+    """Trader using Kaplan strategy from Rust et al.(1992)
+    ## trader waits until standing bid/standing ask get close enough then steals the deal
+    --> shown to be best strategy when only one in heterogeneous population
+    --> fails when many of the same in population"""
     def __init__(self):
         self.name = ""
         self.type = ""
@@ -128,11 +129,45 @@ class KaplanTrader(object):
                     return ["S", self.name, ask]
                 else:
                     return []
+    # TODO change out existing code for better code below
+    def getorder(self, time, countdown, lob):
+        lurk_threshold = 0.2
+        shavegrowthrate = 3
+        shave = int(1.0 / (0.01 + countdown / (shavegrowthrate * lurk_threshold)))
+        if (len(self.orders) < 1) or (countdown > lurk_threshold):
+            order = None
+
+        else:
+            limitprice = self.orders[0].price
+            otype = self.orders[0].otype
+            if otype == 'Bid':
+                if lob['bids']['n'] > 0:
+                    quoteprice = lob['bids']['best'] + shave
+                    if quoteprice > limitprice:
+                        quoteprice = limitprice
+
+                else:
+                    quoteprice = lob['bids']['worst']
+
+            else:
+                if lob['asks']['n'] > 0:
+                    quoteprice = lob['asks']['best'] - shave
+                    if quoteprice < limitprice:
+                        quoteprice = limitprice
+
+                else:
+                    quoteprice = lob['asks']['worst']
+            self.lastquote = quoteprice
+            order = Order(self.tid, otype, quoteprice, self.orders[0].qty, time)
+
+        return order
 
 
-class ZI_Ctrader(object):
-    """ A trader that bids and asks based on random amount"""
-
+class Trader_ZIC(object):
+    """Trader using Zero Intelligence Constrained strategy from Gode/Sunder(1993)
+    ## submits random bids/asks between standing bid/standing ask and individual limit valuations
+    --> supposedly represents human trading behavior
+    --> Plott et al.(2002) show that ZIC does not display human behavior"""
     def __init__(self):
         self.name = ""
         self.type = ""
@@ -189,10 +224,9 @@ class ZI_Ctrader(object):
                 else:
                     return[]
 
-class ZI_Utrader(object):
+class Trader_ZIU(object):
     """ A class always increases bid by 3, decreases ask by 3, does not take cur_value or cur_cost into account
     makes a trader that is subject to Winner's Curse"""
-
     def __init__(self):
         self.name = ""
         self.type = ""
@@ -237,7 +271,7 @@ class ZI_Utrader(object):
                 ask = 999
                 return ["S", self.name, ask]
 
-class PStrader(object):
+class Trader_PS(object):
     """Trader using learning rule to get target price to bid/ask"""
 
     def __init__(self):
@@ -321,11 +355,13 @@ class PStrader(object):
 
 
 class Trader_AA(object):
+    '''Adaptive-Agressiveness trading strategy from Cliff et al.(2008)
+    ## sellers and buyers given aggressiveness levels and use to alter profit margins for bids/asks
+    --> more aggressive = trade off profit for higher chance of transaction
+    --> less aggressive = trade off transaction chance for higher profit
+    --> shown to beat GDX and ZIP trading strategies
+    --> potential comparison to human traders in Smith(1962) +++ '''
     def __init__(self):
-        '''Trading strategy that uses aggressiveness levels, adjusts bids and asks according to target'''
-        '''Refer to Vytelingum, Cliff, Jennings 2008'''
-        '''Code contained within was created by Ash Booth and accessed on Github, his code adds functions to use
-        Newton's method to obtain theta estimates...'''
         self.name = ""
         self.type = ""
         self.values = []
@@ -347,9 +383,9 @@ class Trader_AA(object):
 
         # The order we're trying to trade
         self.orders = []
-        self.limit = None
         self.active = False
         self.job = None
+        self.limit = None
 
         # Parameters describing what the market looks like and it's contstraints
         self.marketMax = 400  # hardcoded
@@ -531,8 +567,7 @@ class Trader_AA(object):
             if num_contracts >= len(self.values):
                 self.active = False
                 return []  # You can't bid anymore
-            cur_value = self.values[num_contracts]  # this is the current value working on
-            self.limit = self.values[0]
+            self.limit = self.values[num_contracts]  # this is the current value working on
             self.job = self.type
             self.active = True
             self.updateTarget()
@@ -550,8 +585,7 @@ class Trader_AA(object):
                     num_contracts = num_contracts + 1
             if num_contracts >= len(self.costs):
                 return []  # You can't ask anymore
-            cur_cost = self.costs[num_contracts]  # this is the current value working on
-            self.limit = self.costs[0]
+            self.limit = self.costs[num_contracts]  # this is the current value working on
             self.job = self.type
             self.active = True
             self.updateTarget()
@@ -614,7 +648,7 @@ class Trader_AA(object):
         if self.spin_up_time > 0: self.spin_up_time -= 1
         if deal:
             price = trade['price']
-            #self.updateEq(price)
+            #self.updateEq(price)  #TODO allow equilibrium updating or no??
             self.updateSmithsAlpha(price)
             self.updateTheta()
 
@@ -643,7 +677,12 @@ class Trader_AA(object):
         self.updateTarget()
 
 class Trader_GD(object):
-        def __init__(self):
+    '''Trader using strategy from Gjerstadt/Dickhaut(1998)
+    ## uses market history to calculate belief function to estimate prob of bid/ask being accepted at price p
+    --> suffers from excessive volatility when rejected orders = 0
+    --> volatility can be fixed using MGD strategy from Das(2001) +++
+    --> not performing as expected... potential errors in code +++ '''
+    def __init__(self):
             self.name = ""
             self.type = ""
             self.bidbestprice = None
@@ -658,7 +697,7 @@ class Trader_GD(object):
             # of the list
             self.history_transac = []
 
-        def offer(self, contracts, standing_bid, standing_ask):
+    def offer(self, contracts, standing_bid, standing_ask):
             # Get the acceptance possibility of a price existing
             # in the transaction history.
             # Params. price: target price
@@ -859,22 +898,13 @@ class Trader_GD(object):
                     cur_cost = self.costs[num_contracts]
                     ask = getquoteprice()
                     return["S", self.name, ask]
-            # if len(self.orders) < 1:
-            #     # no orders: return NULL
-            #     order = None
-            # else:
-            #     # get quote price
-            #     quoteprice = getquoteprice()
-            #     # pass order to LOB with quote price
-            #     return[self.type, self]
-            #
-            # return order
 
         # Every time a new order was placed in LOB, market_session() will invoke
         # respond() function of each trader. Therefore our trader will update
         # transaction history here using the LOB passed by market_session()
         # This methond is rewrite from Trader class
-        def respond(self, time, lob, trade, verbose):
+
+    def respond(self, time, lob, trade, verbose):
 
             # update transaction history
             def updatehistory():
@@ -894,6 +924,232 @@ class Trader_GD(object):
             # we update transaction history
             if trade != None:
                 updatehistory()
+
+class Trader_ZIP(object):
+    '''Trader using Zero Intelligence Plus strategy from Cliff(1997)
+    ## uses prior trading information and limit values to alter profit margin up or down
+    --> potential error at bottom of class when calling def respond() traders need memory +++
+    --> currently trades are not generating eq quantity +++ '''
+
+    # ZIP init key param-values are those used in Cliff's 1997 original HP Labs tech report
+    # NB this implementation keeps separate margin values for buying & sellling,
+    #    so a single trader can both buy AND sell
+    #    -- in the original, traders were either buyers OR sellers
+    def __init__(self):
+
+        self.name = ""
+        self.type = ""
+        self.values = []
+        self.costs = []
+        # got rid of self.balance = balance
+        self.blotter = []
+        self.orders = []
+        # got rid of self.job for self.type
+        self.active = False  # gets switched to True while actively working an order
+        self.prev_change = 0  # this was called last_d in Cliff'97
+        self.beta = 0.1 + 0.4 * random.random()
+        self.momntm = 0.1 * random.random()
+        self.ca = 0.05  # self.ca & .cr were hard-coded in '97 but parameterised later
+        self.cr = 0.05
+        self.margin = None  # this was called profit in Cliff'97
+        self.margin_buy = -1.0 * (0.05 + 0.3 * random.random())
+        self.margin_sell = 0.05 + 0.3 * random.random()
+        self.price = None
+        self.cur_value = None
+        self.cur_cost = None
+        # memory of best price & quantity of best bid and ask, on LOB on previous update
+        self.prev_best_bid_p = None
+        self.prev_best_bid_q = None
+        self.prev_best_ask_p = None
+        self.prev_best_ask_q = None
+
+    def offer(self, contracts, standing_bid, standing_ask):
+        num_contracts = 0
+        self.prev_best_bid_p = standing_bid
+        self.prev_best_ask_p = standing_ask
+        if self.type == "buyer":
+            for contract in contracts:
+                if contract[1] == self.name:  # second position is buyer_id
+                    num_contracts = num_contracts + 1
+            if num_contracts >= len(self.values):
+                self.active = False
+                return []  # You can't bid anymore
+            self.cur_value = self.values[num_contracts]  # this is the current value working on
+            self.active = True
+            self.margin = self.margin_buy
+            bid = int(self.cur_value * (1 + self.margin))
+            self.price = bid
+            return["B", self.name, bid]
+
+        else:
+            for contract in contracts:
+                if contract[2] == self.name:  # third position is seller id
+                    num_contracts = num_contracts + 1
+            if num_contracts >= len(self.costs):
+                self.active = False
+                return []  # You can't bid anymore
+            self.cur_cost = self.costs[num_contracts]  # this is the current value working on
+            self.active = True
+            self.margin = self.margin_sell
+            ask = int(self.cur_cost * (1 + self.margin))
+            self.price = ask
+            return["S", self.name, ask]
+
+    # update margin on basis of what happened in market
+    def respond(self, time, lob, trade, verbose):
+        # ZIP trader responds to market events, altering its margin
+        # does this whether it currently has an order to work or not
+        def target_up(price):
+            # generate a higher target price by randomly perturbing given price
+            ptrb_abs = self.ca * random.random()  # absolute shift
+            ptrb_rel = price * (1.0 + (self.cr * random.random()))  # relative shift
+            target = int(round(ptrb_rel + ptrb_abs, 0))
+            # #                        print('TargetUp: %d %d\n' % (price,target))
+
+            return target
+
+        def target_down(price):
+            # generate a lower target price by randomly perturbing given price
+            ptrb_abs = self.ca * random.random()  # absolute shift
+            ptrb_rel = price * (1.0 - (self.cr * random.random()))  # relative shift
+            target = int(round(ptrb_rel - ptrb_abs, 0))
+            # #                        print('TargetDn: %d %d\n' % (price,target))
+
+            return target
+
+        def willing_to_trade(price):
+            # am I willing to trade at this price?
+            willing = False
+            if self.type == 'buyer' and self.active and self.price >= price:
+                willing = True
+
+            if self.type == 'seller' and self.active and self.price <= price:
+                willing = True
+
+            return willing
+
+        def profit_alter(price):
+            oldprice = self.price
+            diff = price - oldprice
+            change = ((1.0 - self.momntm) * (self.beta * diff)) + (self.momntm * self.prev_change)
+            self.prev_change = change
+            if self.type == 'buyer':
+                newmargin = ((self.price + change) / self.cur_value) - 1.0
+                if newmargin < 0.0:
+                    self.margin_buy = newmargin
+                    self.margin = newmargin
+                self.price = int(round(self.cur_value * (1.0 + self.margin), 0))
+
+            else:
+                newmargin = ((self.price + change) / self.cur_cost) - 1.0
+                if newmargin > 0.0:
+                    self.margin_sell = newmargin
+                    self.margin = newmargin
+                # set the price from limit and profit-margin
+                self.price = int(round(self.cur_cost * (1.0 + self.margin), 0))
+
+        # what, if anything, has happened on the bid LOB?
+        bid_improved = False
+        bid_hit = False
+        lob_best_bid_p = lob['bids']['best']
+        lob_best_bid_q = None
+        if lob_best_bid_p != None:
+            # non-empty bid LOB
+            lob_best_bid_q = lob['bids']['lob'][-1][1]
+            if self.prev_best_bid_p < lob_best_bid_p:
+                # best bid has improved
+                # NB doesn't check if the improvement was by self
+                bid_improved = True
+
+            elif trade != None and ((self.prev_best_bid_p > lob_best_bid_p) or (
+                (self.prev_best_bid_p == lob_best_bid_p) and (self.prev_best_bid_q > lob_best_bid_q))):
+                # previous best bid was hit
+                bid_hit = True
+
+        elif self.prev_best_bid_p != None:
+            # the bid LOB has been emptied by a hit
+            bid_hit = True
+
+        # what, if anything, has happened on the ask LOB?
+        ask_improved = False
+        ask_lifted = False
+        lob_best_ask_p = lob['asks']['best']
+        lob_best_ask_q = None
+        if lob_best_ask_p != None:
+            # non-empty ask LOB
+            lob_best_ask_q = lob['asks']['lob'][0][1]
+            if self.prev_best_ask_p > lob_best_ask_p:
+                # best ask has improved -- NB doesn't check if the improvement was by self
+                ask_improved = True
+
+            elif trade != None and ((self.prev_best_ask_p < lob_best_ask_p) or (
+                (self.prev_best_ask_p == lob_best_ask_p) and (self.prev_best_ask_q > lob_best_ask_q))):
+                # trade happened and best ask price has got worse, or stayed same but quantity reduced -- assume previous best ask was lifted
+                ask_lifted = True
+
+        elif self.prev_best_ask_p != None:
+            # the bid LOB is empty now but was not previously, so must have been hit
+            ask_lifted = True
+
+        if verbose and (bid_improved or bid_hit or ask_improved or ask_lifted):
+            print('B_improved', bid_improved, 'B_hit', bid_hit, 'A_improved', ask_improved, 'A_lifted', ask_lifted)
+        deal = bid_hit or ask_lifted
+
+        if self.type == 'seller':
+            # seller
+            if deal:
+                tradeprice = trade['price']
+                if self.price <= tradeprice:
+                    # could sell for more? raise margin
+                    target_price = target_up(tradeprice)
+                    profit_alter(target_price)
+
+                elif ask_lifted and self.active and not willing_to_trade(tradeprice):
+                    # wouldnt have got this deal, still working order, so reduce margin
+                    target_price = target_down(tradeprice)
+                    profit_alter(target_price)
+
+            else:
+                # no deal: aim for a target price higher than best bid
+                if ask_improved and self.price > lob_best_ask_p:
+                    if lob_best_bid_p != None:
+                        target_price = target_up(lob_best_bid_p)
+
+                    else:
+                        target_price = lob['asks']['worst']  # stub quote
+                    profit_alter(target_price)
+
+        if self.type == 'buyer':
+            # buyer
+            if deal:
+                tradeprice = trade['price']
+                if self.price >= tradeprice:
+                    # could buy for less? raise margin (i.e. cut the price)
+                    target_price = target_down(tradeprice)
+                    profit_alter(target_price)
+
+                elif bid_hit and self.active and not willing_to_trade(tradeprice):
+                    # wouldnt have got this deal, still working order, so reduce margin
+                    target_price = target_up(tradeprice)
+                    profit_alter(target_price)
+
+            else:
+                # no deal: aim for target price lower than best ask
+                if bid_improved and self.price < lob_best_bid_p:
+                    if lob_best_ask_p != None:
+                        target_price = target_down(lob_best_ask_p)
+
+                    else:
+                        target_price = lob['bids']['worst']  # stub quote
+                    profit_alter(target_price)
+
+        # remember the best LOB data ready for next response
+        # TODO fix spot_system or d_a_institution to allow ZIP memory
+        # LOb = limit order book (display ledger)... lob(bid) = standing bid...??? # TODO fix this
+        self.prev_best_bid_p = lob_best_bid_p
+        self.prev_best_bid_q = lob_best_bid_q
+        self.prev_best_ask_p = lob_best_ask_p
+        self.prev_best_ask_q = lob_best_ask_q
 
 if __name__ == "__main__":
     zi = ZeroIntelligenceTrader()

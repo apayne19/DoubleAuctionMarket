@@ -1,4 +1,4 @@
-from trader import SimpleTrader, ZI_Utrader, ZI_Ctrader, KaplanTrader, PStrader, Trader_AA, Trader_GD
+from trader import Trader_Simple, Trader_ZIU, Trader_ZIC, Trader_Kaplan, Trader_PS, Trader_AA, Trader_GD, Trader_ZIP
 #import build_environment as env
 import spot_environment_model as env
 import double_auction_institution as ins

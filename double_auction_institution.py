@@ -35,11 +35,12 @@ class Auction(object):
             self.board["orders"].append((self.time_index(), player_id, "bid", amt))
         else:
             return "closed"
-        # TODO potential problem in transaction price of contracts
+
         if amt > self.board["standing"]["bid"] and amt < self.ceiling:  # check for valid amount
             if amt > self.board["standing"]["ask"]:
                 status = "contract"  # contract = (price, buyer, seller) price = standing ask
                 contract = (self.board["standing"]["ask"], player_id, self.board["standing"]["asker"])
+                # TODO contract price should be random between bid and ask...??
                 self.board["contracts"].append(contract)
                 # reinitalize standing bid and ask
                 self.board["standing"]["bid"] = self.floor  # Start at smallest possible bid

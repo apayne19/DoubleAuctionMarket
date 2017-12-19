@@ -33,10 +33,10 @@ class SpotMarketPeriod(object):
         self.session_name = session_name
         self.period = 0
         self.num_periods = num_periods
-        self.num_buyers = 10  # number of buyers
-        self.num_sellers = 10  # number of sellers
+        self.num_buyers = 11  # number of buyers
+        self.num_sellers = 11  # number of sellers
         self.limits = (400, 0)  # ceiling and floor for bidding
-        self.num_market_periods = 9  # number of periods auction run
+        self.num_market_periods = 5  # number of periods auction run
         self.trader_names = []
         self.traders = []
         self.trader_info = {}
@@ -366,9 +366,9 @@ class SpotMarketPeriod(object):
 
 '''This program iterates through the number of rounds'''
 if __name__ == "__main__":
-    num_periods = 9
+    num_periods = 5
     limits = (400, 0)
-    rounds = 30
+    rounds = 20
     name = "trial"
     period = 0
     session_name = "session_test"
@@ -376,21 +376,22 @@ if __name__ == "__main__":
     smp = SpotMarketPeriod(session_name, num_periods)
     '''This will change when we create more programmed agents to add into the model'''
     # Put Trader Class Names Here - note traders strategy is named trader class name
-    zic = "ZI_Ctrader"  # zero intelligence constrained
-    #zip = "ZeroIntelligenceTraderPlus"
-    ziu = "ZI_Utrader"  # zero intelligence unconstrained
-    kp = "KaplanTrader"  # sniping strategy
-    si = "SimpleTrader"
-    ps = "PStrader"
+    zic = "Trader_ZIC"  # zero intelligence constrained
+    ziu = "Trader_ZIU"  # zero intelligence unconstrained
+    kp = "Trader_Kaplan"  # sniping strategy
+    si = "Trader_Simple"
+    ps = "Trader_PS"
     aa = "Trader_AA"
     gd = "Trader_GD"
-    trader_names = [gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
+    zip = "Trader_ZIP"
+    # trader_names = [zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip]
+    # trader_names = [gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
     # trader_names = [aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa]
-    # trader_names = [ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps]
-    # trader_names = [zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic]
+    trader_names = [ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps]
+    # trader_names = [zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic]
     # input - output and display options
     input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
-    input_file = "Das Data v3"  # data file plugged in SF = santa fe VS = vernon smith
+    input_file = "TestVS"  # data file plugged in SF = santa fe VS = vernon smith
     output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\data\\"
     header = session_name
     smp.init_spot_system(name, limits, rounds, input_path, input_file)
@@ -402,7 +403,7 @@ if __name__ == "__main__":
     output_file = open('Experiment' + str(n) + '.csv', 'w', newline='')  # creates a new file
     for k in range(num_periods):
         periods_list.append(k)
-        random.shuffle(rnd_traders)  # reassign traders each period
+        random.shuffle(rnd_traders)  # shuffles traders per round...??
         # print(rnd_traders)  # prints list of trader strategy
         smp.init_traders(rnd_traders)
         print("**** Running Period {}".format(k))
