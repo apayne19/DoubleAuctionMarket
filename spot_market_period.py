@@ -206,26 +206,6 @@ class SpotMarketPeriod(object):
         fig = go.Figure(data=data, layout=layout)
         py.offline.plot(fig)
 
-    # '''Obtains Smith's Alpha of Convergence: shows converge level to eq price'''
-    # def get_alpha(self):
-    #     eq_low = self.sys.trader_info['equilibrium'][1]
-    #     eq_high = self.sys.trader_info['equilibrium'][2]
-    #     if eq_low == eq_high:
-    #         self.eq = eq_high
-    #     elif eq_low != eq_high:
-    #         self.eq = (eq_low + eq_high) / 2
-    #     else:
-    #         print("error")
-    #     self.alpha = []
-    #     for i in all_prices:
-    #         p_i = i
-    #         p_o = self.eq
-    #         summation = (((p_i - p_o)**2)/len(all_prices))
-    #         denom = math.sqrt(summation)
-    #         sd = denom/p_o
-    #         self.alpha.append(sd)
-    #     return sum(self.alpha)*100
-
     def graph_alphas(self):
         alphas = self.sys.alphas
         trace = go.Scatter(
@@ -266,20 +246,15 @@ class SpotMarketPeriod(object):
         trade_ratio_avg = sum(trade_ratio_list)/len(trade_ratio_list)
         print("Avg. Trade Ratio:" + str(trade_ratio_avg))
 
-    '''Obtains Time, Trader, Ask/Bid, Offer Amt for table graph'''
-    # TODO look at problems of np.arrays in regular dictionaries... better if np.array(np.array)?
-    def get_table(self):
-        self.table = []  # created to make info enter table plot as columns
-        self.table.append(['Time', 'Trader', 'Bid/Ask', 'Offer'])
-        for i in self.sys.da.report_orders():
-            self.table.append(np.array(i))
-
-    '''Graphs a table in plotly of Time, Trader, Ask/Bid, Offer Amt for all periods'''
-    def graph_table(self):
-        table_data = self.table  # calls data from table dictionary
-        # Initialize a figure with ff.create_table(table_data)
-        figure = ff.create_table(table_data)  # creates a table using plotly
-        py.offline.plot(figure)  # plots into web browser
+    '''Obtains Time, Trader, Ask/Bid, Offer Amt for experiment run, writes to csv file'''
+    def record_session_data(self):
+        output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
+        # self.session_name gives unique id for data saved
+        with open(output_path + self.session_name + ".csv", "w") as file:
+            output = csv.writer(file, delimiter=',')
+            output.writerow(['Time', 'Trader', 'Bid/Ask', 'Offer'])
+            output.writerows(self.sys.da.report_orders())
+            file.close()
 
     '''Graph individual trader efficiencies'''
     def graph_trader_eff(self):
@@ -371,7 +346,7 @@ if __name__ == "__main__":
     rounds = 20
     name = "trial"
     period = 0
-    session_name = "session_test"
+    session_name = "TestVS-ps-11-11-5-400-b"
     header = session_name
     smp = SpotMarketPeriod(session_name, num_periods)
     '''This will change when we create more programmed agents to add into the model'''
@@ -392,7 +367,7 @@ if __name__ == "__main__":
     # input - output and display options
     input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
     input_file = "TestVS"  # data file plugged in SF = santa fe VS = vernon smith
-    output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\data\\"
+    output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
     header = session_name
     smp.init_spot_system(name, limits, rounds, input_path, input_file)
     rnd_traders = trader_names    # because shuffle shuffles the list in place, returns none
@@ -415,7 +390,7 @@ if __name__ == "__main__":
         output_writer = csv.writer(output_file)  # prepares new csv file for writing
         output_writer.writerow(results)  # writes period info to csv row per period
         smp.get_contracts()  # gets transaction prices and period endpoints
-        smp.get_table()  # see function doc_string
+        smp.record_session_data()  # records experiment time,trader,bid/ask,offer in excel csv
     output_file.close()  # closes the csv file
     print("Market Efficiencies:" + str(eff))  # print market efficiencies
     print("Avg. Efficiency:" + str(sum(eff)/num_periods))  # print avg efficiency
@@ -437,4 +412,3 @@ if __name__ == "__main__":
     smp.graph_alphas()
     time.sleep(0.75)
     smp.graph_distribution()
-    #smp.graph_table()  # graphs a table of Time, Trader, Bid/Ask, Offer
