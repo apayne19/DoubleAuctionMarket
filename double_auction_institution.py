@@ -1,4 +1,5 @@
 from timeit import default_timer as timer
+
 class Auction(object):
     """ A class that makes a market"""
     board = {"is_open": False, "orders": [], "contracts": [], "standing": {}}
@@ -30,9 +31,10 @@ class Auction(object):
         t = (round(stp - self.srt, 5))
         return t
 
-    def bid(self, player_id, amt):
+    def bid(self, player_id, amt, strategies):
+        trader_strategy = strategies[player_id]['strat']
         if self.board["is_open"]:
-            self.board["orders"].append((self.time_index(), player_id, "bid", amt))
+            self.board["orders"].append((self.time_index(), player_id, "bid", amt, trader_strategy))
         else:
             return "closed"
 
@@ -55,9 +57,10 @@ class Auction(object):
             status = "reject"
         return status
 
-    def ask(self, player_id, amt):
+    def ask(self, player_id, amt, strategies):
+        trader_strategy = strategies[player_id]['strat']
         if self.board["is_open"]:
-            self.board["orders"].append((self.time_index(), player_id, "ask", amt))
+            self.board["orders"].append((self.time_index(), player_id, "ask", amt, trader_strategy))
         else:
             return "closed"
         if amt < self.board["standing"]["ask"] and amt > self.floor:  # check for valid ask

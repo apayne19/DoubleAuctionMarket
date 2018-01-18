@@ -10,12 +10,25 @@ import os
 import time
 import trader as tdr
 import math
-'''This program is a condensed version of spot_system to build the periods of trading'''
 
-'''1). import plotly
-2). change input/ouput url paths to local computer'''
+'''Input_path, input_file, output_path, and session_name need to be set before running this program...
 
-'''Problem with graphing multiple plotly graphs... trying to fix'''
+... input_path pulls data file containing supply/demand, equilibrium price/quantity, etc.
+    --> will need to create data file by running spot_environment_gui.py and saving
+    
+... input_file is the data set you are experimenting with
+
+... output_path is the path location that session data folders will be saved to
+
+... session_name is the unique identifier for each session run
+    --> ex. "filename-tradestrategy-#buyers-#sellers-$limit-version" '''
+
+input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
+input_file = "TestVS"
+output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
+session_name = "Test_Save_strategies"
+
+'''Below are global dictionaries that will contain information needed to execute several functions'''
 all_prices = []
 theoretical_transactions = []
 all_ends = []
@@ -46,6 +59,7 @@ class SpotMarketPeriod(object):
         self.sys.init_spot_system(name, limits, rounds, input_path, input_file)
 
     def init_traders(self, trader_names):
+        print(trader_names)
         self.sys.init_traders(trader_names)
 
     def run(self):
@@ -66,9 +80,9 @@ class SpotMarketPeriod(object):
             avg = sum(self.prices)/len(self.prices)  # gets avg of all contract prices in period
         except ZeroDivisionError:  # if no contracts avg = 0
             avg = 0
-        print("Transaction Avg: " + str(avg))
+        print("Transaction Avg: " + str(avg))  # print to editor
         avg_prices.append(avg)  # appends avg to global dict
-        print("Transaction Avg List: " + str(avg_prices))
+        print("Transaction Avg List: " + str(avg_prices))  # print to editor
         end = len(self.prices)  # finds end of contracts for period
         self.ends.append(end)  # appends end int to temp dict
         for p in self.prices:
@@ -80,10 +94,10 @@ class SpotMarketPeriod(object):
     def get_endpoints(self):
         self.endpoints = []
         for i in all_ends:
-            if bool(self.endpoints) == False:
-                self.endpoints.append(i)
+            if bool(self.endpoints) == False:  # if list is empty
+                self.endpoints.append(i)  # starts list
             else:
-                self.endpoints.append(i + self.endpoints[-1])
+                self.endpoints.append(i + self.endpoints[-1])  # appends to end of list
 
     '''Graphs avg and max surpluses by period.. use matplotlib until plot error fixed'''
     def graph_surplus(self):
@@ -242,19 +256,22 @@ class SpotMarketPeriod(object):
 
     '''Obtains Avg trade ratio for all periods: actual transactions/equilibrium quantity'''
     def get_avg_trade_ratio(self):
-        trade_ratio_list = self.sys.trade_ratio_list
-        trade_ratio_avg = sum(trade_ratio_list)/len(trade_ratio_list)
-        print("Avg. Trade Ratio:" + str(trade_ratio_avg))
+        trade_ratio_list = self.sys.trade_ratio_list  # list of trade ratios
+        trade_ratio_avg = sum(trade_ratio_list)/len(trade_ratio_list)  # average trade ratio
+        print("Avg. Trade Ratio:" + str(trade_ratio_avg))  # print to editor
 
     '''Obtains Time, Trader, Ask/Bid, Offer Amt for experiment run, writes to csv file'''
-    def record_session_data(self):
-        output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
-        # self.session_name gives unique id for data saved
-        with open(output_path + self.session_name + ".csv", "w") as file:
-            output = csv.writer(file, delimiter=',')
-            output.writerow(['Time', 'Trader', 'Bid/Ask', 'Offer'])
-            output.writerows(self.sys.da.report_orders())
-            file.close()
+    def record_session_data(self, session_folder, period):  # session_folder is new output path
+        with open(session_folder + "Bid_Ask_History.csv", "a") as file_1:  # creates csv file
+            output_1 = csv.writer(file_1)
+            #output_1.writerow(['Time', 'Trader', 'Bid/Ask', 'Offer'])  # header
+            output_1.writerows(self.sys.da.report_orders())  # saves bid/ask history in excel csv
+            file_1.close()  # closes file
+        with open(session_folder + "Contract_History.csv", "a") as file_2:  # creates csv file
+            output_2 = csv.writer(file_2)
+            #output_2.writerow(['Price', 'Buyer', 'Seller', "Prd. " + str(period)])  # header
+            output_2.writerows(self.sys.da.report_contracts())  # saves contracts in excel csv
+            file_2.close()  # closes file
 
     '''Graph individual trader efficiencies'''
     def graph_trader_eff(self):
@@ -295,12 +312,13 @@ class SpotMarketPeriod(object):
 
     # TODO create normal distribution graph of trader efficiencies
     def graph_distribution(self):
-        t_effs = self.sys.eff_list
-        mean = np.mean(t_effs)
-        std_dev = np.std(t_effs)
-        median = np.median(t_effs)
-        max = np.max(t_effs)
-        min = np.min(t_effs)
+        t_effs = self.sys.eff_list  # list of trader efficiencies
+        mean = np.mean(t_effs)  # numpy function to get average
+        std_dev = np.std(t_effs)  # numpy function to get standard deviation
+        median = np.median(t_effs)  # numpy function to get median
+        max = np.max(t_effs)  # numpy function to get maximum value
+        min = np.min(t_effs)  # numpy function to get minimum value
+        '''Print statements below '''
         print("Trader Efficiency Mean:" + str(mean))
         print("Trader Efficiency Std. Deviation:" + str(std_dev))
         print("Trader Efficiency Median:" + str(median))
@@ -308,28 +326,24 @@ class SpotMarketPeriod(object):
         print("Trader Efficiency Min:" + str(min))
         y = t_effs
         '''Graph boxplot of trader efficiency'''
-        # trace = go.Box(
-        #     y=y,
-        #     name='Trader Efficiency',
-        #     boxpoints='all',
-        #     jitter=0.3,
-        #     marker=dict(
-        #         color='rgb(214,12,140)',
-        #     ),
-        # )
-        # layout = go.Layout(
-        #     width=1000,
-        #     yaxis=dict(
-        #         title='Trader Efficiency Boxplot',
-        #         zeroline=False
-        #     ),
-        # )
-        #
-        # data = [trace]
-        # fig = go.Figure(data=data, layout=layout)
-        '''Graph violin plot of trader efficiency'''
-        fig = ff.create_violin(y, colors='rgb(214,12,140)', height=700, width=1000,
-                               title="Trader Efficiency Violin Plot")
+        trace = go.Box(
+            y=y,
+            name='Trader Efficiency',
+            boxpoints='all',
+            jitter=0.3,
+            marker=dict(
+                color='rgb(214,12,140)',
+            ),
+        )
+        layout = go.Layout(
+            width=1000,
+            yaxis=dict(
+                title='Trader Efficiency Boxplot',
+                zeroline=False
+            ),
+        )
+        data = [trace]
+        fig = go.Figure(data=data, layout=layout)
         py.offline.plot(fig)
 
     def run_period(self, period, header):
@@ -341,74 +355,74 @@ class SpotMarketPeriod(object):
 
 '''This program iterates through the number of rounds'''
 if __name__ == "__main__":
-    num_periods = 5
-    limits = (400, 0)
-    rounds = 20
+    num_periods = 5  # periods or trading days
+    limits = (400, 0)  # price ceiling, price floor
+    rounds = 20  # rounds in each period (can substitute time clock)
     name = "trial"
-    period = 0
-    session_name = "TestVS-ps-11-11-5-400-b"
+    period = 0  # ...??
+    try:
+        os.makedirs(output_path + session_name)  # creates folder for session data
+    except FileExistsError:
+        print("ERROR: File Exists... must rename or delete previous session data")
+        raise  # raises error if folder already exists
     header = session_name
     smp = SpotMarketPeriod(session_name, num_periods)
-    '''This will change when we create more programmed agents to add into the model'''
-    # Put Trader Class Names Here - note traders strategy is named trader class name
+    '''Below trader classes are abbreviated'''
     zic = "Trader_ZIC"  # zero intelligence constrained
-    ziu = "Trader_ZIU"  # zero intelligence unconstrained
-    kp = "Trader_Kaplan"  # sniping strategy
-    si = "Trader_Simple"
-    ps = "Trader_PS"
-    aa = "Trader_AA"
-    gd = "Trader_GD"
-    zip = "Trader_ZIP"
+    ziu = "Trader_ZIU"  # zero intelligence unconstrained trader.. not used
+    kp = "Trader_Kaplan"  # sniping trader based on Santa Fe paper
+    si = "Trader_Simple"  # simple trader.. not used
+    ps = "Trader_PS"  # PS trader based on Priest and Tol paper
+    aa = "Trader_AA"  # aggressiveness trader based on Cliff and Vytelingum paper
+    gd = "Trader_GD"  # GD trader based on Gjerstadt and Dickhaut paper
+    zip = "Trader_ZIP"  # zero intelligence plus trader
+    '''The lists below establish the number and order of traders and trading strategy'''
+    # TODO create way to automate input of trader # and strategies
     # trader_names = [zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip]
     # trader_names = [gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
-    # trader_names = [aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa]
-    trader_names = [ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps]
+    trader_names = [aa, aa, zic, aa, aa, zip, aa, ps, aa, aa, aa, gd, aa, aa, gd, ps, aa, aa, aa, zic, aa, aa]
+    # trader_names = [ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps]
     # trader_names = [zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic]
-    # input - output and display options
-    input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
-    input_file = "TestVS"  # data file plugged in SF = santa fe VS = vernon smith
-    output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
     header = session_name
     smp.init_spot_system(name, limits, rounds, input_path, input_file)
     rnd_traders = trader_names    # because shuffle shuffles the list in place, returns none
-    n = 0  # used in file creation
-    file_check = os.path.isfile('./Experiment' + str(n) + '.csv')  # checks directory for existing file
-    # TODO check for existing file before creating new one
-    # TODO fix so that saves period/experiment data for each run
-    output_file = open('Experiment' + str(n) + '.csv', 'w', newline='')  # creates a new file
-    for k in range(num_periods):
+    for k in range(num_periods):  # iterates through number of periods or "trading days"
         periods_list.append(k)
-        random.shuffle(rnd_traders)  # shuffles traders per round...??
+        random.shuffle(rnd_traders)  # shuffles trader order per round
         # print(rnd_traders)  # prints list of trader strategy
         smp.init_traders(rnd_traders)
-        print("**** Running Period {}".format(k))
+        print("**** Running Period {}".format(k))  # provides visual effect in editor
         smp.run_period(period, header)
         results = smp.eval()
+        '''the below data is appended into global dictionaries'''
         eff.append(results[8])  # appends the efficiencies per period
         act_surplus.append(results[7])  # appends actual surplus per period
         maxi_surplus.append(results[6])  # appends maximum surplus per period
-        output_writer = csv.writer(output_file)  # prepares new csv file for writing
-        output_writer.writerow(results)  # writes period info to csv row per period
         smp.get_contracts()  # gets transaction prices and period endpoints
-        smp.record_session_data()  # records experiment time,trader,bid/ask,offer in excel csv
-    output_file.close()  # closes the csv file
+        session_folder = output_path + session_name + "\\"  # establishes file path for session data folder
+        smp.record_session_data(session_folder, k)  # records session data in excel csv
     print("Market Efficiencies:" + str(eff))  # print market efficiencies
     print("Avg. Efficiency:" + str(sum(eff)/num_periods))  # print avg efficiency
     print("Total Avg. Transaction Price:" + str(sum(avg_prices[1:])/(num_periods - 1)))
     print("Actual Surpluses:" + str(act_surplus))  # print actual surpluses
     print("Maximum Surpluses:" + str(maxi_surplus))  # print max surpluses
-    smp.get_avg_trade_ratio()  # prints avg trade ratio for all periods
-    time.sleep(0.75)
-    smp.graph_trader_eff()  # plots individual efficiency
-    time.sleep(0.75)  # program waits half second
-    smp.graph_efficiency()  # plots period efficiency
-    time.sleep(0.75)  # wait
-    smp.get_endpoints()  # obtains endpoints of periods for graph
-    time.sleep(0.75)
-    smp.graph_contracts()  # graphs contract transactions and avg transaction per period
-    time.sleep(0.75)  # wait
-    smp.graph_surplus()  # graphs actual and max surplus
-    time.sleep(0.75)  # wait
-    smp.graph_alphas()
-    time.sleep(0.75)
-    smp.graph_distribution()
+    '''time.sleep() is called several times below to allow data aggregation in graphing functions...
+    ... if not used, graphing functions have inheritance issues'''
+    # smp.get_avg_trade_ratio()  # prints avg trade ratio for all periods
+    # time.sleep(0.75)  # program waits 0.75 seconds before continuing
+    # smp.graph_trader_eff()  # plots individual efficiency
+    # time.sleep(0.75)
+    # smp.graph_efficiency()  # plots period efficiency
+    # time.sleep(0.75)
+    # smp.get_endpoints()  # obtains endpoints of periods for graph
+    # time.sleep(0.75)
+    # smp.graph_contracts()  # graphs contract transactions and avg transaction per period
+    # time.sleep(0.75)
+    # smp.graph_surplus()  # graphs actual and max surplus
+    # time.sleep(0.75)
+    # smp.graph_alphas()  # graphs Smith's Alpha of convergence
+    # time.sleep(0.75)
+    # smp.graph_distribution()  # graphs normal distribution of trader efficiencies
+    '''graphs will open in browser of your choosing...
+    ... can download images of graphs by clicking camera icon in browser
+    ... or can create a free online plotly account which allows you to save and edit graphs'''

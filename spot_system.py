@@ -39,6 +39,7 @@ class SpotSystem(object):
     def init_traders(self, trader_names):
         self.trader_names = trader_names
         self.trader_info = self.prepare_traders(self.trader_names, self.mkt, self.limits)  # instantiate traders
+        print(self.trader_info)
 
     def load_market(self, input_path, input_file):
         self.mkt.prepare_market(input_path, input_file)  # set and show market
@@ -75,9 +76,9 @@ class SpotSystem(object):
         if len(offer) == 0:
             return
         if offer[0] == "B":  # identifies the bidders and bids
-            self.da.bid(offer[1], offer[2])
+            self.da.bid(offer[1], offer[2], self.trader_info)
         else:
-            self.da.ask(offer[1], offer[2])  # else identified as sellers and asks
+            self.da.ask(offer[1], offer[2], self.trader_info)  # else identified as sellers and asks
 
     def eval(self):
         # calculate market efficiency
@@ -148,7 +149,7 @@ class SpotSystem(object):
 
         for k in range(len(self.traders)):
             t_id = "t" + str(k)
-            t_strat = self.trader_info[t_id]['strat']
+            t_strat = self.trader_info[t_id]['strat']  # TODO add this info to report.orders so can use in AI
             earn = self.trader_info[t_id]['earn']
             if ep_high == ep_low:  # if high and low eqs the same
                 t_eff = (earn/maximum_surplus)*100  # trader's efficiency in %
