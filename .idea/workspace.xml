@@ -9,7 +9,6 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AI_Testing.py" afterPath="$PROJECT_DIR$/AI_Testing.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/double_auction_institution.py" afterPath="$PROJECT_DIR$/double_auction_institution.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spot_market_period.py" afterPath="$PROJECT_DIR$/spot_market_period.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spot_system.py" afterPath="$PROJECT_DIR$/spot_system.py" />
     </list>
     <ignored path=".idea/" />
     <ignored path=".idea/workspace.xml" />
@@ -23,11 +22,11 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="spot_market_period.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="spot_market_period.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/spot_market_period.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="503">
-              <caret line="388" column="84" lean-forward="true" selection-start-line="388" selection-start-column="84" selection-end-line="388" selection-end-column="84" />
+            <state relative-caret-position="119">
+              <caret line="28" column="31" lean-forward="false" selection-start-line="28" selection-start-column="31" selection-end-line="28" selection-end-column="31" />
               <folding>
                 <element signature="e#0#25#0" expanded="true" />
               </folding>
@@ -47,41 +46,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="spot_environment_model.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/spot_environment_model.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="6052">
-              <caret line="361" column="50" lean-forward="false" selection-start-line="361" selection-start-column="50" selection-end-line="361" selection-end-column="50" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="double_auction_institution.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/double_auction_institution.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="663">
-              <caret line="60" column="56" lean-forward="true" selection-start-line="60" selection-start-column="56" selection-end-line="60" selection-end-column="56" />
+            <state relative-caret-position="255">
+              <caret line="66" column="15" lean-forward="true" selection-start-line="66" selection-start-column="15" selection-end-line="66" selection-end-column="15" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="build_environment.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/build_environment.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="452">
-              <caret line="175" column="69" lean-forward="true" selection-start-line="175" selection-start-column="69" selection-end-line="175" selection-end-column="69" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AI_Testing.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="AI_Testing.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/AI_Testing.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="287">
-              <caret line="325" column="59" lean-forward="false" selection-start-line="325" selection-start-column="59" selection-end-line="325" selection-end-column="59" />
+            <state relative-caret-position="102">
+              <caret line="6" column="0" lean-forward="true" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -124,11 +103,11 @@
         <option value="$PROJECT_DIR$/spot_environment_gui.py" />
         <option value="$PROJECT_DIR$/trader.py" />
         <option value="$PROJECT_DIR$/tournament.py" />
-        <option value="$PROJECT_DIR$/AI_Testing.py" />
         <option value="$PROJECT_DIR$/build_environment.py" />
         <option value="$PROJECT_DIR$/spot_system.py" />
         <option value="$PROJECT_DIR$/double_auction_institution.py" />
         <option value="$PROJECT_DIR$/spot_market_period.py" />
+        <option value="$PROJECT_DIR$/AI_Testing.py" />
       </list>
     </option>
   </component>
@@ -191,7 +170,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.spot_market_period">
+  <component name="RunManager" selected="Python.AI_Testing">
     <configuration default="false" name="spot_market_period" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -356,8 +335,8 @@
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.spot_market_period" />
-        <item index="1" class="java.lang.String" itemvalue="Python.AI_Testing" />
+        <item index="0" class="java.lang.String" itemvalue="Python.AI_Testing" />
+        <item index="1" class="java.lang.String" itemvalue="Python.spot_market_period" />
         <item index="2" class="java.lang.String" itemvalue="Python.spot_environment_gui" />
         <item index="3" class="java.lang.String" itemvalue="Python.tournament" />
         <item index="4" class="java.lang.String" itemvalue="Python.spot_system" />
@@ -613,7 +592,14 @@
       <option name="project" value="LOCAL" />
       <updated>1516296569677</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="Updated report.order so that trader strategy is saved to excel csv... will use in AI predictions">
+      <created>1516309436964</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1516309436964</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -681,7 +667,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Updated and commented on code. Fixed spot_market and spot_market_periods to run" />
     <MESSAGE value="Added graphs to spot_market_periods, almost done adding save feature for period data" />
     <MESSAGE value="Accomplished period data save" />
     <MESSAGE value="Created message box for click on escape. Will continue working on save and save as functionality." />
@@ -706,7 +691,8 @@
     <MESSAGE value="Finished adapting ZIP trader into our model, will need to work out problems. Also found better code for kaplan trader. Will look into contract price decision process." />
     <MESSAGE value="Created process for saving experiment data into excel csv file. Found way to save plotly graphs" />
     <MESSAGE value="Work done from home... created machine learning algorithm for bid/ask value predictions and transaction value predictions... still learning" />
-    <option name="LAST_COMMIT_MESSAGE" value="Work done from home... created machine learning algorithm for bid/ask value predictions and transaction value predictions... still learning" />
+    <MESSAGE value="Updated report.order so that trader strategy is saved to excel csv... will use in AI predictions" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated report.order so that trader strategy is saved to excel csv... will use in AI predictions" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1027,16 +1013,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/AI Testing.py" />
-    <entry file="file://$PROJECT_DIR$/AI_Testing.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="287">
-          <caret line="325" column="59" lean-forward="false" selection-start-line="325" selection-start-column="59" selection-end-line="325" selection-end-column="59" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/spot_environment_model.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="6052">
@@ -1063,20 +1039,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/spot_market_period.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="28" column="31" lean-forward="false" selection-start-line="28" selection-start-column="31" selection-end-line="28" selection-end-column="31" />
+          <folding>
+            <element signature="e#0#25#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/double_auction_institution.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="663">
-          <caret line="60" column="56" lean-forward="true" selection-start-line="60" selection-start-column="56" selection-end-line="60" selection-end-column="56" />
+        <state relative-caret-position="255">
+          <caret line="66" column="15" lean-forward="true" selection-start-line="66" selection-start-column="15" selection-end-line="66" selection-end-column="15" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/spot_market_period.py">
+    <entry file="file://$PROJECT_DIR$/AI_Testing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="503">
-          <caret line="388" column="84" lean-forward="true" selection-start-line="388" selection-start-column="84" selection-end-line="388" selection-end-column="84" />
+        <state relative-caret-position="102">
+          <caret line="6" column="0" lean-forward="true" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
           <folding>
-            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>

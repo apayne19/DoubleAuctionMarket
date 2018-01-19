@@ -26,7 +26,7 @@ import math
 input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
 input_file = "TestVS"
 output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
-session_name = "Test_Save_strategies"
+session_name = "AI_strat Test 6"
 
 '''Below are global dictionaries that will contain information needed to execute several functions'''
 all_prices = []
@@ -380,7 +380,7 @@ if __name__ == "__main__":
     # TODO create way to automate input of trader # and strategies
     # trader_names = [zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip]
     # trader_names = [gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
-    trader_names = [aa, aa, zic, aa, aa, zip, aa, ps, aa, aa, aa, gd, aa, aa, gd, ps, aa, aa, aa, zic, aa, aa]
+    trader_names = [aa, aa, aa, aa, zip, zip, zip, zip, gd, gd, gd, gd, ps, ps, ps, ps, zic, zic, zic, zic, aa, aa]
     # trader_names = [ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps]
     # trader_names = [zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic]
     header = session_name

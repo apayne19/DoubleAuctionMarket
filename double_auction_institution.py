@@ -13,6 +13,8 @@ class Auction(object):
         self.board["standing"]["ask"] = self.ceiling  # Starts at largest possible ask # sellers want high
         self.board["standing"]["asker"] = self.name  # displays seller
         self.srt = timer()
+        self.strategy = None
+        self.player_id = None
 
     def show(self):
         print("I am auction {}, with ceiling {} and floor {}.".format(self.name, self.ceiling, self.floor))
@@ -33,8 +35,19 @@ class Auction(object):
 
     def bid(self, player_id, amt, strategies):
         trader_strategy = strategies[player_id]['strat']
+        if trader_strategy == 'Trader_AA':
+            self.strategy = 0
+        elif trader_strategy == 'Trader_GD':
+            self.strategy = 1
+        elif trader_strategy == 'Trader_PS':
+            self.strategy = 2
+        elif trader_strategy == 'Trader_ZIP':
+            self.strategy = 3
+        elif trader_strategy == 'Trader_ZIC':
+            self.strategy = 4
+        self.player_id = player_id.replace('t', '')
         if self.board["is_open"]:
-            self.board["orders"].append((self.time_index(), player_id, "bid", amt, trader_strategy))
+            self.board["orders"].append((self.time_index(), self.player_id, "bid", amt, self.strategy))
         else:
             return "closed"
 
@@ -59,8 +72,19 @@ class Auction(object):
 
     def ask(self, player_id, amt, strategies):
         trader_strategy = strategies[player_id]['strat']
+        if trader_strategy == 'Trader_AA':
+            self.strategy = 0
+        elif trader_strategy == 'Trader_GD':
+            self.strategy = 1
+        elif trader_strategy == 'Trader_PS':
+            self.strategy = 2
+        elif trader_strategy == 'Trader_ZIP':
+            self.strategy = 3
+        elif trader_strategy == 'Trader_ZIC':
+            self.strategy = 4
+        self.player_id = player_id.replace('t', '')
         if self.board["is_open"]:
-            self.board["orders"].append((self.time_index(), player_id, "ask", amt, trader_strategy))
+            self.board["orders"].append((self.time_index(), self.player_id, "ask", amt, self.strategy))
         else:
             return "closed"
         if amt < self.board["standing"]["ask"] and amt > self.floor:  # check for valid ask
