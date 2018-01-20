@@ -4,6 +4,9 @@ import plotly.offline as py
 import plotly.graph_objs as go
 import time
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import recall_score, precision_score
+from sklearn.preprocessing import MinMaxScaler
+
 
 # TODO see if it would be possible to employ this algorithm to shock markets to equilibrium
 # TODO build AI_trader that uses this algorithm to place better bids/asks
@@ -54,6 +57,12 @@ from sklearn.neighbors import KNeighborsClassifier
 # print("Correct Predictions: " + str(correct_count))
 # print("Wrong Predictions: " + str(wrong_count))
 # print("Percentage of Right Predictions: " + str(percent_correct*100) + "%")
+# print("Train Data Score: " + str(knn.score(input_X_train, input_y_train)))  # how accurate the model is with train data
+# print("Test Data Score: " + str(knn.score(input_X_test, input_y_test)))  # how accurate the model is with test data
+# # precision = precision_score(input_y_test, y_hat, average="weighted")
+# # recall = recall_score(input_y_test, y_hat, average="weighted")
+# # print("Precision: " + str(precision))  # false positives: guessed true when false
+# # print("Recall: " + str(recall))  # false negatives: guessed true when false
 # print("--------------------------------------------------------------------------------------------")
 # print()
 # print()
@@ -144,6 +153,12 @@ from sklearn.neighbors import KNeighborsClassifier
 # print("Correct Predictions: " + str(correct_count))
 # print("Wrong Predictions: " + str(wrong_count))
 # print("Percentage of Right Predictions: " + str(percent_correct*100) + "%")
+# print("Train Data Score: " + str(knn.score(input_X_train, input_y_train)))  # how accurate the model is with train data
+# print("Test Data Score: " + str(knn.score(input_X_test, input_y_test)))  # how accurate the model is with test data
+# # precision = precision_score(input_y_test, y_hat, average="weighted")
+# # recall = recall_score(input_y_test, y_hat, average="weighted")
+# # print("Precision: " + str(precision))  # false positives: guessed true when false
+# # print("Recall: " + str(recall))  # false negatives: guessed true when false
 # print("----------------------------------------------------------------------------------------")
 # print()
 # print()
@@ -247,6 +262,12 @@ from sklearn.neighbors import KNeighborsClassifier
 # print("Correct Predictions: " + str(correct_count))
 # print("Wrong Predictions: " + str(wrong_count))
 # print("Percentage of Right Predictions: " + str(percent_correct*100) + "%")
+# print("Train Data Score: " + str(knn.score(input_X_train, input_y_train)))
+# print("Test Data Score: " + str(knn.score(input_X_test, input_y_test)))
+# # precision = precision_score(input_y_test, y_hat, average="weighted")  # throws ill-defined error???
+# # recall = recall_score(input_y_test, y_hat, average="weighted")  # throws ill-defined error??
+# # print("Precision: " + str(precision))  # false positives: guessed true when false
+# # print("Recall: " + str(recall))  # false negatives: guessed true when false
 # print("-------------------------------------------------------------------------------------------")
 # print()
 # print()
@@ -289,10 +310,12 @@ from sklearn.neighbors import KNeighborsClassifier
 # fig = go.Figure(data=data, layout=layout)
 # py.offline.plot(fig)
 # time.sleep(0.75)
-
+#
+#
 # '''The below algorithm uses 9 datasets of bid/ask behavior (15,842 values)...
 #  ... to predict the 10th datasets 1,730 values
-#  ... generates 99.7% correct predictions'''
+#  ... generates 99.7% correct predictions
+#  ... only uses AA trading strategy'''
 # input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
 # session_name = "AI_predict Test "
 # input_y = []
@@ -352,6 +375,12 @@ from sklearn.neighbors import KNeighborsClassifier
 # print("Correct Predictions: " + str(correct_count))
 # print("Wrong Predictions: " + str(wrong_count))
 # print("Percentage of Right Predictions: " + str(percent_correct*100) + "%")
+# print("Train Data Score: " + str(knn.score(input_X_train, input_y_train)))
+# print("Test Data Score: " + str(knn.score(input_X_test, input_y_test)))
+# # precision = precision_score(input_y_test, y_hat, average="weighted")
+# # recall = recall_score(input_y_test, y_hat, average="weighted")
+# # print("Precision: " + str(precision))  # false positives: guessed true when false
+# # print("Recall: " + str(recall))  # false negatives: guessed true when false
 # print("-------------------------------------------------------------------------------------------")
 # print()
 # print()
@@ -393,11 +422,140 @@ from sklearn.neighbors import KNeighborsClassifier
 #                                       titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')))
 # fig = go.Figure(data=data, layout=layout)
 # py.offline.plot(fig)
+# time.sleep(0.75)
+#
+#
+# '''The below algorithm uses 5 datasets of containing time,trader,bid/ask,amount,strategy ...
+#  ... to predict the strategies used in the 6th dataset
+#  ... Strategy Index  0:AA, 1:GD, 2:PS, 3:ZIP, 4:ZIC
+#  ... generates predictions at about 88.86% accuracy'''
+# input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
+# session_name = "AI_strat Test "
+# input_y = []
+# input_x = []
+#
+# for i in range(5):
+#     input_file = pd.read_csv(input_path + session_name + str(i + 1) + "\\" + "Bid_Ask_History.csv", header=0, delimiter=',')
+#     input_values = input_file._get_numeric_data()
+#     input_X = input_values.as_matrix()
+#     for j in input_X:
+#         input_x.append(j)
+#     for k in range(len(input_X)):
+#         input_y.append(input_X[k][3])
+#
+# test_x = []
+# test_y = []
+# session = "AI_strat Test 6\\"
+# test_file = pd.read_csv(input_path + session + "Bid_Ask_History.csv", header=0, delimiter=',')
+# test_data = test_file._get_numeric_data()  # eliminates strings in dataframe
+# test_X = test_data.as_matrix()  # turns data into matrix
+# for i in test_X:  # turns matrix into list in order to change to pandas dataframe
+#     test_x.append(i)
+# for i in range(len(test_X)):  # appending just strategies into list
+#     test_y.append(test_X[i][3])
+#
+# input_X_train = pd.DataFrame(input_x)
+# print()
+# print("Example of Data Structures Used")
+# print("========================================================================")
+# print("input_X_train")
+# print(input_X_train)
+# print()
+# input_y_train = input_y
+# print("input_y_train")
+# print(input_y_train)
+# print()
+# input_X_test = pd.DataFrame(test_x)
+# print("input_X_test")
+# print(input_X_test)
+# print()
+# input_y_test = test_y
+# print("input_y_test")
+# print(input_y_test)
+# print()
+# print("=========================================================================")
+# print()
+# print()
+# knn = KNeighborsClassifier(n_neighbors=15)  # nearest neighbors is how the data is split into sections???
+# knn.fit(input_X_train, input_y_train)  # computer fits train data to 3-d plot???
+# y_hat = knn.predict(input_X_test)  # predicts based on how close value is to nearest neighbor???
+# print("Strategy Predictions with 6 datasets")
+# print("----------------------------------------------------------------------------------")
+# print("Size of Datasets: " + str(len(input_y)))
+# print()
+# print("Actual Values")
+# print(input_y_test)
+# print("Number of Values: " + str(len(input_y_test)))
+# print()
+# print("Predicted Values")
+# print(y_hat.tolist())
+# print("Number of Values: " + str(len(y_hat)))
+#
+# correct_count = 0
+# wrong_count = 0
+#
+# for i in range(len(y_hat)):
+#     if y_hat[i] == input_y_test[i]:
+#         correct_count = correct_count + 1
+#     else:
+#         wrong_count = wrong_count + 1
+#
+# print()
+# percent_correct = correct_count/len(y_hat)
+# print("Correct Predictions: " + str(correct_count))
+# print("Wrong Predictions: " + str(wrong_count))
+# print("Percentage of Right Predictions: " + str(percent_correct*100) + "%")
+# print("Train Data Score: " + str(knn.score(input_X_train, input_y_train)))  # how accurate the model is with train data
+# print("Test Data Score: " + str(knn.score(input_X_test, input_y_test)))  # how accurate the model is with test data
+# # precision = precision_score(input_y_test, y_hat, average="weighted")
+# # recall = recall_score(input_y_test, y_hat, average="weighted")
+# # print("Precision: " + str(precision))  # false positives: guessed true when false
+# # print("Recall: " + str(recall))  # false negatives: guessed false when true
+# print("-------------------------------------------------------------------------------------------")
+# print()
+# print()
+#
+# trace1 = go.Scatter(
+#             x=np.array(range(len(input_y_test))),
+#             y=np.array(input_y_test), name='Actual',
+#             mode='markers',
+#             line=dict(color='rgba(152, 0, 0, .8)', width=4),
+#             marker=dict(size=10, color='rgba(152, 0, 0, .8)'))
+#
+# trace2 = go.Scatter(
+#         x=np.array(range(len(y_hat))),
+#         y=np.array(y_hat), name='Predicted',
+#         mode='markers',
+#         line=dict(color='rgba(200, 150, 150, .9)', width=4),
+#         marker=dict(size=10, color='rgba(200, 150, 150, .9)'))
+# data = [trace1, trace2]
+# layout = go.Layout(plot_bgcolor='rgb(229,229,229)',
+#                            paper_bgcolor='rgb(255,255,255)',
+#                            title='Strategy Predictions [0:AA, 1:GD, 2:PS, 3:ZIP, 4:ZIC]',
+#                            xaxis=dict(title='Strategy Order',
+#                                       gridcolor='rgb(255,255,255)',
+#                                       showgrid=True,
+#                                       showline=False,
+#                                       showticklabels=True,
+#                                       tickcolor='rgb(127,127,127)',
+#                                       ticks='outside',
+#                                       zeroline=False,
+#                                       titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')),
+#                            yaxis=dict(title='Strategy Index',
+#                                       gridcolor='rgb(255,255,255)',
+#                                       showgrid=True,
+#                                       showline=False,
+#                                       showticklabels=True,
+#                                       tickcolor='rgb(127,127,127)',
+#                                       ticks='outside',
+#                                       zeroline=False,
+#                                       titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')))
+# fig = go.Figure(data=data, layout=layout)
+# py.offline.plot(fig)
 
-'''The below algorithm uses 5 datasets of containing time,trader,bid/ask,amount,strategy ...
- ... to predict the strategies used in the 6th dataset
- ... Strategy Index  0:AA, 1:GD, 2:PS, 3:ZIP, 4:ZIC
- ... generates predictions at about 88.86% accuracy'''
+'''The below algorithm uses 5 datasets of bid/ask behavior...
+ ... to predict the 6th datasets traders
+ ... uses multiple trading strategies'''
 input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
 session_name = "AI_strat Test "
 input_y = []
@@ -408,34 +566,45 @@ for i in range(5):
     input_values = input_file._get_numeric_data()
     input_X = input_values.as_matrix()
     for j in input_X:
-        input_x.append(j)
+        # input_x.append(j[1:3])  # trader, amt, strategy
+        # input_x.append(j)  # time, trader, amt, strategy
+        # input_x.append(j[2])  # amt
+        input_x.append(j[2:3])  # amt, strategy
     for k in range(len(input_X)):
-        input_y.append(input_X[k][3])
+        input_y.append(input_X[k][2])  # amt targets
+
 
 test_x = []
 test_y = []
 session = "AI_strat Test 6\\"
 test_file = pd.read_csv(input_path + session + "Bid_Ask_History.csv", header=0, delimiter=',')
+bid_ask_list = []
+for i in test_file.as_matrix():
+    bid_ask_list.append(i[2])
 test_data = test_file._get_numeric_data()
 test_X = test_data.as_matrix()
 for i in test_X:
-    test_x.append(i)
+    # test_x.append(i[1:3])  # trader, amt, strategy
+    # test_x.append(i)  # time, trader, amt, strategy
+    # test_x.append(i[2])  # amt
+    test_x.append(i[2:3])  # amt, strategy
 for i in range(len(test_X)):
-    test_y.append(test_X[i][3])
+    test_y.append(test_X[i][2])  # amt targets
 
 input_X_train = pd.DataFrame(input_x)
-#print(input_X_train)
 input_y_train = input_y
-#print(input_y_train)
 input_X_test = pd.DataFrame(test_x)
-#print()
-#print(input_X_test)
 input_y_test = test_y
-#print(input_y_test)
-knn = KNeighborsClassifier(n_neighbors=15)
+knn = KNeighborsClassifier(weights='distance')
 knn.fit(input_X_train, input_y_train)
 y_hat = knn.predict(input_X_test)
-print("Bid Ask Predictions with 9 datasets")
+prediction_history = []
+for i in range(len(y_hat)):
+    prediction_history.append({bid_ask_list[i]: y_hat[i]})
+
+print(bid_ask_list)
+print(prediction_history)  # TODO split into periods etc then build AI Trader
+print("Trader Predictions with 6 datasets")
 print("----------------------------------------------------------------------------------")
 print("Size of Datasets: " + str(len(input_y)))
 print()
@@ -461,28 +630,34 @@ percent_correct = correct_count/len(y_hat)
 print("Correct Predictions: " + str(correct_count))
 print("Wrong Predictions: " + str(wrong_count))
 print("Percentage of Right Predictions: " + str(percent_correct*100) + "%")
+print("Train Data Score: " + str(knn.score(input_X_train, input_y_train)))
+print("Test Data Score: " + str(knn.score(input_X_test, input_y_test)))
+# precision = precision_score(input_y_test, y_hat, average="weighted")
+# recall = recall_score(input_y_test, y_hat, average="weighted")
+# print("Precision: " + str(precision))  # false positives: guessed true when false
+# print("Recall: " + str(recall))  # false negatives: guessed true when false
 print("-------------------------------------------------------------------------------------------")
 print()
 print()
 
 trace1 = go.Scatter(
             x=np.array(range(len(input_y_test))),
-            y=np.array(input_y_test), name='Actual',
+            y=np.array(input_y_test), name='Actual Amount',
             mode='markers',
             line=dict(color='rgba(152, 0, 0, .8)', width=4),
             marker=dict(size=10, color='rgba(152, 0, 0, .8)'))
 
 trace2 = go.Scatter(
         x=np.array(range(len(y_hat))),
-        y=np.array(y_hat), name='Predicted',
+        y=np.array(y_hat), name='Predicted Amount',
         mode='markers',
         line=dict(color='rgba(200, 150, 150, .9)', width=4),
         marker=dict(size=10, color='rgba(200, 150, 150, .9)'))
 data = [trace1, trace2]
 layout = go.Layout(plot_bgcolor='rgb(229,229,229)',
                            paper_bgcolor='rgb(255,255,255)',
-                           title='Strategy Predictions [0:AA, 1:GD, 2:PS, 3:ZIP, 4:ZIC]',
-                           xaxis=dict(title='Strategy Order',
+                           title='Trader Predictions (6 datasets)',
+                           xaxis=dict(title='Order of Data (Start-->Finish)',
                                       gridcolor='rgb(255,255,255)',
                                       showgrid=True,
                                       showline=False,
@@ -491,7 +666,7 @@ layout = go.Layout(plot_bgcolor='rgb(229,229,229)',
                                       ticks='outside',
                                       zeroline=False,
                                       titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')),
-                           yaxis=dict(title='Strategy Index',
+                           yaxis=dict(title='Trader ID (22 traders, index start at 0) ',
                                       gridcolor='rgb(255,255,255)',
                                       showgrid=True,
                                       showline=False,
@@ -502,3 +677,4 @@ layout = go.Layout(plot_bgcolor='rgb(229,229,229)',
                                       titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')))
 fig = go.Figure(data=data, layout=layout)
 py.offline.plot(fig)
+time.sleep(0.75)
