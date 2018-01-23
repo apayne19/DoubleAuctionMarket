@@ -1,4 +1,4 @@
-from trader import Trader_Simple, Trader_ZIU, Trader_ZIC, Trader_Kaplan, Trader_PS, Trader_AA, Trader_GD, Trader_ZIP
+from trader import Trader_Simple, Trader_ZIU, Trader_ZIC, Trader_Kaplan, Trader_PS, Trader_AA, Trader_GD, Trader_ZIP, Trader_AI
 #import build_environment as env
 import spot_environment_model as env
 import double_auction_institution as ins
@@ -65,7 +65,7 @@ class SpotSystem(object):
                 if len(contracts) > length_old_contracts:  # if len(contracts)>0
                     length_old_contracts = len(contracts)
                     if self.display:  # if display still true
-                        print("--> Contract #" + str(num_contracts), "|", "Round #" + str(i), "|", contracts[len(contracts) - 1])
+                        print("--> Contract #" + str(num_contracts), "|", "Round #" + str(i), "|", contracts[len(contracts) - 1], "|", self.da.time_index())
                         # prints info for each trader
                         num_contracts = num_contracts + 1
         if self.display:

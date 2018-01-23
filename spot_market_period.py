@@ -1,4 +1,5 @@
 import spot_system as sys
+import AI_Testing as prd
 import random
 import csv
 import matplotlib.pyplot as plt
@@ -26,7 +27,7 @@ import math
 input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
 input_file = "TestVS"
 output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
-session_name = "AI_strat Test 6"
+session_name = "AI_trader Run 1"
 
 '''Below are global dictionaries that will contain information needed to execute several functions'''
 all_prices = []
@@ -38,6 +39,8 @@ eff = []
 periods_list = []
 act_surplus = []
 maxi_surplus = []
+period_number = None
+number_periods = None
 
 class SpotMarketPeriod(object):
 
@@ -45,7 +48,9 @@ class SpotMarketPeriod(object):
         self.display = True
         self.session_name = session_name
         self.period = 0
+        period_number = self.period
         self.num_periods = num_periods
+        number_periods = self.num_periods
         self.num_buyers = 11  # number of buyers
         self.num_sellers = 11  # number of sellers
         self.limits = (400, 0)  # ceiling and floor for bidding
@@ -54,6 +59,7 @@ class SpotMarketPeriod(object):
         self.traders = []
         self.trader_info = {}
         self.sys = sys.SpotSystem()  # calls SpotSystem() which prepares market and traders
+        self.prd = prd.SpotMarketPrediction()
 
     def init_spot_system(self, name, limits, rounds, input_path, input_file):
         self.sys.init_spot_system(name, limits, rounds, input_path, input_file)
@@ -353,6 +359,15 @@ class SpotMarketPeriod(object):
     def save_period(self, results):
         pass
 
+    def get_predictions(self):
+        self.prd.get_data()
+        self.prd.predict_market()
+
+    def update_period(self, k):
+        period = k
+        return period
+
+
 '''This program iterates through the number of rounds'''
 if __name__ == "__main__":
     num_periods = 5  # periods or trading days
@@ -376,17 +391,20 @@ if __name__ == "__main__":
     aa = "Trader_AA"  # aggressiveness trader based on Cliff and Vytelingum paper
     gd = "Trader_GD"  # GD trader based on Gjerstadt and Dickhaut paper
     zip = "Trader_ZIP"  # zero intelligence plus trader
+    ai = "Trader_AI"
     '''The lists below establish the number and order of traders and trading strategy'''
     # TODO create way to automate input of trader # and strategies
     # trader_names = [zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip]
     # trader_names = [gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
-    trader_names = [aa, aa, aa, aa, zip, zip, zip, zip, gd, gd, gd, gd, ps, ps, ps, ps, zic, zic, zic, zic, aa, aa]
+    trader_names = [aa, aa, aa, aa, zip, zip, zip, zip, gd, gd, gd, gd, ps, ps, ps, ps, zic, zic, zic, zic, aa, ai]
     # trader_names = [ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps]
     # trader_names = [zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic]
     header = session_name
     smp.init_spot_system(name, limits, rounds, input_path, input_file)
     rnd_traders = trader_names    # because shuffle shuffles the list in place, returns none
+    smp.get_predictions()
     for k in range(num_periods):  # iterates through number of periods or "trading days"
+        smp.update_period(k)
         periods_list.append(k)
         random.shuffle(rnd_traders)  # shuffles trader order per round
         # print(rnd_traders)  # prints list of trader strategy

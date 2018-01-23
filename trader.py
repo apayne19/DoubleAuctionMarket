@@ -1,5 +1,7 @@
 import random
 import math
+import AI_Testing as prd
+import spot_market_period as smp
 alphas = []
 class Trader_Simple(object):
     """ A class that makes a trader"""
@@ -1150,6 +1152,193 @@ class Trader_ZIP(object):
         self.prev_best_bid_q = lob_best_bid_q
         self.prev_best_ask_p = lob_best_ask_p
         self.prev_best_ask_q = lob_best_ask_q
+
+class Trader_AI(object):
+    """ A class that makes a trader"""
+
+    def __init__(self):
+        self.name = ""
+        self.type = ""
+        self.values = []
+        self.costs = []
+        self.prd = prd.SpotMarketPrediction()
+        self.prd0_bid = self.prd.predict_p0_bid
+        self.prd0_ask = self.prd.predict_p0_ask
+        self.prd1_bid = self.prd.predict_p1_bid
+        self.prd1_ask = self.prd.predict_p1_ask
+        self.prd2_bid = self.prd.predict_p2_bid
+        self.prd2_ask = self.prd.predict_p2_ask
+        self.prd3_bid = self.prd.predict_p3_bid
+        self.prd3_ask = self.prd.predict_p3_ask
+        self.prd4_bid = self.prd.predict_p4_bid
+        self.prd4_ask = self.prd.predict_p4_ask
+        import spot_market_period as smp
+        self.period_number = smp.period_number
+        self.number_periods = smp.number_periods
+        self.offer_attempt = 0
+
+    def offer(self, contracts, standing_bid, standing_ask):
+        num_contracts = 0
+        if self.type == "buyer":
+            for contract in contracts:
+                if contract[1] == self.name:  # second position is buyer_id
+                    num_contracts = num_contracts + 1
+            if self.period_number == 0:
+                if standing_bid:
+                    if standing_bid <= self.prd0_bid[self.offer_attempt]:
+                        bid = self.prd0_bid[self.offer_attempt]
+                        self.offer_attempt = self.offer_attempt + 1
+                        return ["B", self.name, bid]
+                    else:
+                        bid = self.prd0_bid[self.offer_attempt+1]
+                        self.offer.attempt = self.offer_attempt + 2
+                        return ["B", self.name, bid]
+                else:
+                    bid = self.prd0_bid[0]
+                    self.offer_attempt = self.offer_attempt + 1
+                    return["B", self.name, bid]
+
+            elif self.period_number == 1:
+                if standing_bid:
+                    if standing_bid <= self.prd0_bid[self.offer_attempt]:
+                        bid = self.prd0_bid[self.offer_attempt]
+                        self.offer_attempt = self.offer_attempt + 1
+                        return ["B", self.name, bid]
+                    else:
+                        bid = self.prd0_bid[self.offer_attempt+1]
+                        self.offer.attempt = self.offer_attempt + 2
+                        return ["B", self.name, bid]
+                else:
+                    bid = self.prd0_bid[0]
+                    self.offer_attempt = self.offer_attempt + 1
+                    return["B", self.name, bid]
+
+            elif self.period_number == 2:
+                if standing_bid:
+                    if standing_bid <= self.prd0_bid[self.offer_attempt]:
+                        bid = self.prd0_bid[self.offer_attempt]
+                        self.offer_attempt = self.offer_attempt + 1
+                        return ["B", self.name, bid]
+                    else:
+                        bid = self.prd0_bid[self.offer_attempt+1]
+                        self.offer.attempt = self.offer_attempt + 2
+                        return ["B", self.name, bid]
+                else:
+                    bid = self.prd0_bid[0]
+                    self.offer_attempt = self.offer_attempt + 1
+                    return["B", self.name, bid]
+
+            elif self.period_number == 3:
+                if standing_bid:
+                    if standing_bid <= self.prd0_bid[self.offer_attempt]:
+                        bid = self.prd0_bid[self.offer_attempt]
+                        self.offer_attempt = self.offer_attempt + 1
+                        return ["B", self.name, bid]
+                    else:
+                        bid = self.prd0_bid[self.offer_attempt+1]
+                        self.offer.attempt = self.offer_attempt + 2
+                        return ["B", self.name, bid]
+                else:
+                    bid = self.prd0_bid[0]
+                    self.offer_attempt = self.offer_attempt + 1
+                    return["B", self.name, bid]
+
+            elif self.period_number == 4:
+                if standing_bid:
+                    if standing_bid <= self.prd0_bid[self.offer_attempt]:
+                        bid = self.prd0_bid[self.offer_attempt]
+                        self.offer_attempt = self.offer_attempt + 1
+                        return ["B", self.name, bid]
+                    else:
+                        bid = self.prd0_bid[self.offer_attempt+1]
+                        self.offer.attempt = self.offer_attempt + 2
+                        return ["B", self.name, bid]
+                else:
+                    bid = self.prd0_bid[0]
+                    self.offer_attempt = self.offer_attempt + 1
+                    return["B", self.name, bid]
+
+
+
+        else:
+            for contract in contracts:
+                if contract[2] == self.name:  # third position is seller id
+                    num_contracts = num_contracts + 1
+            if self.period_number == 0:
+                if standing_ask:
+                    if standing_ask <= self.prd0_ask[self.offer_attempt]:
+                        ask = self.prd0_ask[self.offer_attempt]
+                        self.offer_attempt = self.offer_attempt + 1
+                        return ["S", self.name, ask]
+                    else:
+                        ask = self.prd0_ask[self.offer_attempt+1]
+                        self.offer.attempt = self.offer_attempt + 2
+                        return ["S", self.name, ask]
+                else:
+                    ask = self.prd0_ask[0]
+                    self.offer_attempt = self.offer_attempt + 1
+                    return["S", self.name, ask]
+
+            elif self.period_number == 1:
+                if standing_ask:
+                    if standing_ask <= self.prd0_ask[self.offer_attempt]:
+                        ask = self.prd0_ask[self.offer_attempt]
+                        self.offer_attempt = self.offer_attempt + 1
+                        return ["S", self.name, ask]
+                    else:
+                        ask = self.prd0_ask[self.offer_attempt+1]
+                        self.offer.attempt = self.offer_attempt + 2
+                        return ["S", self.name, ask]
+                else:
+                    ask = self.prd0_ask[0]
+                    self.offer_attempt = self.offer_attempt + 1
+                    return["S", self.name, ask]
+
+            elif self.period_number == 2:
+                if standing_ask:
+                    if standing_ask <= self.prd0_ask[self.offer_attempt]:
+                        ask = self.prd0_ask[self.offer_attempt]
+                        self.offer_attempt = self.offer_attempt + 1
+                        return ["S", self.name, ask]
+                    else:
+                        ask = self.prd0_ask[self.offer_attempt+1]
+                        self.offer.attempt = self.offer_attempt + 2
+                        return ["S", self.name, ask]
+                else:
+                    ask = self.prd0_ask[0]
+                    self.offer_attempt = self.offer_attempt + 1
+                    return["S", self.name, ask]
+
+            elif self.period_number == 3:
+                if standing_ask:
+                    if standing_ask <= self.prd0_ask[self.offer_attempt]:
+                        ask = self.prd0_ask[self.offer_attempt]
+                        self.offer_attempt = self.offer_attempt + 1
+                        return ["S", self.name, ask]
+                    else:
+                        ask = self.prd0_ask[self.offer_attempt+1]
+                        self.offer.attempt = self.offer_attempt + 2
+                        return ["S", self.name, ask]
+                else:
+                    ask = self.prd0_ask[0]
+                    self.offer_attempt = self.offer_attempt + 1
+                    return["S", self.name, ask]
+
+            elif self.period_number == 4:
+                if standing_ask:
+                    if standing_ask <= self.prd0_ask[self.offer_attempt]:
+                        ask = self.prd0_ask[self.offer_attempt]
+                        self.offer_attempt = self.offer_attempt + 1
+                        return ["S", self.name, ask]
+                    else:
+                        ask = self.prd0_ask[self.offer_attempt+1]
+                        self.offer.attempt = self.offer_attempt + 2
+                        return ["S", self.name, ask]
+                else:
+                    ask = self.prd0_ask[0]
+                    self.offer_attempt = self.offer_attempt + 1
+                    return["S", self.name, ask]
+
 
 if __name__ == "__main__":
     zi = ZeroIntelligenceTrader()
