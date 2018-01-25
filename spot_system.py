@@ -27,6 +27,15 @@ class SpotSystem(object):
         self.trader_info = {}  # dictionary of keys:values
         self.mkt = None  # function called from spot_environment_model
         self.da = None  # function called from double_auction_institution
+        self.current_period = 0  # ADDED
+        self.number_bids = 0  # ADDED
+        self.number_asks = 0  # ADDED
+        self.AA_earn = []
+        self.GD_earn = []
+        self.PS_earn = []  # ADDED: to hold strategy total avg earns
+        self.AI_earn = []
+        self.ZIP_earn = []
+        self.ZIC_earn = []
 
     def init_spot_system(self, name, limits, rounds, input_path, input_file):
         self.name = name
@@ -36,10 +45,12 @@ class SpotSystem(object):
         self.da = ins.Auction('da', self.limits[0], self.limits[1]) # instantiate auction
         self.load_market(input_path, input_file)  # loads market file from gui inputs
 
-    def init_traders(self, trader_names):
+    def init_traders(self, trader_names, period):
+        self.current_period = period
         self.trader_names = trader_names
         self.trader_info = self.prepare_traders(self.trader_names, self.mkt, self.limits)  # instantiate traders
         print(self.trader_info)
+        print(self.da.report_orders())
 
     def load_market(self, input_path, input_file):
         self.mkt.prepare_market(input_path, input_file)  # set and show market
@@ -53,7 +64,7 @@ class SpotSystem(object):
         if self.display:  # if display = true
             print()
             print("Auction Open")
-            #print(self.da.report_orders())  # prints list of orders per period (time, trader, bid/ask)
+            print(self.da.report_orders())  # prints list of orders per period (time, trader, bid/ask)
         length_old_contracts = 0
         temp_traders = self.traders
         for i in range(self.num_market_rounds):
@@ -68,11 +79,23 @@ class SpotSystem(object):
                         print("--> Contract #" + str(num_contracts), "|", "Round #" + str(i), "|", contracts[len(contracts) - 1], "|", self.da.time_index())
                         # prints info for each trader
                         num_contracts = num_contracts + 1
+
         if self.display:
             print()
 
     def trader_handler(self, trader):
-        offer = trader.offer(self.da.report_contracts(), self.da.report_standing()[0], self.da.report_standing()[1])
+        for order in self.da.report_orders():
+            if order[2] == 'bid':
+                self.number_bids = self.number_bids + 1
+            elif order[2] == 'ask':
+                self.number_asks = self.number_asks + 1
+            else:
+                self.number_bids = 0
+                self.number_asks = 0
+        print("#bids: " + str(self.number_bids))
+        print("#asks: " + str(self.number_asks))
+        offer = trader.offer(self.da.report_contracts(), self.da.report_standing()[0], self.da.report_standing()[1],
+                             self.current_period, self.number_bids, self.number_asks)  # added periods, # bids, # asks
         if len(offer) == 0:
             return
         if offer[0] == "B":  # identifies the bidders and bids
@@ -176,6 +199,20 @@ class SpotSystem(object):
                     strat_earn += self.trader_info[t_id]['earn']
             if count > 0:
                 avg_earn = int(strat_earn / count)
+                if k == 'Trader_AA':
+                    self.AA_earn.append(avg_earn)
+                elif k == 'Trader_GD':
+                    self.GD_earn.append(avg_earn)
+                elif k == 'Trader_PS':
+                    self.PS_earn.append(avg_earn)
+                elif k == 'Trader_AI':
+                    self.AI_earn.append(avg_earn)
+                elif k == 'Trader_ZIP':
+                    self.ZIP_earn.append(avg_earn)
+                elif k == 'Trader_ZIC':
+                    self.ZIC_earn.append(avg_earn)
+                else:
+                    print("Trader not listed!")
                 result_header.extend([k, avg_earn])
             if self.display:
                 # noinspection PyUnboundLocalVariable

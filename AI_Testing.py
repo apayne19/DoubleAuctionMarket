@@ -71,7 +71,7 @@ class SpotMarketPrediction(object):
         for i in range(len(test_X)):
             self.test_y.append(test_X[i][2])  # amt targets
 
-    def predict_market(self):
+    def predict_market(self):  # TODO condense back into two lists of bids asks
         self.input_X_train = pd.DataFrame(self.train_x)
         self.input_y_train = self.train_y
         self.input_X_test = pd.DataFrame(self.test_x)
@@ -125,6 +125,30 @@ class SpotMarketPrediction(object):
                 self.predict_p4_bid.append(self.predict_p4_all[0][i][1])
             else:
                 self.predict_p4_ask.append(self.predict_p4_all[0][i][1])
+
+    def give_trader_info(self, period_p, offer_type):
+        period_request = period_p
+        type_request = offer_type
+        if period_request == 0 and type_request == 'bid':
+            return self.predict_p0_bid
+        elif period_request == 0 and type_request == 'ask':
+            return self.predict_p0_ask
+        elif period_request == 1 and type_request == 'bid':
+            return self.predict_p1_bid
+        elif period_request == 1 and type_request == 'ask':
+            return self.predict_p1_ask
+        elif period_request == 2 and type_request == 'bid':
+            return self.predict_p2_bid
+        elif period_request == 2 and type_request == 'ask':
+            return self.predict_p2_ask
+        elif period_request == 3 and type_request == 'bid':
+            return self.predict_p3_bid
+        elif period_request == 3 and type_request == 'ask':
+            return self.predict_p3_ask
+        elif period_request == 4 and type_request == 'bid':
+            return self.predict_p4_bid
+        elif period_request == 4 and type_request == 'ask':
+            return self.predict_p4_ask
 
     def display_info(self):
         print("----------------------------------------------------------------------------------")

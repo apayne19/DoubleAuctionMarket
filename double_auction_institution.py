@@ -34,18 +34,19 @@ class Auction(object):
         return t
 
     def bid(self, player_id, amt, strategies):
-        trader_strategy = strategies[player_id]['strat']
-        if trader_strategy == 'Trader_AA':
-            self.strategy = 0
-        elif trader_strategy == 'Trader_GD':
-            self.strategy = 1
-        elif trader_strategy == 'Trader_PS':
-            self.strategy = 2
-        elif trader_strategy == 'Trader_ZIP':
-            self.strategy = 3
-        elif trader_strategy == 'Trader_ZIC':
-            self.strategy = 4
-        self.player_id = player_id.replace('t', '')
+        self.strategy = strategies[player_id]['strat']
+        # if trader_strategy == 'Trader_AA':
+        #     self.strategy = 0
+        # elif trader_strategy == 'Trader_GD':
+        #     self.strategy = 1
+        # elif trader_strategy == 'Trader_PS':     # just used in AI dataset building
+        #     self.strategy = 2                    # creates index of trader strategies
+        # elif trader_strategy == 'Trader_ZIP':
+        #     self.strategy = 3
+        # elif trader_strategy == 'Trader_ZIC':
+        #     self.strategy = 4
+        # self.player_id = player_id.replace('t', '')  # changes t0,t1, t2... to 0,1,2
+        self.player_id = player_id
         if self.board["is_open"]:
             self.board["orders"].append((self.time_index(), self.player_id, "bid", amt, self.strategy))
         else:
@@ -71,18 +72,19 @@ class Auction(object):
         return status
 
     def ask(self, player_id, amt, strategies):
-        trader_strategy = strategies[player_id]['strat']
-        if trader_strategy == 'Trader_AA':
-            self.strategy = 0
-        elif trader_strategy == 'Trader_GD':
-            self.strategy = 1
-        elif trader_strategy == 'Trader_PS':
-            self.strategy = 2
-        elif trader_strategy == 'Trader_ZIP':
-            self.strategy = 3
-        elif trader_strategy == 'Trader_ZIC':
-            self.strategy = 4
-        self.player_id = player_id.replace('t', '')
+        self.strategy = strategies[player_id]['strat']
+        # if trader_strategy == 'Trader_AA':
+        #     self.strategy = 0
+        # elif trader_strategy == 'Trader_GD':
+        #     self.strategy = 1
+        # elif trader_strategy == 'Trader_PS':      # just used for AI data set building
+        #     self.strategy = 2                     # creates index of trader strategies
+        # elif trader_strategy == 'Trader_ZIP':
+        #     self.strategy = 3
+        # elif trader_strategy == 'Trader_ZIC':
+        #     self.strategy = 4
+        # self.player_id = player_id.replace('t', '')
+        self.player_id = player_id
         if self.board["is_open"]:
             self.board["orders"].append((self.time_index(), self.player_id, "ask", amt, self.strategy))
         else:

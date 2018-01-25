@@ -39,8 +39,8 @@ eff = []
 periods_list = []
 act_surplus = []
 maxi_surplus = []
-period_number = None
-number_periods = None
+
+
 
 class SpotMarketPeriod(object):
 
@@ -48,9 +48,9 @@ class SpotMarketPeriod(object):
         self.display = True
         self.session_name = session_name
         self.period = 0
-        period_number = self.period
+
+        # self.period_number = None
         self.num_periods = num_periods
-        number_periods = self.num_periods
         self.num_buyers = 11  # number of buyers
         self.num_sellers = 11  # number of sellers
         self.limits = (400, 0)  # ceiling and floor for bidding
@@ -64,9 +64,10 @@ class SpotMarketPeriod(object):
     def init_spot_system(self, name, limits, rounds, input_path, input_file):
         self.sys.init_spot_system(name, limits, rounds, input_path, input_file)
 
-    def init_traders(self, trader_names):
+    def init_traders(self, trader_names, period_k):
         print(trader_names)
-        self.sys.init_traders(trader_names)
+        print(period_k)
+        self.sys.init_traders(trader_names, period_k)
 
     def run(self):
         self.sys.run()
@@ -359,13 +360,24 @@ class SpotMarketPeriod(object):
     def save_period(self, results):
         pass
 
-    def get_predictions(self):
-        self.prd.get_data()
-        self.prd.predict_market()
+    def total_avg_earns(self, trader):  # ADDED: function to call total avg earns from spot system
+        if trader == 'AA':
+            return sum(self.sys.AA_earn)/len(self.sys.AA_earn)
+        elif trader == 'GD':
+            return sum(self.sys.GD_earn)/len(self.sys.GD_earn)
+        elif trader == 'PS':
+            return sum(self.sys.PS_earn)/len(self.sys.PS_earn)
+        elif trader == 'AI':
+            return sum(self.sys.AI_earn)/len(self.sys.AI_earn)
+        elif trader == 'ZIP':
+            return sum(self.sys.ZIP_earn)/len(self.sys.ZIP_earn)
+        elif trader == 'ZIC':
+            return sum(self.sys.ZIC_earn)/len(self.sys.ZIC_earn)
+        else:
+            return "Trader not listed!"
 
-    def update_period(self, k):
-        period = k
-        return period
+
+
 
 
 '''This program iterates through the number of rounds'''
@@ -402,13 +414,13 @@ if __name__ == "__main__":
     header = session_name
     smp.init_spot_system(name, limits, rounds, input_path, input_file)
     rnd_traders = trader_names    # because shuffle shuffles the list in place, returns none
-    smp.get_predictions()
+    #smp.get_predictions()
     for k in range(num_periods):  # iterates through number of periods or "trading days"
-        smp.update_period(k)
+
         periods_list.append(k)
         random.shuffle(rnd_traders)  # shuffles trader order per round
         # print(rnd_traders)  # prints list of trader strategy
-        smp.init_traders(rnd_traders)
+        smp.init_traders(rnd_traders, k)
         print("**** Running Period {}".format(k))  # provides visual effect in editor
         smp.run_period(period, header)
         results = smp.eval()
@@ -419,28 +431,37 @@ if __name__ == "__main__":
         smp.get_contracts()  # gets transaction prices and period endpoints
         session_folder = output_path + session_name + "\\"  # establishes file path for session data folder
         smp.record_session_data(session_folder, k)  # records session data in excel csv
+
     print("Market Efficiencies:" + str(eff))  # print market efficiencies
     print("Avg. Efficiency:" + str(sum(eff)/num_periods))  # print avg efficiency
     print("Total Avg. Transaction Price:" + str(sum(avg_prices[1:])/(num_periods - 1)))
     print("Actual Surpluses:" + str(act_surplus))  # print actual surpluses
     print("Maximum Surpluses:" + str(maxi_surplus))  # print max surpluses
+    print()
+    print("Strategy Total Avg. Earnings")
+    print("Trader_AA: " + str(smp.total_avg_earns('AA')))   #
+    print("Trader_GD: " + str(smp.total_avg_earns('GD')))   #
+    print("Trader_PS: " + str(smp.total_avg_earns('PS')))   # ADDED: section to list total avg earns
+    print("Trader_AI: " + str(smp.total_avg_earns('AI')))   #
+    print("Trader_ZIP: " + str(smp.total_avg_earns('ZIP'))) #
+    print("Trader_ZIC: " + str(smp.total_avg_earns('ZIC'))) #
     '''time.sleep() is called several times below to allow data aggregation in graphing functions...
     ... if not used, graphing functions have inheritance issues'''
-    # smp.get_avg_trade_ratio()  # prints avg trade ratio for all periods
-    # time.sleep(0.75)  # program waits 0.75 seconds before continuing
-    # smp.graph_trader_eff()  # plots individual efficiency
-    # time.sleep(0.75)
-    # smp.graph_efficiency()  # plots period efficiency
-    # time.sleep(0.75)
-    # smp.get_endpoints()  # obtains endpoints of periods for graph
-    # time.sleep(0.75)
-    # smp.graph_contracts()  # graphs contract transactions and avg transaction per period
-    # time.sleep(0.75)
-    # smp.graph_surplus()  # graphs actual and max surplus
-    # time.sleep(0.75)
-    # smp.graph_alphas()  # graphs Smith's Alpha of convergence
-    # time.sleep(0.75)
-    # smp.graph_distribution()  # graphs normal distribution of trader efficiencies
+    smp.get_avg_trade_ratio()  # prints avg trade ratio for all periods
+    time.sleep(0.75)  # program waits 0.75 seconds before continuing
+    smp.graph_trader_eff()  # plots individual efficiency
+    time.sleep(0.75)
+    smp.graph_efficiency()  # plots period efficiency
+    time.sleep(0.75)
+    smp.get_endpoints()  # obtains endpoints of periods for graph
+    time.sleep(0.75)
+    smp.graph_contracts()  # graphs contract transactions and avg transaction per period
+    time.sleep(0.75)
+    smp.graph_surplus()  # graphs actual and max surplus
+    time.sleep(0.75)
+    smp.graph_alphas()  # graphs Smith's Alpha of convergence
+    time.sleep(0.75)
+    smp.graph_distribution()  # graphs normal distribution of trader efficiencies
     '''graphs will open in browser of your choosing...
     ... can download images of graphs by clicking camera icon in browser
     ... or can create a free online plotly account which allows you to save and edit graphs'''
