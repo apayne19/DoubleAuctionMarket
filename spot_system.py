@@ -37,13 +37,13 @@ class SpotSystem(object):
         self.ZIP_earn = []
         self.ZIC_earn = []
 
-    def init_spot_system(self, name, limits, rounds, input_path, input_file):
+    def init_spot_system(self, name, limits, rounds, input_path, input_file, output_path, session_name):
         self.name = name
         self.limits = limits
         self.num_market_rounds = rounds
         self.mkt = env.SpotEnvironmentModel()  # instantiate environment object
         self.da = ins.Auction('da', self.limits[0], self.limits[1]) # instantiate auction
-        self.load_market(input_path, input_file)  # loads market file from gui inputs
+        self.load_market(input_path, input_file, output_path, session_name)  # loads market file from gui inputs
 
     def init_traders(self, trader_names, period):
         self.current_period = period
@@ -52,8 +52,8 @@ class SpotSystem(object):
         print(self.trader_info)
         print(self.da.report_orders())
 
-    def load_market(self, input_path, input_file):
-        self.mkt.prepare_market(input_path, input_file)  # set and show market
+    def load_market(self, input_path, input_file, output_path, session_name):
+        self.mkt.prepare_market(input_path, input_file, output_path, session_name)  # set and show market
 
     def run(self):
         self.run_system()  # starts market by calling method below

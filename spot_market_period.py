@@ -27,7 +27,7 @@ import math
 input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
 input_file = "TestVS"
 output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
-session_name = "AA Run 1"
+session_name = "AI Run 7"
 
 '''Below are global dictionaries that will contain information needed to execute several functions'''
 all_prices = []
@@ -61,8 +61,8 @@ class SpotMarketPeriod(object):
         self.sys = sys.SpotSystem()  # calls SpotSystem() which prepares market and traders
         self.prd = prd.SpotMarketPrediction()
 
-    def init_spot_system(self, name, limits, rounds, input_path, input_file):
-        self.sys.init_spot_system(name, limits, rounds, input_path, input_file)
+    def init_spot_system(self, name, limits, rounds, input_path, input_file, output_path, session_name):
+        self.sys.init_spot_system(name, limits, rounds, input_path, input_file, output_path, session_name)
 
     def init_traders(self, trader_names, period_k):
         print(trader_names)
@@ -376,6 +376,22 @@ class SpotMarketPeriod(object):
         else:
             return "Trader not listed!"
 
+    def total_earns(self, trader):  # ADDED: function to call total avg earns from spot system
+        if trader == 'AA':
+            return sum(self.sys.AA_earn)
+        elif trader == 'GD':
+            return sum(self.sys.GD_earn)
+        elif trader == 'PS':
+            return sum(self.sys.PS_earn)
+        elif trader == 'AI':
+            return sum(self.sys.AI_earn)
+        elif trader == 'ZIP':
+            return sum(self.sys.ZIP_earn)
+        elif trader == 'ZIC':
+            return sum(self.sys.ZIC_earn)
+        else:
+            return "Trader not listed!"
+
 
 
 
@@ -409,13 +425,14 @@ if __name__ == "__main__":
     # trader_names = [zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip]
     # trader_names = [gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
     # trader_names = [aa, aa, aa, aa, zip, zip, zip, zip, gd, gd, gd, gd, ps, ps, ps, ps, zic, zic, zic, zic, zip, ai]
-    trader_names = [aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa]
+    trader_names = [aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, ai]
+    #trader_names = [aa, aa, aa, aa, aa, ai, aa, aa, aa, aa, aa, aa, ai, aa, aa, aa, aa, aa, aa, aa, aa, ai]
     # trader_names = [ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps]
     # trader_names = [zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic]
     header = session_name
-    smp.init_spot_system(name, limits, rounds, input_path, input_file)
+    smp.init_spot_system(name, limits, rounds, input_path, input_file, output_path, session_name)
     rnd_traders = trader_names    # because shuffle shuffles the list in place, returns none
-    smp.save_supply_demand()
+    #smp.save_supply_demand()
     #smp.get_predictions()
     for k in range(num_periods):  # iterates through number of periods or "trading days"
 
@@ -440,11 +457,15 @@ if __name__ == "__main__":
     print("Actual Surpluses:" + str(act_surplus))  # print actual surpluses
     print("Maximum Surpluses:" + str(maxi_surplus))  # print max surpluses
     print()
+    print("Strategy Total Earnings")
+    print("Trader_AA: " + str(smp.total_earns('AA')))
+    print("Trader_AI: " + str(smp.total_earns('AI')))
+    print()
     print("Strategy Total Avg. Earnings")
     print("Trader_AA: " + str(smp.total_avg_earns('AA')))   #
     # print("Trader_GD: " + str(smp.total_avg_earns('GD')))   #
     # print("Trader_PS: " + str(smp.total_avg_earns('PS')))   # ADDED: section to list total avg earns
-    # print("Trader_AI: " + str(smp.total_avg_earns('AI')))   #
+    print("Trader_AI: " + str(smp.total_avg_earns('AI')))   #
     # print("Trader_ZIP: " + str(smp.total_avg_earns('ZIP'))) #
     # print("Trader_ZIC: " + str(smp.total_avg_earns('ZIC'))) #
     '''time.sleep() is called several times below to allow data aggregation in graphing functions...
@@ -461,7 +482,7 @@ if __name__ == "__main__":
     time.sleep(0.75)
     # smp.graph_surplus()  # graphs actual and max surplus
     # time.sleep(0.75)
-    # smp.graph_alphas()  # graphs Smith's Alpha of convergence
+    smp.graph_alphas()  # graphs Smith's Alpha of convergence
     # time.sleep(0.75)
     # smp.graph_distribution()  # graphs normal distribution of trader efficiencies
     '''graphs will open in browser of your choosing...

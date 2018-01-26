@@ -10,9 +10,11 @@ from sklearn.preprocessing import MinMaxScaler
 class SpotMarketPrediction(object):
 
     def __init__(self):
+        # self.input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
+        # self.train_sessions = "AA Run "
         self.input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
-        self.train_sessions = "AI_strat Test "
-        self.test_session = "AI_strat Test 6\\"
+        self.session_name = "AI_predict Test "
+        self.test_session = "AI_predict Test 10\\"
         self.train_y = []
         self.train_x = []
         self.test_x = []
@@ -46,38 +48,69 @@ class SpotMarketPrediction(object):
         # self.predict_p4_ask = []
 
     def get_data(self):
-        for i in range(5):
-            train_file = pd.read_csv(self.input_path + self.train_sessions + str(i + 1) + "\\" + "Bid_Ask_History.csv", header=0,
-                                     delimiter=',')
-            train_values = train_file._get_numeric_data()
-            train_X = train_values.as_matrix()
-            for j in train_X:
-                # train_x.append(j[1:3])  # trader, amt, strategy
-                # train_x.append(j)  # time, trader, amt, strategy
-                # train_x.append(j[2])  # amt
-                self.train_x.append(j[2:3])  # amt, strategy
-            for k in range(len(train_X)):
-                self.train_y.append(train_X[k][2])  # amt targets
+        # for i in range(5):
+        #     train_file = pd.read_csv(self.input_path + self.train_sessions + str(i + 1) + "\\" + "Bid_Ask_History.csv", header=0,
+        #                              delimiter=',')
+        #     train_values = train_file._get_numeric_data()
+        #     train_X = train_values.as_matrix()
+        #
+        #     for j in train_X:
+        #         # train_x.append(j[1:3])  # trader, amt, strategy
+        #         # train_x.append(j)  # time, trader, amt, strategy
+        #         # train_x.append(j[2])  # amt
+        #         self.train_x.append(j)  # amt, strategy
+        #     # for k in range(len(train_X)):
+        #     #     self.train_y.append(train_X[k][2])  # amt targets
+        # print(self.train_x)
+        # print()
+        # test_file = pd.read_csv(self.input_path + self.test_session + "Bid_Ask_History.csv", header=0, delimiter=',')
+        # # for i in test_file.as_matrix():
+        # #     self.bid_ask_list.append(i[2])
+        # test_data = test_file._get_numeric_data()
+        # test_X = test_data.as_matrix()
+        # print(self.test_x)
+        # for i in range(len(test_X)):
+        #     self.test_y.append(test_X[i][2])  # amt targets
+        # for i in test_X:
+        #     # test_x.append(i[1:3])  # trader, amt, strategy
+        #     # test_x.append(i)  # time, trader, amt, strategy
+        #     # test_x.append(i[2])  # amt
+        #     self.test_x.append(i)  # amt, strategy
 
-        test_file = pd.read_csv(self.input_path + self.test_session + "Bid_Ask_History.csv", header=0, delimiter=',')
+        for i in range(9):
+            input_file = pd.read_csv(self.input_path + self.session_name + str(i + 1) + "\\" + "Bid_Ask_History.csv", header=None, delimiter=',')
+            input_values = input_file._get_numeric_data()
+            input_X = input_values.as_matrix()
+            for j in input_X:
+                self.train_x.append(j)
+            for k in range(len(input_X)):
+                self.train_y.append(input_X[k][1])
 
+
+        test_file = pd.read_csv(self.input_path + self.test_session + "Bid_Ask_History.csv", header=None, delimiter=',')
         for i in test_file.as_matrix():
             self.bid_ask_list.append(i[2])
         test_data = test_file._get_numeric_data()
         test_X = test_data.as_matrix()
         for i in test_X:
-            # test_x.append(i[1:3])  # trader, amt, strategy
-            # test_x.append(i)  # time, trader, amt, strategy
-            # test_x.append(i[2])  # amt
-            self.test_x.append(i[2:3])  # amt, strategy
+            self.test_x.append(i)
         for i in range(len(test_X)):
-            self.test_y.append(test_X[i][2])  # amt targets
+            self.test_y.append(test_X[i][1])
+
+
 
     def predict_market(self):  # TODO condense back into two lists of bids asks
         self.input_X_train = pd.DataFrame(self.train_x)
         self.input_y_train = self.train_y
         self.input_X_test = pd.DataFrame(self.test_x)
         self.input_y_test = self.test_y
+        # print(self.input_X_train)
+        # print()
+        # print(self.input_y_train)
+        # print()
+        # print(self.input_X_test)
+        # print()
+        # print(self.input_y_test)
         self.knn = KNeighborsClassifier(weights='distance')
         self.knn.fit(self.input_X_train, self.input_y_train)
         self.y_hat = self.knn.predict(self.input_X_test)
@@ -92,6 +125,8 @@ class SpotMarketPrediction(object):
                 self.predicted_asks.append(self.prediction_history[i][1])
             else:
                 print("ERROR: predictions for given offer type DNE!")
+        # print()
+        # print(self.prediction_history)
 
         # if len(self.prediction_history)/5 == int:
         #     self.period_splits = len(self.prediction_history)/5
@@ -144,6 +179,11 @@ class SpotMarketPrediction(object):
             return self.predicted_asks
         else:
             print("ERROR: given offer type DNE!")
+        # print()
+        # print(self.predicted_bids)
+        # print()
+        # print(self.predicted_asks)
+
     # def give_trader_info(self, period_p, offer_type):
     #     period_request = period_p
     #     type_request = offer_type

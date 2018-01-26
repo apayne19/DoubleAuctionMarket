@@ -95,7 +95,7 @@ class BuildMarketEnv(object):
                 print(" " * 5 + "{:^3}   {:^3}  |".format(unit[0], unit[1]))
         print("")
 
-    def plot_supply_demand(self, file_path, session):
+    def plot_supply_demand(self):
         """
         First define supply and demand curves
         """
@@ -128,7 +128,8 @@ class BuildMarketEnv(object):
         plt.title('Supply and Demand')  # add the title
         plt.xlabel('Units')  # add the x axis label
         plt.ylabel('$')  # add the y axis label
-        plt.savefig(file_path + session + "\\" + "Supply Demand Graph.png")  # display the plot
+        #plt.show(block=False)
+
 
     def calc_equilibrium(self):
         # make demand values

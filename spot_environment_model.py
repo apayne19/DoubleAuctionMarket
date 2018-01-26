@@ -341,7 +341,7 @@ class SpotEnvironmentModel(object):
 
         return dunits, sunits, munits, demand_values, supply_costs, eq_price_high, eq_price_low
 
-    def plot_supply_demand(self):
+    def plot_supply_demand(self, output_path, session_name):
         """First define supply and demand curves"""
         # make dunits = list of deman units, sunits = list of supply units
         dunits = [units for units in range(len(self.env["demand"]) + 2)]
@@ -371,8 +371,8 @@ class SpotEnvironmentModel(object):
         plt.title('Supply and Demand')  # add the title
         plt.xlabel('Units')  # add the x axis label
         plt.ylabel('$')  # add the y axis label
-        plt.show()  # display the plot
-        pass
+        plt.savefig(output_path + session_name + "\\" + "Supply Demand.png")  # display the plot
+
 
     def calc_equilibrium(self):
         # make demand values
@@ -549,9 +549,9 @@ class SpotEnvironmentModel(object):
         except OSError as err:
             print("File {} does not exist".format(path))
 
-    def prepare_market(self, input_path, input_file):
+    def prepare_market(self, input_path, input_file, output_path, session_name):
         self.load_file(input_path + input_file + ".csv")
-        self.plot_supply_demand()
+        self.plot_supply_demand(output_path, session_name)
         self.show_participants()
         self.show_equilibrium()
 

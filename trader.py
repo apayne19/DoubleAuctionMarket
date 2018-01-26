@@ -1203,26 +1203,53 @@ class Trader_AI(object):
                 return []  # You can't bid anymore
             cur_value = self.values[num_contracts]  # this is the current value working on
             if standing_bid:
-                for i in range(len(self.market_bids)):
-                    if standing_bid/self.market_bids[i] >= 0.95 and standing_bid/self.market_bids[i] < 1.00:
-                        #if self.market_bids[i] <= cur_value:
-                        bid = self.market_bids[i]
-                        return ["B", self.name, bid]
-
-                    elif standing_bid/self.market_bids[i] >= 0.90 and standing_bid/self.market_bids[i] < 1.00:
-                        #if self.market_bids[i] <= cur_value:
-                        bid = self.market_bids[i]
-                        return ["B", self.name, bid]
-
+                # for i in range(len(self.market_bids)):
+                #     if standing_bid/self.market_bids[i] >= 0.95 and standing_bid/self.market_bids[i] < 1.00:
+                #         if self.market_bids[i] <= cur_value:
+                #             bid = self.market_bids[i]
+                #             return ["B", self.name, bid]
+                #         return []
+                #
+                #     elif standing_bid/self.market_bids[i] >= 0.90 and standing_bid/self.market_bids[i] < 1.00:
+                #         if self.market_bids[i] <= cur_value:
+                #             bid = self.market_bids[i]
+                #             return ["B", self.name, bid]
+                #         else:
+                #             return []
+                #
+                #     else:
+                #         pass
+                # return []
+                if standing_bid < self.market_bids[self.current_number_bids]:
+                    if self.market_bids[self.current_number_bids] <= cur_value:
+                                bid = self.market_bids[self.current_number_bids]
+                                return ["B", self.name, bid]
                     else:
-                        pass
-                return []
+                        return []
+
+                elif standing_bid == self.market_bids[self.current_number_bids]:
+                    if self.market_bids[self.current_number_bids] + 1 <= cur_value:
+                        bid = self.market_bids[self.current_number_bids] + 1
+                        return ["B", self.name, bid]
+                    else:
+                        return []
+
+                elif self.market_bids[self.current_number_bids] < standing_bid < self.market_bids[self.current_number_bids + 1]:
+                    if self.market_bids[self.current_number_bids + 1] <= cur_value:
+                        bid = self.market_bids[self.current_number_bids + 1]
+                        return ["B", self.name, bid]
+                    else:
+                        return []
+
+                else:
+                    return []
 
             else:
-                #if self.market_bids[0] <= cur_value:
-                bid = self.market_bids[0]
-                return["B", self.name, bid]
-
+                if self.market_bids[0] <= cur_value:
+                    bid = self.market_bids[0]
+                    return["B", self.name, bid]
+                else:
+                    return []
 
         else:
             for contract in contracts:
@@ -1232,25 +1259,54 @@ class Trader_AI(object):
                 return [] # You can't ask anymore
             cur_cost = self.costs[num_contracts]
             if standing_ask:
-                for i in range(len(self.market_asks)):
-                    if self.market_asks[i]/standing_ask >= 0.95 and self.market_asks[i]/standing_ask < 1.0:
-                        #if self.market_asks[i] >= cur_cost:
-                        ask = self.market_asks[i]
+                # for i in range(len(self.market_asks)):
+                #     if self.market_asks[i]/standing_ask >= 0.95 and self.market_asks[i]/standing_ask < 1.0:
+                #         if self.market_asks[i] >= cur_cost:
+                #             ask = self.market_asks[i]
+                #             return ["S", self.name, ask]
+                #         else:
+                #             return []
+                #
+                #     elif self.market_asks[i]/standing_ask >= 0.90 and self.market_asks[i]/standing_ask < 1.0:
+                #         if self.market_asks[i] >= cur_cost:
+                #             ask = self.market_asks[i]
+                #             return ["S", self.name, ask]
+                #         else:
+                #             return []
+                #
+                #     else:
+                #         pass
+                # return []
+                if standing_ask > self.market_asks[self.current_number_asks]:
+                    if self.market_asks[self.current_number_asks] >= cur_cost:
+                        ask = self.market_asks[self.current_number_asks]
                         return ["S", self.name, ask]
-
-                    elif self.market_asks[i]/standing_ask >= 0.90 and self.market_asks[i]/standing_ask < 1.0:
-                        #if self.market_asks[i] >= cur_cost:
-                        ask = self.market_asks[i]
-                        return ["S", self.name, ask]
-
                     else:
-                        pass
-                return []
+                        return []
+
+                elif standing_ask == self.market_asks[self.current_number_asks]:
+                    if self.market_asks[self.current_number_asks] + 1 >= cur_cost:
+                        ask = self.market_asks[self.current_number_asks] + 1
+                        return ["S", self.name, ask]
+                    else:
+                        return []
+
+                elif self.market_asks[self.current_number_asks + 1] < standing_ask < self.market_asks[self.current_number_asks]:
+                    if self.market_asks[self.current_number_asks + 1] >= cur_cost:
+                        ask = self.market_asks[self.current_number_asks + 1]
+                        return ["S", self.name, ask]
+                    else:
+                        return []
+
+                else:
+                    return []
 
             else:
-                #if self.market_asks[0] >= cur_cost:
-                ask = self.market_asks[0]
-                return["S", self.name, ask]
+                if self.market_asks[0] >= cur_cost:
+                    ask = self.market_asks[0]
+                    return["S", self.name, ask]
+                else:
+                    return []
 
 
 if __name__ == "__main__":
