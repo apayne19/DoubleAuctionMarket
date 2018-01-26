@@ -27,21 +27,23 @@ class SpotMarketPrediction(object):
         self.knn = None
         self.period_splits = None
         self.indices = []
-        self.predict_p0_all = []
-        self.predict_p0_bid = []
-        self.predict_p0_ask = []
-        self.predict_p1_all = []
-        self.predict_p1_bid = []
-        self.predict_p1_ask = []
-        self.predict_p2_all = []
-        self.predict_p2_bid = []
-        self.predict_p2_ask = []
-        self.predict_p3_all = []
-        self.predict_p3_bid = []
-        self.predict_p3_ask = []
-        self.predict_p4_all = []
-        self.predict_p4_bid = []
-        self.predict_p4_ask = []
+        self.predicted_bids = []
+        self.predicted_asks = []
+        # self.predict_p0_all = []
+        # self.predict_p0_bid = []
+        # self.predict_p0_ask = []
+        # self.predict_p1_all = []
+        # self.predict_p1_bid = []
+        # self.predict_p1_ask = []
+        # self.predict_p2_all = []
+        # self.predict_p2_bid = []
+        # self.predict_p2_ask = []
+        # self.predict_p3_all = []
+        # self.predict_p3_bid = []
+        # self.predict_p3_ask = []
+        # self.predict_p4_all = []
+        # self.predict_p4_bid = []
+        # self.predict_p4_ask = []
 
     def get_data(self):
         for i in range(5):
@@ -83,72 +85,88 @@ class SpotMarketPrediction(object):
         for i in range(len(self.y_hat)):
             self.prediction_history.append([self.bid_ask_list[i], self.y_hat[i]])
 
-        if len(self.prediction_history)/5 == int:
-            self.period_splits = len(self.prediction_history)/5
-        else:
-            self.period_splits = round(len(self.prediction_history)/5, 0)
-
-        for i in range(6):
-            self.indices.append(int(self.period_splits*i))
-
-        self.predict_p0_all.append(self.prediction_history[self.indices[0]:self.indices[1]])
-        for i in range(len(self.predict_p0_all[0])):
-            if self.predict_p0_all[0][i][0] == 'bid':
-                self.predict_p0_bid.append(self.predict_p0_all[0][i][1])
+        for i in range(len(self.prediction_history)):
+            if self.prediction_history[i][0] == 'bid':
+                self.predicted_bids.append(self.prediction_history[i][1])
+            elif self.prediction_history[i][0] == 'ask':
+                self.predicted_asks.append(self.prediction_history[i][1])
             else:
-                self.predict_p0_ask.append(self.predict_p0_all[0][i][1])
+                print("ERROR: predictions for given offer type DNE!")
 
-        self.predict_p1_all.append(self.prediction_history[self.indices[1]:self.indices[2]])
-        for i in range(len(self.predict_p1_all[0])):
-            if self.predict_p1_all[0][i][0] == 'bid':
-                self.predict_p1_bid.append(self.predict_p1_all[0][i][1])
-            else:
-                self.predict_p1_ask.append(self.predict_p1_all[0][i][1])
+        # if len(self.prediction_history)/5 == int:
+        #     self.period_splits = len(self.prediction_history)/5
+        # else:
+        #     self.period_splits = round(len(self.prediction_history)/5, 0)
+        #
+        # for i in range(6):
+        #     self.indices.append(int(self.period_splits*i))
+        #
+        # self.predict_p0_all.append(self.prediction_history[self.indices[0]:self.indices[1]])
+        # for i in range(len(self.predict_p0_all[0])):
+        #     if self.predict_p0_all[0][i][0] == 'bid':
+        #         self.predict_p0_bid.append(self.predict_p0_all[0][i][1])
+        #     else:
+        #         self.predict_p0_ask.append(self.predict_p0_all[0][i][1])
+        #
+        # self.predict_p1_all.append(self.prediction_history[self.indices[1]:self.indices[2]])
+        # for i in range(len(self.predict_p1_all[0])):
+        #     if self.predict_p1_all[0][i][0] == 'bid':
+        #         self.predict_p1_bid.append(self.predict_p1_all[0][i][1])
+        #     else:
+        #         self.predict_p1_ask.append(self.predict_p1_all[0][i][1])
+        #
+        # self.predict_p2_all.append(self.prediction_history[self.indices[2]:self.indices[3]])
+        # for i in range(len(self.predict_p2_all[0])):
+        #     if self.predict_p2_all[0][i][0] == 'bid':
+        #         self.predict_p2_bid.append(self.predict_p2_all[0][i][1])
+        #     else:
+        #         self.predict_p2_ask.append(self.predict_p2_all[0][i][1])
+        #
+        # self.predict_p3_all.append(self.prediction_history[self.indices[3]:self.indices[4]])
+        # for i in range(len(self.predict_p3_all[0])):
+        #     if self.predict_p3_all[0][i][0] == 'bid':
+        #         self.predict_p3_bid.append(self.predict_p3_all[0][i][1])
+        #     else:
+        #         self.predict_p3_ask.append(self.predict_p3_all[0][i][1])
+        #
+        # self.predict_p4_all.append(self.prediction_history[self.indices[4]:self.indices[5]])
+        # for i in range(len(self.predict_p4_all[0])):
+        #     if self.predict_p4_all[0][i][0] == 'bid':
+        #         self.predict_p4_bid.append(self.predict_p4_all[0][i][1])
+        #     else:
+        #         self.predict_p4_ask.append(self.predict_p4_all[0][i][1])
 
-        self.predict_p2_all.append(self.prediction_history[self.indices[2]:self.indices[3]])
-        for i in range(len(self.predict_p2_all[0])):
-            if self.predict_p2_all[0][i][0] == 'bid':
-                self.predict_p2_bid.append(self.predict_p2_all[0][i][1])
-            else:
-                self.predict_p2_ask.append(self.predict_p2_all[0][i][1])
-
-        self.predict_p3_all.append(self.prediction_history[self.indices[3]:self.indices[4]])
-        for i in range(len(self.predict_p3_all[0])):
-            if self.predict_p3_all[0][i][0] == 'bid':
-                self.predict_p3_bid.append(self.predict_p3_all[0][i][1])
-            else:
-                self.predict_p3_ask.append(self.predict_p3_all[0][i][1])
-
-        self.predict_p4_all.append(self.prediction_history[self.indices[4]:self.indices[5]])
-        for i in range(len(self.predict_p4_all[0])):
-            if self.predict_p4_all[0][i][0] == 'bid':
-                self.predict_p4_bid.append(self.predict_p4_all[0][i][1])
-            else:
-                self.predict_p4_ask.append(self.predict_p4_all[0][i][1])
-
-    def give_trader_info(self, period_p, offer_type):
-        period_request = period_p
+    def give_trader_info(self, offer_type):
         type_request = offer_type
-        if period_request == 0 and type_request == 'bid':
-            return self.predict_p0_bid
-        elif period_request == 0 and type_request == 'ask':
-            return self.predict_p0_ask
-        elif period_request == 1 and type_request == 'bid':
-            return self.predict_p1_bid
-        elif period_request == 1 and type_request == 'ask':
-            return self.predict_p1_ask
-        elif period_request == 2 and type_request == 'bid':
-            return self.predict_p2_bid
-        elif period_request == 2 and type_request == 'ask':
-            return self.predict_p2_ask
-        elif period_request == 3 and type_request == 'bid':
-            return self.predict_p3_bid
-        elif period_request == 3 and type_request == 'ask':
-            return self.predict_p3_ask
-        elif period_request == 4 and type_request == 'bid':
-            return self.predict_p4_bid
-        elif period_request == 4 and type_request == 'ask':
-            return self.predict_p4_ask
+        if type_request == 'bid':
+            return self.predicted_bids
+        elif type_request == 'ask':
+            return self.predicted_asks
+        else:
+            print("ERROR: given offer type DNE!")
+    # def give_trader_info(self, period_p, offer_type):
+    #     period_request = period_p
+    #     type_request = offer_type
+    #     if period_request == 0 and type_request == 'bid':
+    #         return self.predict_p0_bid
+    #     elif period_request == 0 and type_request == 'ask':
+    #         return self.predict_p0_ask
+    #     elif period_request == 1 and type_request == 'bid':
+    #         return self.predict_p1_bid
+    #     elif period_request == 1 and type_request == 'ask':
+    #         return self.predict_p1_ask
+    #     elif period_request == 2 and type_request == 'bid':
+    #         return self.predict_p2_bid
+    #     elif period_request == 2 and type_request == 'ask':
+    #         return self.predict_p2_ask
+    #     elif period_request == 3 and type_request == 'bid':
+    #         return self.predict_p3_bid
+    #     elif period_request == 3 and type_request == 'ask':
+    #         return self.predict_p3_ask
+    #     elif period_request == 4 and type_request == 'bid':
+    #         return self.predict_p4_bid
+    #     elif period_request == 4 and type_request == 'ask':
+    #         return self.predict_p4_ask
 
     def display_info(self):
         print("----------------------------------------------------------------------------------")
@@ -187,30 +205,36 @@ class SpotMarketPrediction(object):
         # print("Precision: " + str(precision))  # false positives: guessed true when false
         # print("Recall: " + str(recall))  # false negatives: guessed true when false
         print("-------------------------------------------------------------------------------------------")
-        print("Period 1 Predictions")
-        print(self.predict_p0_all)
-        print(self.predict_p0_bid)
-        print(self.predict_p0_ask)
+        print("Market Bid Predictions")
+        print(self.predicted_bids)
+        print(len(self.predicted_bids))
         print()
-        print("Period 2 Predictions")
-        print(self.predict_p1_all)
-        print(self.predict_p1_bid)
-        print(self.predict_p1_ask)
-        print()
-        print("Period 3 Predictions")
-        print(self.predict_p2_all)
-        print(self.predict_p2_bid)
-        print(self.predict_p2_ask)
-        print()
-        print("Period 4 Predictions")
-        print(self.predict_p3_all)
-        print(self.predict_p3_bid)
-        print(self.predict_p3_ask)
-        print()
-        print("Period 5 Predictions")
-        print(self.predict_p4_all)
-        print(self.predict_p4_bid)
-        print(self.predict_p4_ask)
+        print("Market Ask Predictions")
+        print(self.predicted_asks)
+        print(len(self.predicted_asks))
+        # print(self.predict_p0_all)
+        # print(self.predict_p0_bid)
+        # print(self.predict_p0_ask)
+        # print()
+        # print("Period 2 Predictions")
+        # print(self.predict_p1_all)
+        # print(self.predict_p1_bid)
+        # print(self.predict_p1_ask)
+        # print()
+        # print("Period 3 Predictions")
+        # print(self.predict_p2_all)
+        # print(self.predict_p2_bid)
+        # print(self.predict_p2_ask)
+        # print()
+        # print("Period 4 Predictions")
+        # print(self.predict_p3_all)
+        # print(self.predict_p3_bid)
+        # print(self.predict_p3_ask)
+        # print()
+        # print("Period 5 Predictions")
+        # print(self.predict_p4_all)
+        # print(self.predict_p4_bid)
+        # print(self.predict_p4_ask)
 
     def graph_predictions(self):
         trace1 = go.Scatter(

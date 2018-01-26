@@ -27,7 +27,7 @@ import math
 input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
 input_file = "TestVS"
 output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
-session_name = "AI_trader Run 1"
+session_name = "AA Run 1"
 
 '''Below are global dictionaries that will contain information needed to execute several functions'''
 all_prices = []
@@ -398,7 +398,7 @@ if __name__ == "__main__":
     zic = "Trader_ZIC"  # zero intelligence constrained
     ziu = "Trader_ZIU"  # zero intelligence unconstrained trader.. not used
     kp = "Trader_Kaplan"  # sniping trader based on Santa Fe paper
-    si = "Trader_Simple"  # simple trader.. not used
+    si = "Trader_Shaver"  # simple trader.. not used
     ps = "Trader_PS"  # PS trader based on Priest and Tol paper
     aa = "Trader_AA"  # aggressiveness trader based on Cliff and Vytelingum paper
     gd = "Trader_GD"  # GD trader based on Gjerstadt and Dickhaut paper
@@ -408,12 +408,14 @@ if __name__ == "__main__":
     # TODO create way to automate input of trader # and strategies
     # trader_names = [zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip]
     # trader_names = [gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
-    trader_names = [aa, aa, aa, aa, zip, zip, zip, zip, gd, gd, gd, gd, ps, ps, ps, ps, zic, zic, zic, zic, aa, ai]
+    # trader_names = [aa, aa, aa, aa, zip, zip, zip, zip, gd, gd, gd, gd, ps, ps, ps, ps, zic, zic, zic, zic, zip, ai]
+    trader_names = [aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa]
     # trader_names = [ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps]
     # trader_names = [zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic, zic]
     header = session_name
     smp.init_spot_system(name, limits, rounds, input_path, input_file)
     rnd_traders = trader_names    # because shuffle shuffles the list in place, returns none
+    smp.save_supply_demand()
     #smp.get_predictions()
     for k in range(num_periods):  # iterates through number of periods or "trading days"
 
@@ -440,28 +442,28 @@ if __name__ == "__main__":
     print()
     print("Strategy Total Avg. Earnings")
     print("Trader_AA: " + str(smp.total_avg_earns('AA')))   #
-    print("Trader_GD: " + str(smp.total_avg_earns('GD')))   #
-    print("Trader_PS: " + str(smp.total_avg_earns('PS')))   # ADDED: section to list total avg earns
-    print("Trader_AI: " + str(smp.total_avg_earns('AI')))   #
-    print("Trader_ZIP: " + str(smp.total_avg_earns('ZIP'))) #
-    print("Trader_ZIC: " + str(smp.total_avg_earns('ZIC'))) #
+    # print("Trader_GD: " + str(smp.total_avg_earns('GD')))   #
+    # print("Trader_PS: " + str(smp.total_avg_earns('PS')))   # ADDED: section to list total avg earns
+    # print("Trader_AI: " + str(smp.total_avg_earns('AI')))   #
+    # print("Trader_ZIP: " + str(smp.total_avg_earns('ZIP'))) #
+    # print("Trader_ZIC: " + str(smp.total_avg_earns('ZIC'))) #
     '''time.sleep() is called several times below to allow data aggregation in graphing functions...
     ... if not used, graphing functions have inheritance issues'''
     smp.get_avg_trade_ratio()  # prints avg trade ratio for all periods
     time.sleep(0.75)  # program waits 0.75 seconds before continuing
-    smp.graph_trader_eff()  # plots individual efficiency
-    time.sleep(0.75)
-    smp.graph_efficiency()  # plots period efficiency
-    time.sleep(0.75)
+    # smp.graph_trader_eff()  # plots individual efficiency
+    # time.sleep(0.75)
+    # smp.graph_efficiency()  # plots period efficiency
+    # time.sleep(0.75)
     smp.get_endpoints()  # obtains endpoints of periods for graph
     time.sleep(0.75)
     smp.graph_contracts()  # graphs contract transactions and avg transaction per period
     time.sleep(0.75)
-    smp.graph_surplus()  # graphs actual and max surplus
-    time.sleep(0.75)
-    smp.graph_alphas()  # graphs Smith's Alpha of convergence
-    time.sleep(0.75)
-    smp.graph_distribution()  # graphs normal distribution of trader efficiencies
+    # smp.graph_surplus()  # graphs actual and max surplus
+    # time.sleep(0.75)
+    # smp.graph_alphas()  # graphs Smith's Alpha of convergence
+    # time.sleep(0.75)
+    # smp.graph_distribution()  # graphs normal distribution of trader efficiencies
     '''graphs will open in browser of your choosing...
     ... can download images of graphs by clicking camera icon in browser
     ... or can create a free online plotly account which allows you to save and edit graphs'''

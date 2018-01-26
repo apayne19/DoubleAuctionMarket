@@ -1,4 +1,4 @@
-from trader import Trader_Simple, Trader_ZIU, Trader_ZIC, Trader_Kaplan, Trader_PS, Trader_AA, Trader_GD, Trader_ZIP, Trader_AI
+from trader import Trader_Shaver, Trader_ZIU, Trader_ZIC, Trader_Kaplan, Trader_PS, Trader_AA, Trader_GD, Trader_ZIP, Trader_AI
 #import build_environment as env
 import spot_environment_model as env
 import double_auction_institution as ins
@@ -70,6 +70,8 @@ class SpotSystem(object):
         for i in range(self.num_market_rounds):
             random.shuffle(temp_traders)  # generates random order of traders each round
             for trader in temp_traders:
+                self.number_bids = 0
+                self.number_asks = 0
                 self.trader_handler(trader)
                 print("Standing Bid, Standing Ask:" + str(self.da.report_standing()))  # prints bid,ask in real time
                 contracts = self.da.report_contracts()  # list of contracts as they happen
@@ -77,6 +79,8 @@ class SpotSystem(object):
                     length_old_contracts = len(contracts)
                     if self.display:  # if display still true
                         print("--> Contract #" + str(num_contracts), "|", "Round #" + str(i), "|", contracts[len(contracts) - 1], "|", self.da.time_index())
+                        print("#bids: " + str(self.number_bids))
+                        print("#asks: " + str(self.number_asks))
                         # prints info for each trader
                         num_contracts = num_contracts + 1
 
@@ -89,11 +93,8 @@ class SpotSystem(object):
                 self.number_bids = self.number_bids + 1
             elif order[2] == 'ask':
                 self.number_asks = self.number_asks + 1
-            else:
-                self.number_bids = 0
-                self.number_asks = 0
-        print("#bids: " + str(self.number_bids))
-        print("#asks: " + str(self.number_asks))
+
+
         offer = trader.offer(self.da.report_contracts(), self.da.report_standing()[0], self.da.report_standing()[1],
                              self.current_period, self.number_bids, self.number_asks)  # added periods, # bids, # asks
         if len(offer) == 0:
@@ -169,6 +170,8 @@ class SpotSystem(object):
             print("actual surplus = {}, maximum surplus = {}.".format(actual_surplus, maximum_surplus))
             print("market efficiency = {} percent.".format(efficiency))
             print("trade ratio = {}.".format(trade_ratio))
+            # print("#bids: " + str(self.number_bids))
+            # print("#asks: " + str(self.number_asks))
 
         for k in range(len(self.traders)):
             t_id = "t" + str(k)

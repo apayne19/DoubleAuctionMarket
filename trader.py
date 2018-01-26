@@ -6,8 +6,9 @@ alphas = []
 
 '''Changed init.traders in spot.system and spot.market.prd to include current_period'''
 
-class Trader_Simple(object):
-    """ A class that makes a trader"""
+class Trader_Shaver(object):
+    """ This trading strategy attempts to increase standing bid by 1 and decrease standing ask by -1...
+    ... based on Dave Cliff's Shaver strategy"""
 
     def __init__(self):
         self.name = ""
@@ -31,7 +32,7 @@ class Trader_Simple(object):
             # TODO Put in bidding or buying strategy
             if standing_bid:
                 if cur_value > standing_bid:
-                    bid = max(cur_value, standing_bid + 10)  # 10 is an arbitrary increment
+                    bid = standing_bid + 1  # 1 is an arbitrary increment
                     return ["B", self.name, bid]
                 else:
                     return []
@@ -53,7 +54,7 @@ class Trader_Simple(object):
             # TODO Put in asking or selling strategy
             if standing_ask:
                 if cur_cost < standing_ask:
-                    ask = max(standing_ask - 10, cur_cost)  # 10 is an arbitrary decrement
+                    ask = standing_ask - 1  # 10 is an arbitrary decrement
                     return ["S", self.name, ask]
                 else:
                     return []
@@ -1168,26 +1169,31 @@ class Trader_AI(object):
         self.prd.__init__()
         self.prd.get_data()
         self.prd.predict_market()
-        self.prd0_bid = self.prd.give_trader_info(0, 'bid')
-        self.prd0_ask = self.prd.give_trader_info(0, 'ask')
-        self.prd1_bid = self.prd.give_trader_info(1, 'bid')
-        self.prd1_ask = self.prd.give_trader_info(1, 'ask')
-        self.prd2_bid = self.prd.give_trader_info(2, 'bid')
-        self.prd2_ask = self.prd.give_trader_info(2, 'ask')
-        self.prd3_bid = self.prd.give_trader_info(3, 'bid')
-        self.prd3_ask = self.prd.give_trader_info(3, 'ask')
-        self.prd4_bid = self.prd.give_trader_info(4, 'bid')
-        self.prd4_ask = self.prd.give_trader_info(4, 'ask')
+        self.market_bids = self.prd.give_trader_info('bid')
+        self.market_asks = self.prd.give_trader_info('ask')
+        # self.prd0_bid = self.prd.give_trader_info(0, 'bid')
+        # self.prd0_ask = self.prd.give_trader_info(0, 'ask')
+        # self.prd1_bid = self.prd.give_trader_info(1, 'bid')
+        # self.prd1_ask = self.prd.give_trader_info(1, 'ask')
+        # self.prd2_bid = self.prd.give_trader_info(2, 'bid')
+        # self.prd2_ask = self.prd.give_trader_info(2, 'ask')
+        # self.prd3_bid = self.prd.give_trader_info(3, 'bid')
+        # self.prd3_ask = self.prd.give_trader_info(3, 'ask')
+        # self.prd4_bid = self.prd.give_trader_info(4, 'bid')
+        # self.prd4_ask = self.prd.give_trader_info(4, 'ask')
         self.current_period = 0
-        self.offer_attempt = 0
+        # self.offer_attempt = 0
         self.current_number_bids = 0
         self.current_number_asks = 0
-
+        self.standing_bid = None
+        self.standing_ask = None
 
     def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks):
         self.current_period = period
         self.current_number_bids = number_bids  # will update with every offer
         self.current_number_asks = number_asks  # will update with every offer
+        standing_ask = standing_ask
+        standing_bid = standing_bid
         num_contracts = 0
         if self.type == "buyer":
             for contract in contracts:
@@ -1196,128 +1202,27 @@ class Trader_AI(object):
             if num_contracts >= len(self.values):
                 return []  # You can't bid anymore
             cur_value = self.values[num_contracts]  # this is the current value working on
-            if self.current_period == 0:  # TODO can condense into one list of bids
-                if standing_bid:
-                    if standing_bid <= self.prd0_bid[self.current_number_bids]:
-                        if self.prd0_bid[self.current_number_bids] <= cur_value:
-                            bid = self.prd0_bid[self.current_number_bids]
-                            self.current_number_bids = self.current_number_bids + 1
-                            return ["B", self.name, bid]
-                        else:
-                            return []
-                    else:
-                        if self.prd0_bid[self.current_number_bids+1] <= cur_value:
-                            bid = self.prd0_bid[self.current_number_bids+1]
-                            self.current_number_bids = self.current_number_bids + 2
-                            return ["B", self.name, bid]
-                        else:
-                            return []
-                else:
-                    if self.prd0_bid[0] <= cur_value:
-                        bid = self.prd0_bid[0]
-                        self.offer_attempt = self.offer_attempt + 1
-                        return["B", self.name, bid]
-                    else:
-                        return []
+            if standing_bid:
+                for i in range(len(self.market_bids)):
+                    if standing_bid/self.market_bids[i] >= 0.95 and standing_bid/self.market_bids[i] < 1.00:
+                        #if self.market_bids[i] <= cur_value:
+                        bid = self.market_bids[i]
+                        return ["B", self.name, bid]
 
+                    elif standing_bid/self.market_bids[i] >= 0.90 and standing_bid/self.market_bids[i] < 1.00:
+                        #if self.market_bids[i] <= cur_value:
+                        bid = self.market_bids[i]
+                        return ["B", self.name, bid]
 
-            elif self.current_period == 1:
-                if standing_bid:
-                    if standing_bid <= self.prd1_bid[self.offer_attempt]:
-                        if self.prd1_bid[self.offer_attempt] <= cur_value:
-                            bid = self.prd1_bid[self.offer_attempt]
-                            self.offer_attempt = self.offer_attempt + 1
-                            return ["B", self.name, bid]
-                        else:
-                            return []
                     else:
-                        if self.prd1_bid[self.offer_attempt+1] <= cur_value:
-                            bid = self.prd1_bid[self.offer_attempt+1]
-                            self.offer_attempt = self.offer_attempt + 2
-                            return ["B", self.name, bid]
-                        else:
-                            return []
-                else:
-                    if self.prd1_bid[0] <= cur_value:
-                        bid = self.prd1_bid[0]
-                        self.offer_attempt = self.offer_attempt + 1
-                        return["B", self.name, bid]
-                    else:
-                        return []
-
-            elif self.current_period == 2:
-                if standing_bid:
-                    if standing_bid <= self.prd2_bid[self.offer_attempt]:
-                        if self.prd2_bid[self.offer_attempt] <= cur_value:
-                            bid = self.prd2_bid[self.offer_attempt]
-                            self.offer_attempt = self.offer_attempt + 1
-                            return ["B", self.name, bid]
-                        else:
-                            return []
-                    else:
-                        if self.prd2_bid[self.offer_attempt+1] <= cur_value:
-                            bid = self.prd2_bid[self.offer_attempt+1]
-                            self.offer_attempt = self.offer_attempt + 2
-                            return ["B", self.name, bid]
-                        else:
-                            return []
-                else:
-                    if self.prd2_bid[0] <= cur_value:
-                        bid = self.prd2_bid[0]
-                        self.offer_attempt = self.offer_attempt + 1
-                        return["B", self.name, bid]
-                    else:
-                        return []
-
-            elif self.current_period == 3:
-                if standing_bid:
-                    if standing_bid <= self.prd3_bid[self.offer_attempt]:
-                        if self.prd3_bid[self.offer_attempt] <= cur_value:
-                            bid = self.prd3_bid[self.offer_attempt]
-                            self.offer_attempt = self.offer_attempt + 1
-                            return ["B", self.name, bid]
-                        else:
-                            return []
-                    else:
-                        if self.prd3_bid[self.offer_attempt+1] <= cur_value:
-                            bid = self.prd3_bid[self.offer_attempt+1]
-                            self.offer_attempt = self.offer_attempt + 2
-                            return ["B", self.name, bid]
-                        else:
-                            return []
-                else:
-                    if self.prd3_bid[0] <= cur_value:
-                        bid = self.prd3_bid[0]
-                        self.offer_attempt = self.offer_attempt + 1
-                        return["B", self.name, bid]
-                    else:
-                        return []
-
-            elif self.current_period == 4:
-                if standing_bid:
-                    if standing_bid <= self.prd4_bid[self.offer_attempt]:
-                        if self.prd4_bid[self.offer_attempt] <= cur_value:
-                            bid = self.prd4_bid[self.offer_attempt]
-                            self.offer_attempt = self.offer_attempt + 1
-                            return ["B", self.name, bid]
-                        else:
-                            return []
-                    else:
-                        if self.prd4_bid[self.offer_attempt+1] <= cur_value:
-                            bid = self.prd4_bid[self.offer_attempt+1]
-                            self.offer_attempt = self.offer_attempt + 2
-                            return ["B", self.name, bid]
-                        else:
-                            return []
-                else:
-                    if self.prd4_bid[0] <= cur_value:
-                        bid = self.prd4_bid[0]
-                        self.offer_attempt = self.offer_attempt + 1
-                        return["B", self.name, bid]
-                    else:
-                        return []
-            else:
+                        pass
                 return []
+
+            else:
+                #if self.market_bids[0] <= cur_value:
+                bid = self.market_bids[0]
+                return["B", self.name, bid]
+
 
         else:
             for contract in contracts:
@@ -1326,127 +1231,26 @@ class Trader_AI(object):
             if num_contracts >= len(self.costs):
                 return [] # You can't ask anymore
             cur_cost = self.costs[num_contracts]
-            if self.current_period == 0:
-                if standing_ask:
-                    if standing_ask <= self.prd0_ask[self.offer_attempt]:
-                        if self.prd0_ask[self.offer_attempt] >= cur_cost:
-                            ask = self.prd0_ask[self.offer_attempt]
-                            self.offer_attempt = self.offer_attempt + 1
-                            return ["S", self.name, ask]
-                        else:
-                            return []
-                    else:
-                        if self.prd0_ask[self.offer_attempt+1] >= cur_cost:
-                            ask = self.prd0_ask[self.offer_attempt+1]
-                            self.offer_attempt = self.offer_attempt + 2
-                            return ["S", self.name, ask]
-                        else:
-                            return []
-                else:
-                    if self.prd0_ask[0] >= cur_cost:
-                        ask = self.prd0_ask[0]
-                        self.offer_attempt = self.offer_attempt + 1
-                        return["S", self.name, ask]
-                    else:
-                        return []
+            if standing_ask:
+                for i in range(len(self.market_asks)):
+                    if self.market_asks[i]/standing_ask >= 0.95 and self.market_asks[i]/standing_ask < 1.0:
+                        #if self.market_asks[i] >= cur_cost:
+                        ask = self.market_asks[i]
+                        return ["S", self.name, ask]
 
-            elif self.current_period == 1:
-                if standing_ask:
-                    if standing_ask <= self.prd1_ask[self.offer_attempt]:
-                        if self.prd1_ask[self.offer_attempt] >= cur_cost:
-                            ask = self.prd1_ask[self.offer_attempt]
-                            self.offer_attempt = self.offer_attempt + 1
-                            return ["S", self.name, ask]
-                        else:
-                            return []
-                    else:
-                        if self.prd1_ask[self.offer_attempt+1] >= cur_cost:
-                            ask = self.prd1_ask[self.offer_attempt+1]
-                            self.offer_attempt = self.offer_attempt + 2
-                            return ["S", self.name, ask]
-                        else:
-                            return []
-                else:
-                    if self.prd1_ask[0] >= cur_cost:
-                        ask = self.prd1_ask[0]
-                        self.offer_attempt = self.offer_attempt + 1
-                        return["S", self.name, ask]
-                    else:
-                        return []
+                    elif self.market_asks[i]/standing_ask >= 0.90 and self.market_asks[i]/standing_ask < 1.0:
+                        #if self.market_asks[i] >= cur_cost:
+                        ask = self.market_asks[i]
+                        return ["S", self.name, ask]
 
-            elif self.current_period == 2:
-                if standing_ask:
-                    if standing_ask <= self.prd2_ask[self.offer_attempt]:
-                        if self.prd2_ask[self.offer_attempt] >= cur_cost:
-                            ask = self.prd2_ask[self.offer_attempt]
-                            self.offer_attempt = self.offer_attempt + 1
-                            return ["S", self.name, ask]
-                        else:
-                            return []
                     else:
-                        if self.prd2_ask[self.offer_attempt+1] >= cur_cost:
-                            ask = self.prd2_ask[self.offer_attempt+1]
-                            self.offer_attempt = self.offer_attempt + 2
-                            return ["S", self.name, ask]
-                        else:
-                            return []
-                else:
-                    if self.prd2_ask[0] >= cur_cost:
-                        ask = self.prd2_ask[0]
-                        self.offer_attempt = self.offer_attempt + 1
-                        return["S", self.name, ask]
-                    else:
-                        return []
-
-            elif self.current_period == 3:
-                if standing_ask:
-                    if standing_ask <= self.prd3_ask[self.offer_attempt]:
-                        if self.prd3_ask[self.offer_attempt] >= cur_cost:
-                            ask = self.prd3_ask[self.offer_attempt]
-                            self.offer_attempt = self.offer_attempt + 1
-                            return ["S", self.name, ask]
-                        else:
-                            return []
-                    else:
-                        if self.prd3_ask[self.offer_attempt+1] >= cur_cost:
-                            ask = self.prd3_ask[self.offer_attempt+1]
-                            self.offer_attempt = self.offer_attempt + 2
-                            return ["S", self.name, ask]
-                        else:
-                            return []
-                else:
-                    if self.prd3_ask[0] >= cur_cost:
-                        ask = self.prd3_ask[0]
-                        self.offer_attempt = self.offer_attempt + 1
-                        return["S", self.name, ask]
-                    else:
-                        return []
-
-            elif self.current_period == 4:
-                if standing_ask:
-                    if standing_ask <= self.prd4_ask[self.offer_attempt]:
-                        if self.prd4_ask[self.offer_attempt] >= cur_cost:
-                            ask = self.prd4_ask[self.offer_attempt]
-                            self.offer_attempt = self.offer_attempt + 1
-                            return ["S", self.name, ask]
-                        else:
-                            return []
-                    else:
-                        if self.prd4_ask[self.offer_attempt+1] >= cur_cost:
-                            ask = self.prd4_ask[self.offer_attempt+1]
-                            self.offer_attempt = self.offer_attempt + 2
-                            return ["S", self.name, ask]
-                        else:
-                            return []
-                else:
-                    if self.prd4_ask[0] >= cur_cost:
-                        ask = self.prd4_ask[0]
-                        self.offer_attempt = self.offer_attempt + 1
-                        return["S", self.name, ask]
-                    else:
-                        return []
-            else:
+                        pass
                 return []
+
+            else:
+                #if self.market_asks[0] >= cur_cost:
+                ask = self.market_asks[0]
+                return["S", self.name, ask]
 
 
 if __name__ == "__main__":
