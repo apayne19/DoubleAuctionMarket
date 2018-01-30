@@ -1171,18 +1171,7 @@ class Trader_AI(object):
         self.prd.predict_market()
         self.market_bids = self.prd.give_trader_info('bid')
         self.market_asks = self.prd.give_trader_info('ask')
-        # self.prd0_bid = self.prd.give_trader_info(0, 'bid')
-        # self.prd0_ask = self.prd.give_trader_info(0, 'ask')
-        # self.prd1_bid = self.prd.give_trader_info(1, 'bid')
-        # self.prd1_ask = self.prd.give_trader_info(1, 'ask')
-        # self.prd2_bid = self.prd.give_trader_info(2, 'bid')
-        # self.prd2_ask = self.prd.give_trader_info(2, 'ask')
-        # self.prd3_bid = self.prd.give_trader_info(3, 'bid')
-        # self.prd3_ask = self.prd.give_trader_info(3, 'ask')
-        # self.prd4_bid = self.prd.give_trader_info(4, 'bid')
-        # self.prd4_ask = self.prd.give_trader_info(4, 'ask')
         self.current_period = 0
-        # self.offer_attempt = 0
         self.current_number_bids = 0
         self.current_number_asks = 0
         self.standing_bid = None
