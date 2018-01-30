@@ -27,7 +27,7 @@ import math
 input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
 input_file = "TestVS"
 output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
-session_name = "AI Run 7"
+session_name = "AI Run 9"
 
 '''Below are global dictionaries that will contain information needed to execute several functions'''
 all_prices = []

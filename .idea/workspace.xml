@@ -5,8 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="20ab1217-fded-4f2a-a544-19f32ae10eb8" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/trader.py" afterPath="$PROJECT_DIR$/trader.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spot_market_period.py" afterPath="$PROJECT_DIR$/spot_market_period.py" />
     </list>
     <ignored path=".idea/" />
     <ignored path=".idea/workspace.xml" />
@@ -20,24 +21,24 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="spot_market_period.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="spot_market_period.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/spot_market_period.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="714">
-              <caret line="42" column="0" lean-forward="false" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+            <state relative-caret-position="55">
+              <caret line="397" column="0" lean-forward="true" selection-start-line="397" selection-start-column="0" selection-end-line="397" selection-end-column="0" />
               <folding>
                 <element signature="e#0#25#0" expanded="true" />
-                <marker date="1517334215260" expanded="true" signature="13308:13350" ph="..." />
+                <marker date="1517336833043" expanded="true" signature="13308:13350" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="trader.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="trader.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/trader.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="124">
-              <caret line="1174" column="36" lean-forward="true" selection-start-line="1174" selection-start-column="36" selection-end-line="1174" selection-end-column="36" />
+            <state relative-caret-position="308">
+              <caret line="1207" column="17" lean-forward="true" selection-start-line="1207" selection-start-column="17" selection-end-line="1207" selection-end-column="17" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -48,8 +49,8 @@
       <file leaf-file-name="AI_Testing.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AI_Testing.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1173">
-              <caret line="69" column="40" lean-forward="false" selection-start-line="69" selection-start-column="40" selection-end-line="69" selection-end-column="40" />
+            <state relative-caret-position="187">
+              <caret line="113" column="59" lean-forward="true" selection-start-line="113" selection-start-column="59" selection-end-line="113" selection-end-column="59" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -96,8 +97,8 @@
         <option value="$PROJECT_DIR$/spot_system.py" />
         <option value="$PROJECT_DIR$/spot_environment_model.py" />
         <option value="$PROJECT_DIR$/AI_Testing.py" />
-        <option value="$PROJECT_DIR$/spot_market_period.py" />
         <option value="$PROJECT_DIR$/trader.py" />
+        <option value="$PROJECT_DIR$/spot_market_period.py" />
       </list>
     </option>
   </component>
@@ -160,7 +161,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.AI_Testing">
+  <component name="RunManager" selected="Python.spot_market_period">
     <configuration default="false" name="spot_market_period" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -325,8 +326,8 @@
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.AI_Testing" />
-        <item index="1" class="java.lang.String" itemvalue="Python.spot_market_period" />
+        <item index="0" class="java.lang.String" itemvalue="Python.spot_market_period" />
+        <item index="1" class="java.lang.String" itemvalue="Python.AI_Testing" />
         <item index="2" class="java.lang.String" itemvalue="Python.spot_environment_gui" />
         <item index="3" class="java.lang.String" itemvalue="Python.tournament" />
         <item index="4" class="java.lang.String" itemvalue="Python.spot_system" />
@@ -624,7 +625,14 @@
       <option name="project" value="LOCAL" />
       <updated>1516927117345</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="test VCS error">
+      <created>1517334277719</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1517334277719</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -634,7 +642,7 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2495238" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31362468" sideWeight="0.13904762" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18576051" sideWeight="0.8609524" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3132686" sideWeight="0.8609524" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32969153" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -692,7 +700,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Added period lines to contract graph in spot_market_periods" />
     <MESSAGE value="Continued work on contract graphing. Added some code to da_institutions and spot_system so that bids,asks and contract transactions are displayed in real time. Started building ZIP trader" />
     <MESSAGE value="Built time index based on process time. Adam started build on zip --&gt; need to change order to fit spot_system. Built HaveToWin and Kaplan traders." />
     <MESSAGE value="Almost done with Kaplan trader. Adam/Nick made csv files of vernon smith and santa fe experiments. TODO make time index clock for bid/ask. TODO finish ZIP trader." />
@@ -717,7 +724,8 @@
     <MESSAGE value="Finished AI predictor class, almost done with AI trader... throwing error" />
     <MESSAGE value="AI trader is now operational and placing bids/asks correctly, but still refining. Added function to obtain strategy total avg earn. Added function to obtain current number of bids and asks placed" />
     <MESSAGE value="Worked on AI trader" />
-    <option name="LAST_COMMIT_MESSAGE" value="Worked on AI trader" />
+    <MESSAGE value="test VCS error" />
+    <option name="LAST_COMMIT_MESSAGE" value="test VCS error" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -732,7 +740,7 @@
           <caret line="39" column="0" lean-forward="true" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
           <folding>
             <element signature="e#0#25#0" expanded="true" />
-            <marker date="1517334215260" expanded="true" signature="13308:13350" ph="..." />
+            <marker date="1517336833043" expanded="true" signature="13308:13350" ph="..." />
           </folding>
         </state>
       </provider>
@@ -778,7 +786,7 @@
           <caret line="22" column="0" lean-forward="true" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
           <folding>
             <element signature="e#0#25#0" expanded="true" />
-            <marker date="1517334215260" expanded="true" signature="13308:13350" ph="..." />
+            <marker date="1517336833043" expanded="true" signature="13308:13350" ph="..." />
           </folding>
         </state>
       </provider>
@@ -1048,31 +1056,31 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/AI_Testing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1173">
-          <caret line="69" column="40" lean-forward="false" selection-start-line="69" selection-start-column="40" selection-end-line="69" selection-end-column="40" />
+        <state relative-caret-position="187">
+          <caret line="113" column="59" lean-forward="true" selection-start-line="113" selection-start-column="59" selection-end-line="113" selection-end-column="59" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/spot_market_period.py">
+    <entry file="file://$PROJECT_DIR$/trader.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="714">
-          <caret line="42" column="0" lean-forward="false" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+        <state relative-caret-position="308">
+          <caret line="1207" column="17" lean-forward="true" selection-start-line="1207" selection-start-column="17" selection-end-line="1207" selection-end-column="17" />
           <folding>
-            <element signature="e#0#25#0" expanded="true" />
-            <marker date="1517334215260" expanded="true" signature="13308:13350" ph="..." />
+            <element signature="e#0#13#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/trader.py">
+    <entry file="file://$PROJECT_DIR$/spot_market_period.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="124">
-          <caret line="1174" column="36" lean-forward="true" selection-start-line="1174" selection-start-column="36" selection-end-line="1174" selection-end-column="36" />
+        <state relative-caret-position="55">
+          <caret line="397" column="0" lean-forward="true" selection-start-line="397" selection-start-column="0" selection-end-line="397" selection-end-column="0" />
           <folding>
-            <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#0#25#0" expanded="true" />
+            <marker date="1517336833043" expanded="true" signature="13308:13350" ph="..." />
           </folding>
         </state>
       </provider>
