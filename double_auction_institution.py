@@ -33,22 +33,11 @@ class Auction(object):
         t = (round(stp - self.srt, 5))
         return t
 
-    def bid(self, player_id, amt, strategies):
+    def bid(self, player_id, amt, strategies, period, round):
         self.strategy = strategies[player_id]['strat']
-        # if trader_strategy == 'Trader_AA':
-        #     self.strategy = 0
-        # elif trader_strategy == 'Trader_GD':
-        #     self.strategy = 1
-        # elif trader_strategy == 'Trader_PS':     # just used in AI dataset building
-        #     self.strategy = 2                    # creates index of trader strategies
-        # elif trader_strategy == 'Trader_ZIP':
-        #     self.strategy = 3
-        # elif trader_strategy == 'Trader_ZIC':
-        #     self.strategy = 4
-        # self.player_id = player_id.replace('t', '')  # changes t0,t1, t2... to 0,1,2
         self.player_id = player_id
         if self.board["is_open"]:
-            self.board["orders"].append((self.time_index(), self.player_id, "bid", amt, self.strategy))
+            self.board["orders"].append((self.time_index(), self.player_id, "bid", amt, self.strategy, period, round))
         else:
             return "closed"
 
@@ -71,22 +60,11 @@ class Auction(object):
             status = "reject"
         return status
 
-    def ask(self, player_id, amt, strategies):
+    def ask(self, player_id, amt, strategies, period, round):
         self.strategy = strategies[player_id]['strat']
-        # if trader_strategy == 'Trader_AA':
-        #     self.strategy = 0
-        # elif trader_strategy == 'Trader_GD':
-        #     self.strategy = 1
-        # elif trader_strategy == 'Trader_PS':      # just used for AI data set building
-        #     self.strategy = 2                     # creates index of trader strategies
-        # elif trader_strategy == 'Trader_ZIP':
-        #     self.strategy = 3
-        # elif trader_strategy == 'Trader_ZIC':
-        #     self.strategy = 4
-        # self.player_id = player_id.replace('t', '')
         self.player_id = player_id
         if self.board["is_open"]:
-            self.board["orders"].append((self.time_index(), self.player_id, "ask", amt, self.strategy))
+            self.board["orders"].append((self.time_index(), self.player_id, "ask", amt, self.strategy, period, round))
         else:
             return "closed"
         if amt < self.board["standing"]["ask"] and amt > self.floor:  # check for valid ask

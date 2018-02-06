@@ -6,6 +6,9 @@ import time
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import recall_score, precision_score
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.neighbors import RadiusNeighborsClassifier
+from sklearn.neighbors import NearestNeighbors
+from sklearn.naive_bayes import GaussianNB
 
 class SpotMarketPrediction(object):
 
@@ -13,8 +16,8 @@ class SpotMarketPrediction(object):
         # self.input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
         # self.train_sessions = "AA Run "
         self.input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
-        self.session_name = "AI_predict Test "
-        self.test_session = "AI_predict Test 10\\"
+        self.session_name = "AA_predict "
+        self.test_session = "AA_predict 5\\"
         self.train_y = []
         self.train_x = []
         self.test_x = []
@@ -31,23 +34,9 @@ class SpotMarketPrediction(object):
         self.indices = []
         self.predicted_bids = []
         self.predicted_asks = []
-        # self.predict_p0_all = []
-        # self.predict_p0_bid = []
-        # self.predict_p0_ask = []
-        # self.predict_p1_all = []
-        # self.predict_p1_bid = []
-        # self.predict_p1_ask = []
-        # self.predict_p2_all = []
-        # self.predict_p2_bid = []
-        # self.predict_p2_ask = []
-        # self.predict_p3_all = []
-        # self.predict_p3_bid = []
-        # self.predict_p3_ask = []
-        # self.predict_p4_all = []
-        # self.predict_p4_bid = []
-        # self.predict_p4_ask = []
 
     def get_data(self):
+
         # for i in range(5):
         #     train_file = pd.read_csv(self.input_path + self.train_sessions + str(i + 1) + "\\" + "Bid_Ask_History.csv", header=0,
         #                              delimiter=',')
@@ -77,7 +66,7 @@ class SpotMarketPrediction(object):
         #     # test_x.append(i[2])  # amt
         #     self.test_x.append(i)  # amt, strategy
 
-        for i in range(9):
+        for i in range(4):
             input_file = pd.read_csv(self.input_path + self.session_name + str(i + 1) + "\\" + "Bid_Ask_History.csv", header=None, delimiter=',')
             input_values = input_file._get_numeric_data()
             input_X = input_values.as_matrix()
@@ -85,7 +74,6 @@ class SpotMarketPrediction(object):
                 self.train_x.append(j)
             for k in range(len(input_X)):
                 self.train_y.append(input_X[k][1])
-
 
         test_file = pd.read_csv(self.input_path + self.test_session + "Bid_Ask_History.csv", header=None, delimiter=',')
         for i in test_file.as_matrix():
@@ -97,13 +85,19 @@ class SpotMarketPrediction(object):
         for i in range(len(test_X)):
             self.test_y.append(test_X[i][1])
 
-
-
     def predict_market(self):  # TODO condense back into two lists of bids asks
+
         self.input_X_train = pd.DataFrame(self.train_x)
+        #self.input_X_train = [[30, 35, 40, 45, 50], [60, 65, 70, 75, 80]]
         self.input_y_train = self.train_y
+        #self.input_y_train = [[1], [2]]
         self.input_X_test = pd.DataFrame(self.test_x)
+        #self.input_X_test = [45, 50, 55, 60, 65]
         self.input_y_test = self.test_y
+        #self.input_y_test = [1]
+        # testx = [40, 50, 60, 70, 80]
+        # testy = [2]
+
         # print(self.input_X_train)
         # print()
         # print(self.input_y_train)
@@ -111,65 +105,29 @@ class SpotMarketPrediction(object):
         # print(self.input_X_test)
         # print()
         # print(self.input_y_test)
-        self.knn = KNeighborsClassifier(weights='distance')
-        self.knn.fit(self.input_X_train, self.input_y_train)
-        self.y_hat = self.knn.predict(self.input_X_test)
 
-        for i in range(len(self.y_hat)):
-            self.prediction_history.append([self.bid_ask_list[i], self.y_hat[i]])
+        # self.knn = KNeighborsClassifier(n_neighbors=2, weights='distance')
+        # self.knn.fit(self.input_X_train, self.input_y_train)
+        # #self.knn.fit(testx, testy)
+        # self.y_hat = self.knn.predict_proba(self.input_X_test)
 
-        for i in range(len(self.prediction_history)):
-            if self.prediction_history[i][0] == 'bid':
-                self.predicted_bids.append(self.prediction_history[i][1])
-            elif self.prediction_history[i][0] == 'ask':
-                self.predicted_asks.append(self.prediction_history[i][1])
-            else:
-                print("ERROR: predictions for given offer type DNE!")
+        gnb = GaussianNB()
+        gnb.fit(self.input_X_train, self.input_y_train)
+        self.y_hat = gnb.predict(self.input_X_train)
+
+        print(self.y_hat)
+        # for i in range(len(self.y_hat)):
+        #     self.prediction_history.append([self.bid_ask_list[i], self.y_hat[i]])
+        #
+        # for i in range(len(self.prediction_history)):
+        #     if self.prediction_history[i][0] == 'bid':
+        #         self.predicted_bids.append(self.prediction_history[i][1])
+        #     elif self.prediction_history[i][0] == 'ask':
+        #         self.predicted_asks.append(self.prediction_history[i][1])
+        #     else:
+        #         print("ERROR: predictions for given offer type DNE!")
         # print()
         # print(self.prediction_history)
-
-        # if len(self.prediction_history)/5 == int:
-        #     self.period_splits = len(self.prediction_history)/5
-        # else:
-        #     self.period_splits = round(len(self.prediction_history)/5, 0)
-        #
-        # for i in range(6):
-        #     self.indices.append(int(self.period_splits*i))
-        #
-        # self.predict_p0_all.append(self.prediction_history[self.indices[0]:self.indices[1]])
-        # for i in range(len(self.predict_p0_all[0])):
-        #     if self.predict_p0_all[0][i][0] == 'bid':
-        #         self.predict_p0_bid.append(self.predict_p0_all[0][i][1])
-        #     else:
-        #         self.predict_p0_ask.append(self.predict_p0_all[0][i][1])
-        #
-        # self.predict_p1_all.append(self.prediction_history[self.indices[1]:self.indices[2]])
-        # for i in range(len(self.predict_p1_all[0])):
-        #     if self.predict_p1_all[0][i][0] == 'bid':
-        #         self.predict_p1_bid.append(self.predict_p1_all[0][i][1])
-        #     else:
-        #         self.predict_p1_ask.append(self.predict_p1_all[0][i][1])
-        #
-        # self.predict_p2_all.append(self.prediction_history[self.indices[2]:self.indices[3]])
-        # for i in range(len(self.predict_p2_all[0])):
-        #     if self.predict_p2_all[0][i][0] == 'bid':
-        #         self.predict_p2_bid.append(self.predict_p2_all[0][i][1])
-        #     else:
-        #         self.predict_p2_ask.append(self.predict_p2_all[0][i][1])
-        #
-        # self.predict_p3_all.append(self.prediction_history[self.indices[3]:self.indices[4]])
-        # for i in range(len(self.predict_p3_all[0])):
-        #     if self.predict_p3_all[0][i][0] == 'bid':
-        #         self.predict_p3_bid.append(self.predict_p3_all[0][i][1])
-        #     else:
-        #         self.predict_p3_ask.append(self.predict_p3_all[0][i][1])
-        #
-        # self.predict_p4_all.append(self.prediction_history[self.indices[4]:self.indices[5]])
-        # for i in range(len(self.predict_p4_all[0])):
-        #     if self.predict_p4_all[0][i][0] == 'bid':
-        #         self.predict_p4_bid.append(self.predict_p4_all[0][i][1])
-        #     else:
-        #         self.predict_p4_ask.append(self.predict_p4_all[0][i][1])
 
     def give_trader_info(self, offer_type):
         type_request = offer_type
@@ -183,30 +141,6 @@ class SpotMarketPrediction(object):
         # print(self.predicted_bids)
         # print()
         # print(self.predicted_asks)
-
-    # def give_trader_info(self, period_p, offer_type):
-    #     period_request = period_p
-    #     type_request = offer_type
-    #     if period_request == 0 and type_request == 'bid':
-    #         return self.predict_p0_bid
-    #     elif period_request == 0 and type_request == 'ask':
-    #         return self.predict_p0_ask
-    #     elif period_request == 1 and type_request == 'bid':
-    #         return self.predict_p1_bid
-    #     elif period_request == 1 and type_request == 'ask':
-    #         return self.predict_p1_ask
-    #     elif period_request == 2 and type_request == 'bid':
-    #         return self.predict_p2_bid
-    #     elif period_request == 2 and type_request == 'ask':
-    #         return self.predict_p2_ask
-    #     elif period_request == 3 and type_request == 'bid':
-    #         return self.predict_p3_bid
-    #     elif period_request == 3 and type_request == 'ask':
-    #         return self.predict_p3_ask
-    #     elif period_request == 4 and type_request == 'bid':
-    #         return self.predict_p4_bid
-    #     elif period_request == 4 and type_request == 'ask':
-    #         return self.predict_p4_ask
 
     def display_info(self):
         print("----------------------------------------------------------------------------------")
@@ -252,29 +186,6 @@ class SpotMarketPrediction(object):
         print("Market Ask Predictions")
         print(self.predicted_asks)
         print(len(self.predicted_asks))
-        # print(self.predict_p0_all)
-        # print(self.predict_p0_bid)
-        # print(self.predict_p0_ask)
-        # print()
-        # print("Period 2 Predictions")
-        # print(self.predict_p1_all)
-        # print(self.predict_p1_bid)
-        # print(self.predict_p1_ask)
-        # print()
-        # print("Period 3 Predictions")
-        # print(self.predict_p2_all)
-        # print(self.predict_p2_bid)
-        # print(self.predict_p2_ask)
-        # print()
-        # print("Period 4 Predictions")
-        # print(self.predict_p3_all)
-        # print(self.predict_p3_bid)
-        # print(self.predict_p3_ask)
-        # print()
-        # print("Period 5 Predictions")
-        # print(self.predict_p4_all)
-        # print(self.predict_p4_bid)
-        # print(self.predict_p4_ask)
 
     def graph_predictions(self):
         trace1 = go.Scatter(

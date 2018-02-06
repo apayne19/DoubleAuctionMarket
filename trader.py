@@ -59,8 +59,8 @@ class Trader_Shaver(object):
                 else:
                     return []
             else:
-                if cur_cost > 0:
-                    ask = 999
+                if cur_cost < 2000:
+                    ask = 2000
                     return["B", self.name, ask]
 
 class Trader_Kaplan(object):
@@ -124,14 +124,14 @@ class Trader_Kaplan(object):
                         return []
 
                 else:
-                    if cur_cost < 999:
+                    if cur_cost < 400:
                         ask = standing_ask - 1
                         return ["S", self.name, ask]
                     else:
                         return []
             else:
                 if cur_cost > 0:
-                    ask = 999
+                    ask = 400
                     return ["S", self.name, ask]
                 else:
                     return []
@@ -195,7 +195,7 @@ class Trader_ZIC(object):
             # TODO Put in bidding or buying strategy
             if standing_bid:
                 if cur_value > standing_bid:
-                        bid = random.randint(standing_bid + 1, cur_value)  # random number between
+                        bid = random.randint(standing_bid, cur_value)  # random number between
                         return ["B", self.name, bid]
                 else:
                     return []
@@ -218,14 +218,14 @@ class Trader_ZIC(object):
             # TODO Put in asking or selling strategy
             if standing_ask:
                 if cur_cost < standing_ask:
-                        ask = random.randint(cur_cost, standing_ask - 1)  # random number between
+                        ask = random.randint(cur_cost, standing_ask)  # random number between
                         return ["S", self.name, ask]
                 else:
                     return []
 
             else:
-                if cur_cost < 999:
-                    ask = 999
+                if cur_cost < 400:
+                    ask = 400
                     return["S", self.name, ask]
                 else:
                     return[]

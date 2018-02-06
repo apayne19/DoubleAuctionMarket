@@ -28,6 +28,7 @@ class SpotSystem(object):
         self.mkt = None  # function called from spot_environment_model
         self.da = None  # function called from double_auction_institution
         self.current_period = 0  # ADDED
+        self.current_round = 0
         self.number_bids = 0  # ADDED
         self.number_asks = 0  # ADDED
         self.AA_earn = []
@@ -36,6 +37,8 @@ class SpotSystem(object):
         self.AI_earn = []
         self.ZIP_earn = []
         self.ZIC_earn = []
+        self.SI_earn = []
+        self.KP_earn = []
 
     def init_spot_system(self, name, limits, rounds, input_path, input_file, output_path, session_name):
         self.name = name
@@ -49,8 +52,6 @@ class SpotSystem(object):
         self.current_period = period
         self.trader_names = trader_names
         self.trader_info = self.prepare_traders(self.trader_names, self.mkt, self.limits)  # instantiate traders
-        print(self.trader_info)
-        print(self.da.report_orders())
 
     def load_market(self, input_path, input_file, output_path, session_name):
         self.mkt.prepare_market(input_path, input_file, output_path, session_name)  # set and show market
@@ -60,7 +61,7 @@ class SpotSystem(object):
 
     def run_system(self):
         self.da.open_board("tournament official")
-        num_contracts = 1
+        num_contracts = 1  # shouldnt this be 0??
         if self.display:  # if display = true
             print()
             print("Auction Open")
@@ -69,6 +70,7 @@ class SpotSystem(object):
         temp_traders = self.traders
         for i in range(self.num_market_rounds):
             random.shuffle(temp_traders)  # generates random order of traders each round
+            self.current_round = i
             for trader in temp_traders:
                 self.number_bids = 0
                 self.number_asks = 0
@@ -100,9 +102,9 @@ class SpotSystem(object):
         if len(offer) == 0:
             return
         if offer[0] == "B":  # identifies the bidders and bids
-            self.da.bid(offer[1], offer[2], self.trader_info)
+            self.da.bid(offer[1], offer[2], self.trader_info, self.current_period, self.current_round)
         else:
-            self.da.ask(offer[1], offer[2], self.trader_info)  # else identified as sellers and asks
+            self.da.ask(offer[1], offer[2], self.trader_info, self.current_period, self.current_round)  # else identified as sellers and asks
 
     def eval(self):
         # calculate market efficiency
@@ -200,26 +202,30 @@ class SpotSystem(object):
                 if k == self.trader_info[t_id]['strat']:
                     count = count + 1
                     strat_earn += self.trader_info[t_id]['earn']
+                    if k == 'Trader_AA':
+                        self.AA_earn.append(strat_earn)
+                    elif k == 'Trader_GD':
+                        self.GD_earn.append(strat_earn)
+                    elif k == 'Trader_PS':
+                        self.PS_earn.append(strat_earn)
+                    elif k == 'Trader_AI':
+                        self.AI_earn.append(strat_earn)
+                    elif k == 'Trader_ZIP':
+                        self.ZIP_earn.append(strat_earn)
+                    elif k == 'Trader_ZIC':
+                        self.ZIC_earn.append(strat_earn)
+                    elif k == 'Trader_Shaver':
+                        self.SI_earn.append(strat_earn)
+                    elif k == 'Trader_Kaplan':
+                        self.KP_earn.append(strat_earn)
+                    else:
+                        print("Trader not listed!")
             if count > 0:
                 avg_earn = int(strat_earn / count)
-                if k == 'Trader_AA':
-                    self.AA_earn.append(avg_earn)
-                elif k == 'Trader_GD':
-                    self.GD_earn.append(avg_earn)
-                elif k == 'Trader_PS':
-                    self.PS_earn.append(avg_earn)
-                elif k == 'Trader_AI':
-                    self.AI_earn.append(avg_earn)
-                elif k == 'Trader_ZIP':
-                    self.ZIP_earn.append(avg_earn)
-                elif k == 'Trader_ZIC':
-                    self.ZIC_earn.append(avg_earn)
-                else:
-                    print("Trader not listed!")
                 result_header.extend([k, avg_earn])
             if self.display:
                 # noinspection PyUnboundLocalVariable
-                print("Strategy {} earned an average of {}.".format(k, avg_earn))
+                print("Strategy {} earned {} with a running average of {}.".format(k, strat_earn, avg_earn))
 
         return result_header
 

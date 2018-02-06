@@ -129,6 +129,7 @@ class BuildMarketEnv(object):
         plt.xlabel('Units')  # add the x axis label
         plt.ylabel('$')  # add the y axis label
         #plt.show(block=False)
+        pass
 
 
     def calc_equilibrium(self):

@@ -372,6 +372,7 @@ class SpotEnvironmentModel(object):
         plt.xlabel('Units')  # add the x axis label
         plt.ylabel('$')  # add the y axis label
         plt.savefig(output_path + session_name + "\\" + "Supply Demand.png")  # display the plot
+        plt.close()
 
 
     def calc_equilibrium(self):
