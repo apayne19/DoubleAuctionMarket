@@ -17,7 +17,7 @@ class Trader_Shaver(object):
         self.values = []
         self.costs = []
 
-    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks):
+    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds):
         num_contracts = 0  # intialize number of contracts
 
         if self.type == "buyer":
@@ -74,9 +74,11 @@ class Trader_Kaplan(object):
         self.values = []
         self.costs = []
 
-    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks):
+    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds):
         num_contracts = 0  # intialize number of contracts
-
+        if pmax == None and pmin == None:  # if first period then infinity and -infinity
+            pmax = 100000000
+            pmin = -100000000
         if self.type == "buyer":
             # find out how many contracts you have
             for contract in contracts:
@@ -85,89 +87,183 @@ class Trader_Kaplan(object):
             if num_contracts >= len(self.values):
                 return []  # You can't bid anymore
             cur_value = self.values[num_contracts]  # this is the current value working on
-
+            try:
+                next_value = self.values[num_contracts+1]  # if multiple units demanded
+            except IndexError:
+                next_value = None
+            spread = standing_ask - standing_bid  # distance between standing ask and standing bid
+            profit = cur_value - standing_bid  # expected earnings
+            expected_profit = profit/cur_value  # TODO discuss expected profit calculation
+            profit_threshold = 0.02  # profit has to be greater than 2%
+            spread_factor = 0.1 * standing_ask  # 10% of standing ask
+            lurk_threshold = 0.2  # when 80% of trading period done
+            time_conversion = round_num/total_rounds  # % of trading period done
             if standing_bid:
                 if standing_ask:
-                    if standing_bid/standing_ask >= 0.98 and cur_value > standing_bid:
-                        bid = standing_ask - 1
-                        return ["B", self.name, bid]
+                    if next_value == None:
+                        most = min(standing_ask, cur_value - 1)
+                        if most > standing_bid:
+                            if standing_ask <= pmax and expected_profit > profit_threshold and spread < spread_factor:
+                                bid = min(standing_ask, most)
+                                return ["B", self.name, bid]
+                            elif standing_ask <= pmin:
+                                bid = min(standing_ask, most)
+                                return ["B", self.name, bid]
+                            elif float(1 - time_conversion) <= lurk_threshold:
+                                bid = min(standing_ask, most)
+                                return ["B", self.name, bid]
+                            else:
+                                return []
+
+                        else:
+                            return []
+
                     else:
-                        return []
+                        most = min(standing_ask, next_value - 1)
+                        if most > standing_bid:
+                            if standing_ask <= pmax and expected_profit > profit_threshold and spread < spread_factor:
+                                bid = min(standing_ask, most)
+                                return ["B", self.name, bid]
+                            elif standing_ask <= pmin:
+                                bid = min(standing_ask, most)
+                                return ["B", self.name, bid]
+                            elif float(1 - time_conversion) <= lurk_threshold:
+                                bid = min(standing_ask, most)
+                                return ["B", self.name, bid]
+                            else:
+                                return []
+                        else:
+                            return []
+
                 else:
-                    if cur_value > standing_bid:
-                        bid = standing_bid + 1
-                        return ["B", self.name, bid]
+                    if next_value == None:
+                        most = cur_value - 1
+                        if most > standing_bid:
+                            if standing_ask <= pmax and expected_profit > profit_threshold and spread < spread_factor:
+                                bid = min(standing_ask, most)
+                                return ["B", self.name, bid]
+                            elif standing_ask <= pmin:
+                                bid = min(standing_ask, most)
+                                return ["B", self.name, bid]
+                            elif float(1 - time_conversion) <= lurk_threshold:
+                                bid = min(standing_ask, most)
+                                return ["B", self.name, bid]
+                            else:
+                                return []
+                        else:
+                            return []
                     else:
-                        return []
+                        most = next_value - 1
+                        if most > standing_bid:
+                            if standing_ask <= pmax and expected_profit > profit_threshold and spread < spread_factor:
+                                bid = min(standing_ask, most)
+                                return ["B", self.name, bid]
+                            elif standing_ask <= pmin:
+                                bid = min(standing_ask, most)
+                                return ["B", self.name, bid]
+                            elif float(1 - time_conversion) <= lurk_threshold:
+                                bid = min(standing_ask, most)
+                                return ["B", self.name, bid]
+                            else:
+                                return []
+                        else:
+                            return []
+
             else:
-                if cur_value > 0:
-                    bid = 1
-                    return ["B", self.name, bid]
-                else:
-                    return []
+                bid = 1
+                return ["B", self.name, bid]
 
         else:
+            return []
             # find out how many contracts you have
-            for contract in contracts:
-                if contract[2] == self.name:  # third position is seller id
-                    num_contracts = num_contracts + 1
-            if num_contracts >= len(self.costs):
-                return []  # You can't ask anymore
-            cur_cost = self.costs[num_contracts]  # this is the current value working on
-
-            if standing_ask:
-                if standing_bid:
-                    if standing_bid/standing_ask >= 0.98 and cur_cost < standing_ask:
-                        ask = standing_bid + 1  # random number between cost and standing ask
-                        return ["S", self.name, ask]
-                    else:
-                        return []
-
-                else:
-                    if cur_cost < 400:
-                        ask = standing_ask - 1
-                        return ["S", self.name, ask]
-                    else:
-                        return []
-            else:
-                if cur_cost > 0:
-                    ask = 400
-                    return ["S", self.name, ask]
-                else:
-                    return []
-    # TODO change out existing code for better code below
-    def getorder(self, time, countdown, lob):
-        lurk_threshold = 0.2
-        shavegrowthrate = 3
-        shave = int(1.0 / (0.01 + countdown / (shavegrowthrate * lurk_threshold)))
-        if (len(self.orders) < 1) or (countdown > lurk_threshold):
-            order = None
-
-        else:
-            limitprice = self.orders[0].price
-            otype = self.orders[0].otype
-            if otype == 'Bid':
-                if lob['bids']['n'] > 0:
-                    quoteprice = lob['bids']['best'] + shave
-                    if quoteprice > limitprice:
-                        quoteprice = limitprice
-
-                else:
-                    quoteprice = lob['bids']['worst']
-
-            else:
-                if lob['asks']['n'] > 0:
-                    quoteprice = lob['asks']['best'] - shave
-                    if quoteprice < limitprice:
-                        quoteprice = limitprice
-
-                else:
-                    quoteprice = lob['asks']['worst']
-            self.lastquote = quoteprice
-            order = Order(self.tid, otype, quoteprice, self.orders[0].qty, time)
-
-        return order
-
+            # for contract in contracts:
+            #     if contract[2] == self.name:  # third position is seller id
+            #         num_contracts = num_contracts + 1
+            # if num_contracts >= len(self.costs):
+            #     return []  # You can't ask anymore
+            # cur_cost = self.costs[num_contracts]  # this is the current value working on
+            # next_cost = self.costs[num_contracts + 1]
+            # spread = standing_ask - standing_bid
+            # spread_factor = 0.1 * standing_bid
+            # profit = standing_ask - cur_cost
+            # expected_profit = profit / cur_value
+            # profit_threshold = 0.02
+            # lurk_threshold = 0.2
+            # time_conversion = round / total_rounds
+            # if standing_ask:
+            #     if standing_bid:
+            #         if next_cost == None:
+            #             most = max(cur_cost - 1, standing_bid)
+            #             if most < standing_ask:
+            #                 if standing_ask <= pmax and ...... and spread < spread_factor:
+            #                     bid = min(standing_ask, most)
+            #                     return ["B", self.name, bid]
+            #                 elif standing_ask <= pmin:
+            #                     bid = min(standing_ask, most)
+            #                     return ["B", self.name, bid]
+            #                 elif float(1 - time_conversion) <= lurk_threshold:
+            #                     bid = min(standing_ask, most)
+            #                     return ["B", self.name, bid]
+            #                 else:
+            #                     return []
+            #
+            #             else:
+            #                 return []
+            #
+            #         else:
+            #             most = max(cur_cost +1 , standing_bid)
+            #             if most > standing_bid:
+            #                 if standing_ask <= pmax and ...... and spread < spread_factor:
+            #                     bid = min(standing_ask, most)
+            #                     return ["B", self.name, bid]
+            #                 elif standing_ask <= pmin:
+            #                     bid = min(standing_ask, most)
+            #                     return ["B", self.name, bid]
+            #                 elif float(1 - time_conversion) <= lurk_threshold:
+            #                     bid = min(standing_ask, most)
+            #                     return ["B", self.name, bid]
+            #                 else:
+            #                     return []
+            #             else:
+            #                 return []
+            #
+            #     else:
+            #         if next_cost == None:
+            #             most = cur_cost + 1
+            #             if most > standing_bid:
+            #                 if standing_ask <= pmax and ...... and spread < spread_factor:
+            #                     bid = min(standing_ask, most)
+            #                     return ["B", self.name, bid]
+            #                 elif standing_ask <= pmin:
+            #                     bid = min(standing_ask, most)
+            #                     return ["B", self.name, bid]
+            #                 elif float(1 - time_conversion) <= lurk_threshold:
+            #                     bid = min(standing_ask, most)
+            #                     return ["B", self.name, bid]
+            #                 else:
+            #                     return []
+            #             else:
+            #                 return []
+            #         else:
+            #             most = next_value - 1
+            #             if most > standing_bid:
+            #                 if standing_ask <= pmax and ...... and spread < spread_factor:
+            #                     bid = min(standing_ask, most)
+            #                     return ["B", self.name, bid]
+            #                 elif standing_ask <= pmin:
+            #                     bid = min(standing_ask, most)
+            #                     return ["B", self.name, bid]
+            #                 elif float(1 - time_conversion) <= lurk_threshold:
+            #                     bid = min(standing_ask, most)
+            #                     return ["B", self.name, bid]
+            #                 else:
+            #                     return []
+            #             else:
+            #                 return []
+            #
+            # else:
+            #     bid = 1
+            #     return ["B", self.name, bid]
 
 class Trader_ZIC(object):
     """Trader using Zero Intelligence Constrained strategy from Gode/Sunder(1993)
@@ -180,7 +276,7 @@ class Trader_ZIC(object):
         self.values = []
         self.costs = []
 
-    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks):
+    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds):
         num_contracts = 0  # intialize number of contracts
 
         if self.type == "buyer":
@@ -201,11 +297,8 @@ class Trader_ZIC(object):
                     return []
 
             else:
-                if cur_value > 0:
-                    bid = 1
-                    return["B", self.name, bid]
-                else:
-                    return[]
+                bid = 1
+                return["B", self.name, bid]
         else:
             # find out how many contracts you have
             for contract in contracts:
@@ -224,11 +317,8 @@ class Trader_ZIC(object):
                     return []
 
             else:
-                if cur_cost < 400:
-                    ask = 400
-                    return["S", self.name, ask]
-                else:
-                    return[]
+                ask = 399
+                return["S", self.name, ask]
 
 class Trader_ZIU(object):
     """ A class always increases bid by 3, decreases ask by 3, does not take cur_value or cur_cost into account
@@ -239,7 +329,7 @@ class Trader_ZIU(object):
         self.values = []
         self.costs = []
 
-    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks):
+    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds):
         num_contracts = 0  # intialize number of contracts
 
         if self.type == "buyer":
@@ -286,7 +376,7 @@ class Trader_PS(object):
         self.values = []
         self.costs = []
 
-    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks):
+    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds):
         num_contracts = 0  # intialize number of contracts
 
         if self.type == "buyer":
@@ -562,7 +652,7 @@ class Trader_AA(object):
         if theta == 0: theta += 0.0000001
         self.theta = theta
 
-    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks):
+    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds):
         self.prev_best_bid_p = standing_bid
         self.prev_best_ask_p = standing_ask
         num_contracts = 0
@@ -703,7 +793,7 @@ class Trader_GD(object):
             # of the list
             self.history_transac = []
 
-    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks):
+    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds):
             # Get the acceptance possibility of a price existing
             # in the transaction history.
             # Params. price: target price
@@ -969,7 +1059,7 @@ class Trader_ZIP(object):
         self.prev_best_ask_p = None
         self.prev_best_ask_q = None
 
-    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks):
+    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds):
         num_contracts = 0
         self.prev_best_bid_p = standing_bid
         self.prev_best_ask_p = standing_ask
@@ -1177,7 +1267,7 @@ class Trader_AI(object):
         self.standing_bid = None
         self.standing_ask = None
 
-    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks):
+    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds):
         self.current_period = period
         self.current_number_bids = number_bids  # will update with every offer
         self.current_number_asks = number_asks  # will update with every offer

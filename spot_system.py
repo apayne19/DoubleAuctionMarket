@@ -14,26 +14,26 @@ import math
 # noinspection PyUnboundLocalVariable,PyUnboundLocalVariable
 class SpotSystem(object):
     def __init__(self):
-        self.name = ""
+        self.name = ""  # place holder for session name
         self.display = True  # calls function to display board
         self.limits = (0, 0)  # creates limits that can be changed
         self.num_market_rounds = 0  # sets number of market rounds to 0
         self.trader_names = []  # dictionary for trader names to be logged
-        self.traders = [] # dictionary of trader ids?
-        self.eff_list = []
-        self.t_list = []
-        self.alphas = []
-        self.trade_ratio_list = []
+        self.traders = []  # dictionary of trader strategies
+        self.eff_list = []  # trader efficiency list
+        self.t_list = []  # trader number list
+        self.alphas = []  # holds smith's convergence alphas, proximities to equilibrium
+        self.trade_ratio_list = []  # holds period trade ratios
         self.trader_info = {}  # dictionary of keys:values
         self.mkt = None  # function called from spot_environment_model
         self.da = None  # function called from double_auction_institution
-        self.current_period = 0  # ADDED
-        self.current_round = 0
-        self.number_bids = 0  # ADDED
-        self.number_asks = 0  # ADDED
+        self.current_period = 0  # place holder for period number
+        self.current_round = 0  # place holder for round number
+        self.number_bids = 0  # running count of bid offers made previously
+        self.number_asks = 0  # running count of asks offers made previously
         self.AA_earn = []
         self.GD_earn = []
-        self.PS_earn = []  # ADDED: to hold strategy total avg earns
+        self.PS_earn = []  # these hold strategy total earns
         self.AI_earn = []
         self.ZIP_earn = []
         self.ZIC_earn = []
@@ -41,16 +41,16 @@ class SpotSystem(object):
         self.KP_earn = []
 
     def init_spot_system(self, name, limits, rounds, input_path, input_file, output_path, session_name):
-        self.name = name
-        self.limits = limits
-        self.num_market_rounds = rounds
+        self.name = name  # session name
+        self.limits = limits  # price ceiling and floor
+        self.num_market_rounds = rounds  # total number of rounds to run
         self.mkt = env.SpotEnvironmentModel()  # instantiate environment object
-        self.da = ins.Auction('da', self.limits[0], self.limits[1]) # instantiate auction
+        self.da = ins.Auction('da', self.limits[0], self.limits[1])  # instantiate auction
         self.load_market(input_path, input_file, output_path, session_name)  # loads market file from gui inputs
 
     def init_traders(self, trader_names, period):
-        self.current_period = period
-        self.trader_names = trader_names
+        self.current_period = period  # trading period
+        self.trader_names = trader_names  # trader strategies
         self.trader_info = self.prepare_traders(self.trader_names, self.mkt, self.limits)  # instantiate traders
 
     def load_market(self, input_path, input_file, output_path, session_name):
@@ -62,57 +62,68 @@ class SpotSystem(object):
     def run_system(self):
         self.da.open_board("tournament official")
         num_contracts = 1  # shouldnt this be 0??
-        if self.display:  # if display = true
+        if self.display:  # if display = true (if tournament still running)
             print()
             print("Auction Open")
-            print(self.da.report_orders())  # prints list of orders per period (time, trader, bid/ask)
-        length_old_contracts = 0
-        temp_traders = self.traders
-        for i in range(self.num_market_rounds):
+        length_old_contracts = 0  # number of previous contracts
+        temp_traders = self.traders  # trader ids
+        for i in range(self.num_market_rounds):  # iterates through each round
             random.shuffle(temp_traders)  # generates random order of traders each round
             self.current_round = i
-            for trader in temp_traders:
-                self.number_bids = 0
-                self.number_asks = 0
-                self.trader_handler(trader)
+            for trader in temp_traders:  # iterates through each trader
+                self.number_bids = 0  # starting bid offers = 0
+                self.number_asks = 0  # starting ask offers = 0
+                self.trader_handler(trader)  # calls next function, executes trader's offer based on strategy
                 print("Standing Bid, Standing Ask:" + str(self.da.report_standing()))  # prints bid,ask in real time
                 contracts = self.da.report_contracts()  # list of contracts as they happen
                 if len(contracts) > length_old_contracts:  # if len(contracts)>0
-                    length_old_contracts = len(contracts)
-                    if self.display:  # if display still true
-                        print("--> Contract #" + str(num_contracts), "|", "Round #" + str(i), "|", contracts[len(contracts) - 1], "|", self.da.time_index())
+                    length_old_contracts = len(contracts)  # update previous contracts
+                    if self.display:  # if display still true (tournament still running)
+                        print("--> Contract #" + str(num_contracts), "|", "Round #" + str(self.current_round), "|", contracts[len(contracts) - 1], "|", self.da.time_index())
                         print("#bids: " + str(self.number_bids))
                         print("#asks: " + str(self.number_asks))
                         # prints info for each trader
-                        num_contracts = num_contracts + 1
+                        num_contracts = num_contracts + 1  # add 1 to contracts number
 
         if self.display:
             print()
 
     def trader_handler(self, trader):
-        for order in self.da.report_orders():
+        last_period_prices = []
+        for order in self.da.report_orders():  # iterates through orders
+            last_period_prices.append(order[0])
             if order[2] == 'bid':
-                self.number_bids = self.number_bids + 1
+                self.number_bids = self.number_bids + 1  # if bid add 1 to bid count
             elif order[2] == 'ask':
-                self.number_asks = self.number_asks + 1
-
-
+                self.number_asks = self.number_asks + 1  # if ask add 1 to ask count
+        try:
+            last_period_min = min(last_period_prices)
+        except ValueError:
+            last_period_min = None
+        try:
+            last_period_max = max(last_period_prices)
+        except ValueError:
+            last_period_max = None
+        '''below the trader generates an offer based on strategy function called in trader.py'''
         offer = trader.offer(self.da.report_contracts(), self.da.report_standing()[0], self.da.report_standing()[1],
-                             self.current_period, self.number_bids, self.number_asks)  # added periods, # bids, # asks
+                             self.current_period, self.number_bids, self.number_asks, last_period_max, last_period_min,
+                             self.current_round, self.num_market_rounds)  # added periods, # bids, # asks
         if len(offer) == 0:
-            return
-        if offer[0] == "B":  # identifies the bidders and bids
+            return  # if no offer then return nothing
+        '''below the bid and ask functions are called from double_auction_institution...
+        ... takes information from trader offer and submits bid or ask to market'''
+        if offer[0] == "B":  # identifies the buyers and bids
             self.da.bid(offer[1], offer[2], self.trader_info, self.current_period, self.current_round)
-        else:
-            self.da.ask(offer[1], offer[2], self.trader_info, self.current_period, self.current_round)  # else identified as sellers and asks
+        else:  # identifies the sellers and asks
+            self.da.ask(offer[1], offer[2], self.trader_info, self.current_period, self.current_round)
 
     def eval(self):
         # calculate market efficiency
         result_header = [" ", " ", len(self.traders)]
-        ep_low = self.trader_info['equilibrium'][1]
-        ep_high = self.trader_info['equilibrium'][2]
-        e_quantity = self.trader_info['equilibrium'][0]
-        maximum_surplus = self.trader_info['equilibrium'][3]
+        ep_low = self.trader_info['equilibrium'][1]  # equilibrium price low
+        ep_high = self.trader_info['equilibrium'][2]  # equilibrium price high
+        e_quantity = self.trader_info['equilibrium'][0]  # equilibrium quantity
+        maximum_surplus = self.trader_info['equilibrium'][3]  # max surplus that can be obtained
 
         for trader in self.traders:
             trader_id = trader.name
@@ -128,47 +139,47 @@ class SpotSystem(object):
         if ep_low == ep_high:
             theor_p = ep_high
         else:
-            theor_p = (ep_low + ep_high)/2
+            theor_p = (ep_low + ep_high)/2  # if equilibrium high and low prices then take avg
 
         for contract in self.da.report_contracts():  # going through list of contracts
-            count = count + 1
-            price = contract[0]  # pulls price from board
-            act_p.append(price)
+            count = count + 1  # counts contracts
+            price = contract[0]  # pulls transaction price from board
+            act_p.append(price)  # appends transaction price to global dictionary
             buyer_id = contract[1]  # pulls buyer id from board
             seller_id = contract[2]  # pulls seller id from board
-            if self.trader_info[buyer_id]['type'] == 'B':  # type is bid?
-                value = self.trader_info[buyer_id]['values'][self.trader_info[buyer_id]['units']]
-                '''the line above is indexing values and units from trader_info?'''
-                self.trader_info[buyer_id]['earn'] += value - price
-                self.trader_info[buyer_id]['units'] += 1
+            if self.trader_info[buyer_id]['type'] == 'B':  # if bidding
+                value = self.trader_info[buyer_id]['values'][self.trader_info[buyer_id]['units']]  # max valuation
+                self.trader_info[buyer_id]['earn'] += value - price  # profit
+                self.trader_info[buyer_id]['units'] += 1  # trader's units gained
             else:
                 print("error, buyer id = {}, buyer type = {}".format(buyer_id, self.trader_info[buyer_id]['type']))
-            if self.trader_info[seller_id]['type'] == 'S':
-                cost = self.trader_info[seller_id]['costs'][self.trader_info[seller_id]['units']]
-                self.trader_info[seller_id]['earn'] += price - cost
-                self.trader_info[seller_id]['units'] += 1
+            if self.trader_info[seller_id]['type'] == 'S':  # if selling
+                cost = self.trader_info[seller_id]['costs'][self.trader_info[seller_id]['units']]  # lowest cost
+                self.trader_info[seller_id]['earn'] += price - cost  # profit
+                self.trader_info[seller_id]['units'] += 1  # trader's units sold
             else:
                 print("error in contract {}, seller id = {}, seller type = {}".format(contract, seller_id,
                                                                                        self.trader_info[seller_id]['type']))
             # noinspection PyUnboundLocalVariable,PyUnboundLocalVariable
             actual_surplus += value - cost
-        summation = []
-        for i in act_p:
-            s_step = (i-theor_p)**2
-            summation.append(s_step)
+        summation = []  # dictionary for holding the summation calculations for Smith's Alpha
+        for i in act_p:  # iterate through transaction prices
+            s_step = (i-theor_p)**2  # (transaction price - equilibrium price)squared
+            summation.append(s_step)  # appends each calculation
         if len(act_p) != 0:
             smith_alpha = (math.sqrt(sum(summation)/len(act_p))/theor_p)*100
+            '''the above calculation comes from Vernon Smith (1967)'''
         else:
-            smith_alpha = 0
-        self.alphas.append(smith_alpha)
-        efficiency = int((actual_surplus / maximum_surplus) * 100)
+            smith_alpha = 0  # TODO this needs to be changed to None etc.
+        self.alphas.append(smith_alpha)  # appends each period's convergence alpha
+        efficiency = int((actual_surplus / maximum_surplus) * 100)  # periods trading efficiency
         trade_ratio = count/e_quantity
-        self.trade_ratio_list.append(trade_ratio)
+        self.trade_ratio_list.append(trade_ratio)  # appends period's trade ratio
         result_header.extend([ep_low, ep_high, e_quantity, maximum_surplus, actual_surplus, efficiency])
         if self.display:
-            print("actP:" + str(act_p) + "length:" + str(len(act_p)) + "theorP:" + str(theor_p))
-            print("summations:" + str(summation))
-            print("Smith_alpha:" + str(smith_alpha))
+            # print("actP:" + str(act_p) + "length:" + str(len(act_p)) + "theorP:" + str(theor_p))
+            # print("summations:" + str(summation))
+            # print("Smith_alpha:" + str(smith_alpha))
             print("actual surplus = {}, maximum surplus = {}.".format(actual_surplus, maximum_surplus))
             print("market efficiency = {} percent.".format(efficiency))
             print("trade ratio = {}.".format(trade_ratio))
@@ -176,9 +187,9 @@ class SpotSystem(object):
             # print("#asks: " + str(self.number_asks))
 
         for k in range(len(self.traders)):
-            t_id = "t" + str(k)
-            t_strat = self.trader_info[t_id]['strat']  # TODO add this info to report.orders so can use in AI
-            earn = self.trader_info[t_id]['earn']
+            t_id = "t" + str(k)  # trader id
+            t_strat = self.trader_info[t_id]['strat']  # trading strategy
+            earn = self.trader_info[t_id]['earn']  # trader earnings
             if ep_high == ep_low:  # if high and low eqs the same
                 t_eff = (earn/maximum_surplus)*100  # trader's efficiency in %
             elif ep_high != ep_low:  # if eqs different
@@ -189,21 +200,21 @@ class SpotSystem(object):
             if self.display:
                 print("Trader {}, using strategy {}, earned {}, had efficiency {} %.".format(t_id, t_strat, earn, round(t_eff, 1)))
             result_header.extend([t_id, t_strat, earn])
-            self.eff_list.append(round(t_eff, 1))
-            self.t_list.append(k)
+            self.eff_list.append(round(t_eff, 1))  # appends trader's period efficiency and rounds
+            self.t_list.append(k)  # appends trader number to list
         if self.display:
             print()
 
         for k in self.trader_info['strategies']:
-            strat_earn = 0
+            strat_earn = 0  # place holder for strategy earnings
             count = 0
             for l in range(len(self.traders)):
                 t_id = "t" + str(l)
                 if k == self.trader_info[t_id]['strat']:
-                    count = count + 1
+                    count = count + 1  # count times strategy used
                     strat_earn += self.trader_info[t_id]['earn']
                     if k == 'Trader_AA':
-                        self.AA_earn.append(strat_earn)
+                        self.AA_earn.append(strat_earn)  # these append trader earnings to their unique dicts
                     elif k == 'Trader_GD':
                         self.GD_earn.append(strat_earn)
                     elif k == 'Trader_PS':
@@ -219,9 +230,9 @@ class SpotSystem(object):
                     elif k == 'Trader_Kaplan':
                         self.KP_earn.append(strat_earn)
                     else:
-                        print("Trader not listed!")
+                        print("Trader not listed!")  # lets the user know if trader dicts not updated
             if count > 0:
-                avg_earn = int(strat_earn / count)
+                avg_earn = int(strat_earn / count)  # calculates strategies avg earning
                 result_header.extend([k, avg_earn])
             if self.display:
                 # noinspection PyUnboundLocalVariable
@@ -234,8 +245,8 @@ class SpotSystem(object):
         d = {}
         t = {}
         if len(tn) != mkt.num_buyers + mkt.num_sellers:
-            print ("tn = {} does not have the right length".format(tn))
-        print ("Buyers = {}, Sellers = {}, Total = {}".format(mkt.num_buyers, mkt.num_sellers, len(tn)))
+            print("tn = {} does not have the right length".format(tn))
+        print("Buyers = {}, Sellers = {}, Total = {}".format(mkt.num_buyers, mkt.num_sellers, len(tn)))
         for k in range(mkt.num_buyers + mkt.num_sellers):
             t_id = "t" + str(k)  # make trader id
             t[t_id] = globals()[tn[k]]()  # create object

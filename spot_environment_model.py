@@ -343,36 +343,37 @@ class SpotEnvironmentModel(object):
 
     def plot_supply_demand(self, output_path, session_name):
         """First define supply and demand curves"""
-        # make dunits = list of deman units, sunits = list of supply units
-        dunits = [units for units in range(len(self.env["demand"]) + 2)]
-        sunits = [units for units in range(len(self.env["supply"]) + 1)]
-        munits = [units for units in range(max(len(dunits), len(sunits)))]
+        with plt.style.context('seaborn'):
+            # make dunits = list of deman units, sunits = list of supply units
+            dunits = [units for units in range(len(self.env["demand"]) + 2)]
+            sunits = [units for units in range(len(self.env["supply"]) + 1)]
+            munits = [units for units in range(max(len(dunits), len(sunits)))]
 
-        self.calc_equilibrium()  # this is where env["dem"] and env["sup"] created
+            self.calc_equilibrium()  # this is where env["dem"] and env["sup"] created
 
-        # Then plot the curves
+            # Then plot the curves
 
-        demand_values = self.env["dem"]
-        supply_costs = self.env["sup"]
+            demand_values = self.env["dem"]
+            supply_costs = self.env["sup"]
 
-        plt.step(dunits, demand_values, label='Demand')  # generate demand plot
-        plt.step(sunits, supply_costs, label='Supply')  # generate supply plot
+            plt.step(dunits, demand_values, label='Demand', color='orangered')  # generate demand plot
+            plt.step(sunits, supply_costs, label='Supply', color='darkorange')  # generate supply plot
 
-        eq_price_high = self.env["eq"]["price_high"]
-        eq_price_low = self.env["eq"]["price_low"]
+            eq_price_high = self.env["eq"]["price_high"]
+            eq_price_low = self.env["eq"]["price_low"]
 
-        if eq_price_high != eq_price_low:
-            plt.plot(munits, [eq_price_high for x in munits], label='Price High')
-            plt.plot(munits, [eq_price_low for x in munits], label='Price Low')
-        else:
-            plt.plot(munits, [eq_price_high for x in munits], label='Price') # one price
+            if eq_price_high != eq_price_low:
+                plt.plot(munits, [eq_price_high for x in munits], linestyle='--', color='darkslategray', label='Eq. Price High')
+                plt.plot(munits, [eq_price_low for x in munits], linestyle='--', color='darkslategray', label='Eq. Price Low')
+            else:
+                plt.plot(munits, [eq_price_high for x in munits], linestyle='--', color='darkslategray', label='Eq. Price') # one price
 
-        plt.legend(bbox_to_anchor=(0.65, 0.98))  # places a legend on the plot
-        plt.title('Supply and Demand')  # add the title
-        plt.xlabel('Units')  # add the x axis label
-        plt.ylabel('$')  # add the y axis label
-        plt.savefig(output_path + session_name + "\\" + "Supply Demand.png")  # display the plot
-        plt.close()
+            plt.legend(bbox_to_anchor=(0.65, 0.98))  # places a legend on the plot
+            plt.title('Simulation Market Supply and Demand')  # add the title
+            plt.xlabel('Units')  # add the x axis label
+            plt.ylabel('Value ($)')  # add the y axis label
+            plt.savefig(output_path + session_name + "\\" + "Supply Demand.png")  # display the plot
+            plt.close()
 
 
     def calc_equilibrium(self):
