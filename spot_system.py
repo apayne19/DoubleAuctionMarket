@@ -39,6 +39,8 @@ class SpotSystem(object):
         self.ZIC_earn = []
         self.SI_earn = []
         self.KP_earn = []
+        self.ZIP_watch = None
+        self.deal_status = None
 
     def init_spot_system(self, name, limits, rounds, input_path, input_file, output_path, session_name):
         self.name = name  # session name
@@ -74,16 +76,44 @@ class SpotSystem(object):
                 self.number_bids = 0  # starting bid offers = 0
                 self.number_asks = 0  # starting ask offers = 0
                 self.trader_handler(trader)  # calls next function, executes trader's offer based on strategy
+
                 print("Standing Bid, Standing Ask:" + str(self.da.report_standing()))  # prints bid,ask in real time
                 contracts = self.da.report_contracts()  # list of contracts as they happen
+                '''need to put ZIP respond() here'''
                 if len(contracts) > length_old_contracts:  # if len(contracts)>0
                     length_old_contracts = len(contracts)  # update previous contracts
                     if self.display:  # if display still true (tournament still running)
-                        print("--> Contract #" + str(num_contracts), "|", "Round #" + str(self.current_round), "|", contracts[len(contracts) - 1], "|", self.da.time_index())
+                        '''need to put ZIP respond() here'''
+                        self.deal_status = True
+                        print("DEAL")
+                        print("ZIP Before: " + str(self.ZIP_watch))
+                        try:
+
+                            self.ZIP_watch = Trader_ZIP().respond(contracts, self.deal_status, self.da.report_standing()[0],
+                                                              self.da.report_standing()[1], self.ZIP_watch[0])
+                        except TypeError:
+                            self.ZIP_watch = Trader_ZIP().respond(contracts, self.deal_status, self.da.report_standing()[0],
+                                                                  self.da.report_standing()[1], self.ZIP_watch)
+                        # print("ZIP After: " + str(self.ZIP_watch))
+                        print("--> Contract #" + str(num_contracts), "|", "Round #" + str(self.current_round), "|",
+                              contracts[len(contracts) - 1], "|", self.da.time_index())
                         print("#bids: " + str(self.number_bids))
                         print("#asks: " + str(self.number_asks))
                         # prints info for each trader
                         num_contracts = num_contracts + 1  # add 1 to contracts number
+                else:
+                    self.deal_status = False
+                    print("NO DEAL")
+                    print("ZIP Before: " + str(self.ZIP_watch))
+                    self.ZIP_watch = Trader_ZIP().respond(contracts, self.deal_status, self.da.report_standing()[0],
+                                                          self.da.report_standing()[1], self.ZIP_watch)
+                    # try:
+                    #     self.ZIP_watch = Trader_ZIP().respond(contracts, self.deal_status, self.da.report_standing()[0],
+                    #                                       self.da.report_standing()[1], self.ZIP_watch[0])
+                    # except TypeError:
+                    #     self.ZIP_watch = Trader_ZIP().respond(contracts, self.deal_status, self.da.report_standing()[0],
+                    #                                           self.da.report_standing()[1], self.ZIP_watch)
+                    print("ZIP After: " + str(self.ZIP_watch))
 
         if self.display:
             print()
@@ -105,9 +135,14 @@ class SpotSystem(object):
         except ValueError:
             last_period_max = None
         '''below the trader generates an offer based on strategy function called in trader.py'''
-        offer = trader.offer(self.da.report_contracts(), self.da.report_standing()[0], self.da.report_standing()[1],
-                             self.current_period, self.number_bids, self.number_asks, last_period_max, last_period_min,
-                             self.current_round, self.num_market_rounds)  # added periods, # bids, # asks
+        if trader == 'Trader_ZIP':
+            offer = trader.offer(self.da.report_contracts(), self.da.report_standing()[0], self.da.report_standing()[1],
+                                 self.current_period, self.number_bids, self.number_asks, last_period_max, last_period_min,
+                                 self.current_round, self.num_market_rounds, self.ZIP_watch[1])  # added periods, # bids, # asks
+        else:
+            offer = trader.offer(self.da.report_contracts(), self.da.report_standing()[0], self.da.report_standing()[1],
+                                 self.current_period, self.number_bids, self.number_asks, last_period_max, last_period_min,
+                                 self.current_round, self.num_market_rounds)  # added periods, # bids, # asks
         if len(offer) == 0:
             return  # if no offer then return nothing
         '''below the bid and ask functions are called from double_auction_institution...

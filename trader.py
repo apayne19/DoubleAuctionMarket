@@ -1040,6 +1040,7 @@ class Trader_ZIP(object):
         # got rid of self.balance = balance
         self.blotter = []
         self.orders = []
+        self.limit = None
         # got rid of self.job for self.type
         self.active = False  # gets switched to True while actively working an order
         self.prev_change = 0  # this was called last_d in Cliff'97
@@ -1051,18 +1052,21 @@ class Trader_ZIP(object):
         self.margin_buy = -1.0 * (0.05 + 0.3 * random.random())
         self.margin_sell = 0.05 + 0.3 * random.random()
         self.price = None
-        self.cur_value = None
-        self.cur_cost = None
+        # self.cur_value = None
+        # self.cur_cost = None
         # memory of best price & quantity of best bid and ask, on LOB on previous update
-        self.prev_best_bid_p = None
-        self.prev_best_bid_q = None
-        self.prev_best_ask_p = None
-        self.prev_best_ask_q = None
+        # self.prev_best_bid_p = None
+        # self.prev_best_bid_q = None
+        # self.prev_best_ask_p = None
+        # self.prev_best_ask_q = None
 
-    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds):
+    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num,
+              total_rounds, prev_info):
+        # add margin to call
         num_contracts = 0
-        self.prev_best_bid_p = standing_bid
-        self.prev_best_ask_p = standing_ask
+        # self.prev_best_bid_p = standing_bid
+        # self.prev_best_ask_p = standing_ask
+
         if self.type == "buyer":
             for contract in contracts:
                 if contract[1] == self.name:  # second position is buyer_id
@@ -1070,11 +1074,15 @@ class Trader_ZIP(object):
             if num_contracts >= len(self.values):
                 self.active = False
                 return []  # You can't bid anymore
-            self.cur_value = self.values[num_contracts]  # this is the current value working on
+            self.limit = self.values[num_contracts]  # this is the current value working on
             self.active = True
-            self.margin = self.margin_buy
-            bid = int(self.cur_value * (1 + self.margin))
+            try:
+                self.margin = prev_info
+            except IndexError:
+                self.margin = self.margin_buy
+            bid = int(round(self.limit * (1 + self.margin)), 0)
             self.price = bid
+
             return["B", self.name, bid]
 
         else:
@@ -1084,168 +1092,163 @@ class Trader_ZIP(object):
             if num_contracts >= len(self.costs):
                 self.active = False
                 return []  # You can't bid anymore
-            self.cur_cost = self.costs[num_contracts]  # this is the current value working on
+            self.limit = self.costs[num_contracts]  # this is the current value working on
             self.active = True
-            self.margin = self.margin_sell
-            ask = int(self.cur_cost * (1 + self.margin))
+            try:
+                self.margin = prev_info
+            except IndexError:
+                self.margin = self.margin_buy
+            ask = int(round(self.limit * (1 + self.margin)), 0)
             self.price = ask
             return["S", self.name, ask]
 
     # update margin on basis of what happened in market
-    def respond(self, time, lob, trade, verbose):
+    def respond(self, contracts, deal_status, standing_bid, standing_ask, prev_offer):
+
+        '''Added:
+        contracts = transactions
+        num_contract_before = number contracts before next trader goes
+        num_contract_after = number contracts after trader goes
+        prev_offer = Zip's previous bid
+        '''
         # ZIP trader responds to market events, altering its margin
         # does this whether it currently has an order to work or not
-        def target_up(price):
+        # self.name = ""
+        # self.type = ""
+        # self.values = []
+        # self.costs = []
+        # # got rid of self.balance = balance
+        # self.blotter = []
+        # self.orders = []
+        # self.limit = None
+        # # got rid of self.job for self.type
+        # self.active = False  # gets switched to True while actively working an order
+        # self.prev_change = 0  # this was called last_d in Cliff'97
+        # self.beta = 0.1 + 0.4 * random.random()
+        # self.momntm = 0.1 * random.random()
+        # self.ca = 0.05  # self.ca & .cr were hard-coded in '97 but parameterised later
+        # self.cr = 0.05
+        # self.margin = None  # this was called profit in Cliff'97
+        # self.margin_buy = -1.0 * (0.05 + 0.3 * random.random())
+        # self.margin_sell = 0.05 + 0.3 * random.random()
+        # self.price = None
+        def target_up(price, ca, cr):
             # generate a higher target price by randomly perturbing given price
-            ptrb_abs = self.ca * random.random()  # absolute shift
-            ptrb_rel = price * (1.0 + (self.cr * random.random()))  # relative shift
+            ptrb_abs = ca * random.random()  # absolute shift
+            ptrb_rel = price * (1.0 + (cr * random.random()))  # relative shift
             target = int(round(ptrb_rel + ptrb_abs, 0))
             # #                        print('TargetUp: %d %d\n' % (price,target))
 
             return target
 
-        def target_down(price):
+        def target_down(price, ca, cr):
             # generate a lower target price by randomly perturbing given price
-            ptrb_abs = self.ca * random.random()  # absolute shift
-            ptrb_rel = price * (1.0 - (self.cr * random.random()))  # relative shift
+            ptrb_abs = ca * random.random()  # absolute shift
+            ptrb_rel = price * (1.0 - (cr * random.random()))  # relative shift
             target = int(round(ptrb_rel - ptrb_abs, 0))
             # #                        print('TargetDn: %d %d\n' % (price,target))
 
             return target
 
-        def willing_to_trade(price):
-            # am I willing to trade at this price?
-            willing = False
-            if self.type == 'buyer' and self.active and self.price >= price:
-                willing = True
-
-            if self.type == 'seller' and self.active and self.price <= price:
-                willing = True
-
-            return willing
-
-        def profit_alter(price):
-            oldprice = self.price
-            diff = price - oldprice
-            change = ((1.0 - self.momntm) * (self.beta * diff)) + (self.momntm * self.prev_change)
+        def profit_alter(new_price, old_price, limit, momntm, beta, prev_change):
+            oldprice = old_price
+            diff = new_price - oldprice
+            change = ((1.0 - momntm) * (beta * diff)) + (momntm * prev_change)
             self.prev_change = change
             if self.type == 'buyer':
-                newmargin = ((self.price + change) / self.cur_value) - 1.0
+                newmargin = ((old_price + change) / limit) - 1.0
                 if newmargin < 0.0:
-                    self.margin_buy = newmargin
-                    self.margin = newmargin
-                self.price = int(round(self.cur_value * (1.0 + self.margin), 0))
+                    margin_buy = newmargin
+                    margin = newmargin
+                self.price = int(round(self.limit * (1.0 + margin), 0))
 
             else:
-                newmargin = ((self.price + change) / self.cur_cost) - 1.0
+                newmargin = ((self.price + change) / self.limit) - 1.0
                 if newmargin > 0.0:
                     self.margin_sell = newmargin
                     self.margin = newmargin
                 # set the price from limit and profit-margin
-                self.price = int(round(self.cur_cost * (1.0 + self.margin), 0))
+                self.price = int(round(self.limit * (1.0 + self.margin), 0))
 
-        # what, if anything, has happened on the bid LOB?
-        bid_improved = False
-        bid_hit = False
-        lob_best_bid_p = lob['bids']['best']
-        lob_best_bid_q = None
-        if lob_best_bid_p != None:
-            # non-empty bid LOB
-            lob_best_bid_q = lob['bids']['lob'][-1][1]
-            if self.prev_best_bid_p < lob_best_bid_p:
-                # best bid has improved
-                # NB doesn't check if the improvement was by self
-                bid_improved = True
-
-            elif trade != None and ((self.prev_best_bid_p > lob_best_bid_p) or (
-                (self.prev_best_bid_p == lob_best_bid_p) and (self.prev_best_bid_q > lob_best_bid_q))):
-                # previous best bid was hit
-                bid_hit = True
-
-        elif self.prev_best_bid_p != None:
-            # the bid LOB has been emptied by a hit
-            bid_hit = True
-
-        # what, if anything, has happened on the ask LOB?
-        ask_improved = False
-        ask_lifted = False
-        lob_best_ask_p = lob['asks']['best']
-        lob_best_ask_q = None
-        if lob_best_ask_p != None:
-            # non-empty ask LOB
-            lob_best_ask_q = lob['asks']['lob'][0][1]
-            if self.prev_best_ask_p > lob_best_ask_p:
-                # best ask has improved -- NB doesn't check if the improvement was by self
-                ask_improved = True
-
-            elif trade != None and ((self.prev_best_ask_p < lob_best_ask_p) or (
-                (self.prev_best_ask_p == lob_best_ask_p) and (self.prev_best_ask_q > lob_best_ask_q))):
-                # trade happened and best ask price has got worse, or stayed same but quantity reduced -- assume previous best ask was lifted
-                ask_lifted = True
-
-        elif self.prev_best_ask_p != None:
-            # the bid LOB is empty now but was not previously, so must have been hit
-            ask_lifted = True
-
-        if verbose and (bid_improved or bid_hit or ask_improved or ask_lifted):
-            print('B_improved', bid_improved, 'B_hit', bid_hit, 'A_improved', ask_improved, 'A_lifted', ask_lifted)
-        deal = bid_hit or ask_lifted
-
+        num_contracts = 0
         if self.type == 'seller':
             # seller
-            if deal:
-                tradeprice = trade['price']
-                if self.price <= tradeprice:
+            for contract in contracts:
+                if contract[1] == self.name:  # second position is buyer_id
+                    num_contracts = num_contracts + 1
+            self.limit = self.costs[num_contracts]
+            if prev_offer == None:
+                self.price = int(round(self.limit * (1 + self.margin)), 0)
+            else:
+                self.price = prev_offer
+            if deal_status == True:  # indicates there was a deal made after the current turn
+                tradeprice = contracts[-1][0]  # most recent transaction price
+                if self.price <= tradeprice:  # if previous ask was less than or equal to most recent contract price
                     # could sell for more? raise margin
-                    target_price = target_up(tradeprice)
+                    target_price = target_up(tradeprice, self.ca, self.cr)
                     profit_alter(target_price)
+                    return [self.price, self.margin]
 
-                elif ask_lifted and self.active and not willing_to_trade(tradeprice):
+                elif tradeprice < self.limit:
                     # wouldnt have got this deal, still working order, so reduce margin
-                    target_price = target_down(tradeprice)
+                    target_price = target_down(tradeprice, self.ca, self.cr)
                     profit_alter(target_price)
+                    return [self.price, self.margin]
 
             else:
                 # no deal: aim for a target price higher than best bid
-                if ask_improved and self.price > lob_best_ask_p:
-                    if lob_best_bid_p != None:
-                        target_price = target_up(lob_best_bid_p)
+                if self.price > standing_ask:
+                    if standing_bid:
+                        target_price = target_up(standing_bid, self.ca, self.cr)
 
                     else:
-                        target_price = lob['asks']['worst']  # stub quote
+                        target_price = 401   # stub quote
                     profit_alter(target_price)
+                    return [self.price, self.margin]
 
         if self.type == 'buyer':
             # buyer
-            if deal:
-                tradeprice = trade['price']
+            for contract in contracts:
+                if contract[1] == self.name:  # second position is buyer_id
+                    num_contracts = num_contracts + 1
+            self.limit = self.values[num_contracts]
+            if prev_offer == None:
+                self.price = int(round(self.limit * (1 + self.margin)), 0)
+            else:
+                self.price = prev_offer
+            if deal_status == True:
+                tradeprice = contracts[-1][0]
                 if self.price >= tradeprice:
                     # could buy for less? raise margin (i.e. cut the price)
-                    target_price = target_down(tradeprice)
-                    profit_alter(target_price)
+                    target_price = target_down(tradeprice, self.ca, self.cr)
+                    results = profit_alter(target_price, self.price)
+                    #return [self.price, self.margin]
+                    return ['Yes']
 
-                elif bid_hit and self.active and not willing_to_trade(tradeprice):
+                elif tradeprice > self.limit:
                     # wouldnt have got this deal, still working order, so reduce margin
-                    target_price = target_up(tradeprice)
-                    profit_alter(target_price)
+                    target_price = target_up(tradeprice, self.ca, self.cr)
+                    results = profit_alter(target_price, self.price)
+                    #return [self.price, self.margin]
+                    return ['Yes']
 
             else:
                 # no deal: aim for target price lower than best ask
-                if bid_improved and self.price < lob_best_bid_p:
-                    if lob_best_ask_p != None:
-                        target_price = target_down(lob_best_ask_p)
+                if self.price < standing_bid:
+                    if standing_ask:
+                        target_price = target_down(standing_ask, self.ca, self.cr)
 
                     else:
-                        target_price = lob['bids']['worst']  # stub quote
-                    profit_alter(target_price)
+                        target_price = -1  # stub quote
+                    results = profit_alter(target_price, self.price)
+
+                    return [self.price, self.margin]
+
+
 
         # remember the best LOB data ready for next response
-        # TODO fix spot_system or d_a_institution to allow ZIP memory
-        # LOb = limit order book (display ledger)... lob(bid) = standing bid...??? # TODO fix this
-        self.prev_best_bid_p = lob_best_bid_p
-        self.prev_best_bid_q = lob_best_bid_q
-        self.prev_best_ask_p = lob_best_ask_p
-        self.prev_best_ask_q = lob_best_ask_q
+        #self.prev_best_bid_p = standing_bid
+        #self.prev_best_ask_p = standing_ask
 
 class Trader_AI(object):
     """ A class that makes a trader"""
