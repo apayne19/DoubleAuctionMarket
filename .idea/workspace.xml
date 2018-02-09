@@ -25,11 +25,21 @@
       <file leaf-file-name="spot_market_period.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/spot_market_period.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="766">
-              <caret line="323" column="66" lean-forward="true" selection-start-line="323" selection-start-column="66" selection-end-line="323" selection-end-column="66" />
+            <state relative-caret-position="2286">
+              <caret line="349" column="13" lean-forward="true" selection-start-line="349" selection-start-column="13" selection-end-line="349" selection-end-column="13" />
               <folding>
                 <element signature="e#0#25#0" expanded="true" />
-                <marker date="1518049563526" expanded="true" signature="9885:9927" ph="..." />
+                <element signature="e#3204#4308#0" expanded="false" />
+                <element signature="e#4898#5665#0" expanded="false" />
+                <element signature="e#5794#6377#0" expanded="false" />
+                <element signature="e#6466#8005#0" expanded="false" />
+                <element signature="e#8044#8595#0" expanded="false" />
+                <element signature="e#9158#10230#0" expanded="false" />
+                <element signature="e#10319#10885#0" expanded="false" />
+                <element signature="e#10990#12522#0" expanded="false" />
+                <element signature="e#12773#13516#0" expanded="false" />
+                <element signature="e#13621#14228#0" expanded="false" />
+                <marker date="1518212967837" expanded="true" signature="10188:10230" ph="..." />
               </folding>
             </state>
           </provider>
@@ -45,11 +55,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="spot_system.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="spot_system.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/spot_system.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="748">
-              <caret line="109" column="26" lean-forward="true" selection-start-line="109" selection-start-column="26" selection-end-line="109" selection-end-column="26" />
+            <state relative-caret-position="425">
+              <caret line="102" column="69" lean-forward="true" selection-start-line="102" selection-start-column="69" selection-end-line="102" selection-end-column="69" />
               <folding />
             </state>
           </provider>
@@ -58,8 +68,8 @@
       <file leaf-file-name="spot_environment_model.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/spot_environment_model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="6086">
-              <caret line="363" column="0" lean-forward="false" selection-start-line="363" selection-start-column="0" selection-end-line="363" selection-end-column="0" />
+            <state relative-caret-position="1285">
+              <caret line="555" column="58" lean-forward="true" selection-start-line="555" selection-start-column="58" selection-end-line="555" selection-end-column="58" />
               <folding />
             </state>
           </provider>
@@ -75,11 +85,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="trader.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="trader.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/trader.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="487">
-              <caret line="1167" column="48" lean-forward="true" selection-start-line="1167" selection-start-column="48" selection-end-line="1167" selection-end-column="48" />
+            <state relative-caret-position="4788">
+              <caret line="1384" column="51" lean-forward="true" selection-start-line="1384" selection-start-column="51" selection-end-line="1384" selection-end-column="51" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -694,7 +704,14 @@
       <option name="project" value="LOCAL" />
       <updated>1517964836048</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="Overhauled ZIP trader, still working on bug fixes. Started working with alpha go zero algorithm.">
+      <created>1518052814062</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1518052814062</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -706,7 +723,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31362468" sideWeight="0.13904762" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32969153" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22200647" sideWeight="0.8609524" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14757282" sideWeight="0.8609524" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -762,7 +779,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Built function to graph bids/ask by time index into tables using plotly. TODO finish Kaplan trader" />
     <MESSAGE value="Finished Kaplan and HaveToWin traders" />
     <MESSAGE value="Ready to merge with master" />
     <MESSAGE value="Created ability to measure individual efficiency" />
@@ -787,7 +803,8 @@
     <MESSAGE value="clear" />
     <MESSAGE value="Added period and round written into csv file. Fixed matplotlib graphing/saving feature for session save." />
     <MESSAGE value="Finished kaplan bidding strategy, working on selling strategy. Adjusted matplotlib graphing" />
-    <option name="LAST_COMMIT_MESSAGE" value="Finished kaplan bidding strategy, working on selling strategy. Adjusted matplotlib graphing" />
+    <MESSAGE value="Overhauled ZIP trader, still working on bug fixes. Started working with alpha go zero algorithm." />
+    <option name="LAST_COMMIT_MESSAGE" value="Overhauled ZIP trader, still working on bug fixes. Started working with alpha go zero algorithm." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -802,7 +819,17 @@
           <caret line="39" column="0" lean-forward="true" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
           <folding>
             <element signature="e#0#25#0" expanded="true" />
-            <marker date="1518049563526" expanded="true" signature="9885:9927" ph="..." />
+            <element signature="e#3204#4308#0" expanded="false" />
+            <element signature="e#4898#5665#0" expanded="false" />
+            <element signature="e#5794#6377#0" expanded="false" />
+            <element signature="e#6466#8005#0" expanded="false" />
+            <element signature="e#8044#8595#0" expanded="false" />
+            <element signature="e#9158#10230#0" expanded="false" />
+            <element signature="e#10319#10885#0" expanded="false" />
+            <element signature="e#10990#12522#0" expanded="false" />
+            <element signature="e#12773#13516#0" expanded="false" />
+            <element signature="e#13621#14228#0" expanded="false" />
+            <marker date="1518212967837" expanded="true" signature="10188:10230" ph="..." />
           </folding>
         </state>
       </provider>
@@ -848,7 +875,17 @@
           <caret line="22" column="0" lean-forward="true" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
           <folding>
             <element signature="e#0#25#0" expanded="true" />
-            <marker date="1518049563526" expanded="true" signature="9885:9927" ph="..." />
+            <element signature="e#3204#4308#0" expanded="false" />
+            <element signature="e#4898#5665#0" expanded="false" />
+            <element signature="e#5794#6377#0" expanded="false" />
+            <element signature="e#6466#8005#0" expanded="false" />
+            <element signature="e#8044#8595#0" expanded="false" />
+            <element signature="e#9158#10230#0" expanded="false" />
+            <element signature="e#10319#10885#0" expanded="false" />
+            <element signature="e#10990#12522#0" expanded="false" />
+            <element signature="e#12773#13516#0" expanded="false" />
+            <element signature="e#13621#14228#0" expanded="false" />
+            <marker date="1518212967837" expanded="true" signature="10188:10230" ph="..." />
           </folding>
         </state>
       </provider>
@@ -1098,14 +1135,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/spot_environment_model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6086">
-          <caret line="363" column="0" lean-forward="false" selection-start-line="363" selection-start-column="0" selection-end-line="363" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/spot_environment_gui.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="7276">
@@ -1122,32 +1151,50 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/spot_environment_model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1285">
+          <caret line="555" column="58" lean-forward="true" selection-start-line="555" selection-start-column="58" selection-end-line="555" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/spot_market_period.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="766">
-          <caret line="323" column="66" lean-forward="true" selection-start-line="323" selection-start-column="66" selection-end-line="323" selection-end-column="66" />
+        <state relative-caret-position="2286">
+          <caret line="349" column="13" lean-forward="true" selection-start-line="349" selection-start-column="13" selection-end-line="349" selection-end-column="13" />
           <folding>
             <element signature="e#0#25#0" expanded="true" />
-            <marker date="1518049563526" expanded="true" signature="9885:9927" ph="..." />
+            <element signature="e#3204#4308#0" expanded="false" />
+            <element signature="e#4898#5665#0" expanded="false" />
+            <element signature="e#5794#6377#0" expanded="false" />
+            <element signature="e#6466#8005#0" expanded="false" />
+            <element signature="e#8044#8595#0" expanded="false" />
+            <element signature="e#9158#10230#0" expanded="false" />
+            <element signature="e#10319#10885#0" expanded="false" />
+            <element signature="e#10990#12522#0" expanded="false" />
+            <element signature="e#12773#13516#0" expanded="false" />
+            <element signature="e#13621#14228#0" expanded="false" />
+            <marker date="1518212967837" expanded="true" signature="10188:10230" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4788">
+          <caret line="1384" column="51" lean-forward="true" selection-start-line="1384" selection-start-column="51" selection-end-line="1384" selection-end-column="51" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/spot_system.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="748">
-          <caret line="109" column="26" lean-forward="true" selection-start-line="109" selection-start-column="26" selection-end-line="109" selection-end-column="26" />
+        <state relative-caret-position="425">
+          <caret line="102" column="69" lean-forward="true" selection-start-line="102" selection-start-column="69" selection-end-line="102" selection-end-column="69" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trader.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="487">
-          <caret line="1167" column="48" lean-forward="true" selection-start-line="1167" selection-start-column="48" selection-end-line="1167" selection-end-column="48" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>

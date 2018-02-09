@@ -17,7 +17,7 @@ class Trader_Shaver(object):
         self.values = []
         self.costs = []
 
-    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds):
+    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds, zip_margin):
         num_contracts = 0  # intialize number of contracts
 
         if self.type == "buyer":
@@ -74,7 +74,7 @@ class Trader_Kaplan(object):
         self.values = []
         self.costs = []
 
-    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds):
+    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds, zip_margin):
         num_contracts = 0  # intialize number of contracts
         if pmax == None and pmin == None:  # if first period then infinity and -infinity
             pmax = 100000000
@@ -276,7 +276,7 @@ class Trader_ZIC(object):
         self.values = []
         self.costs = []
 
-    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds):
+    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds, zip_margin):
         num_contracts = 0  # intialize number of contracts
 
         if self.type == "buyer":
@@ -329,7 +329,7 @@ class Trader_ZIU(object):
         self.values = []
         self.costs = []
 
-    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds):
+    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds, zip_margin):
         num_contracts = 0  # intialize number of contracts
 
         if self.type == "buyer":
@@ -376,7 +376,7 @@ class Trader_PS(object):
         self.values = []
         self.costs = []
 
-    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds):
+    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds, zip_margin):
         num_contracts = 0  # intialize number of contracts
 
         if self.type == "buyer":
@@ -652,7 +652,7 @@ class Trader_AA(object):
         if theta == 0: theta += 0.0000001
         self.theta = theta
 
-    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds):
+    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds, zip_margin):
         self.prev_best_bid_p = standing_bid
         self.prev_best_ask_p = standing_ask
         num_contracts = 0
@@ -793,7 +793,7 @@ class Trader_GD(object):
             # of the list
             self.history_transac = []
 
-    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds):
+    def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds, zip_margin):
             # Get the acceptance possibility of a price existing
             # in the transaction history.
             # Params. price: target price
@@ -1052,20 +1052,11 @@ class Trader_ZIP(object):
         self.margin_buy = -1.0 * (0.05 + 0.3 * random.random())
         self.margin_sell = 0.05 + 0.3 * random.random()
         self.price = None
-        # self.cur_value = None
-        # self.cur_cost = None
-        # memory of best price & quantity of best bid and ask, on LOB on previous update
-        # self.prev_best_bid_p = None
-        # self.prev_best_bid_q = None
-        # self.prev_best_ask_p = None
-        # self.prev_best_ask_q = None
 
     def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num,
-              total_rounds, prev_info):
+              total_rounds, new_margin):
         # add margin to call
         num_contracts = 0
-        # self.prev_best_bid_p = standing_bid
-        # self.prev_best_ask_p = standing_ask
 
         if self.type == "buyer":
             for contract in contracts:
@@ -1076,11 +1067,11 @@ class Trader_ZIP(object):
                 return []  # You can't bid anymore
             self.limit = self.values[num_contracts]  # this is the current value working on
             self.active = True
-            try:
-                self.margin = prev_info
-            except IndexError:
+            if new_margin == None:
                 self.margin = self.margin_buy
-            bid = int(round(self.limit * (1 + self.margin)), 0)
+            else:
+                self.margin = new_margin
+            bid = round(self.limit * (1 + self.margin), 0)
             self.price = bid
 
             return["B", self.name, bid]
@@ -1094,16 +1085,16 @@ class Trader_ZIP(object):
                 return []  # You can't bid anymore
             self.limit = self.costs[num_contracts]  # this is the current value working on
             self.active = True
-            try:
-                self.margin = prev_info
-            except IndexError:
-                self.margin = self.margin_buy
-            ask = int(round(self.limit * (1 + self.margin)), 0)
+            if new_margin == None:
+                self.margin = self.margin_sell
+            else:
+                self.margin = new_margin
+            ask = round(self.limit * (1 + self.margin), 0)
             self.price = ask
             return["S", self.name, ask]
 
     # update margin on basis of what happened in market
-    def respond(self, contracts, deal_status, standing_bid, standing_ask, prev_offer):
+    def respond(self, values, type, contracts, deal_status, standing_bid, standing_ask, prev_info):
 
         '''Added:
         contracts = transactions
@@ -1111,144 +1102,186 @@ class Trader_ZIP(object):
         num_contract_after = number contracts after trader goes
         prev_offer = Zip's previous bid
         '''
-        # ZIP trader responds to market events, altering its margin
-        # does this whether it currently has an order to work or not
-        # self.name = ""
-        # self.type = ""
-        # self.values = []
-        # self.costs = []
-        # # got rid of self.balance = balance
-        # self.blotter = []
-        # self.orders = []
-        # self.limit = None
-        # # got rid of self.job for self.type
-        # self.active = False  # gets switched to True while actively working an order
-        # self.prev_change = 0  # this was called last_d in Cliff'97
-        # self.beta = 0.1 + 0.4 * random.random()
-        # self.momntm = 0.1 * random.random()
-        # self.ca = 0.05  # self.ca & .cr were hard-coded in '97 but parameterised later
-        # self.cr = 0.05
-        # self.margin = None  # this was called profit in Cliff'97
-        # self.margin_buy = -1.0 * (0.05 + 0.3 * random.random())
-        # self.margin_sell = 0.05 + 0.3 * random.random()
-        # self.price = None
-        def target_up(price, ca, cr):
-            # generate a higher target price by randomly perturbing given price
-            ptrb_abs = ca * random.random()  # absolute shift
-            ptrb_rel = price * (1.0 + (cr * random.random()))  # relative shift
-            target = int(round(ptrb_rel + ptrb_abs, 0))
-            # #                        print('TargetUp: %d %d\n' % (price,target))
-
-            return target
-
-        def target_down(price, ca, cr):
-            # generate a lower target price by randomly perturbing given price
-            ptrb_abs = ca * random.random()  # absolute shift
-            ptrb_rel = price * (1.0 - (cr * random.random()))  # relative shift
-            target = int(round(ptrb_rel - ptrb_abs, 0))
-            # #                        print('TargetDn: %d %d\n' % (price,target))
-
-            return target
-
-        def profit_alter(new_price, old_price, limit, momntm, beta, prev_change):
-            oldprice = old_price
-            diff = new_price - oldprice
-            change = ((1.0 - momntm) * (beta * diff)) + (momntm * prev_change)
-            self.prev_change = change
-            if self.type == 'buyer':
-                newmargin = ((old_price + change) / limit) - 1.0
-                if newmargin < 0.0:
-                    margin_buy = newmargin
-                    margin = newmargin
-                self.price = int(round(self.limit * (1.0 + margin), 0))
-
-            else:
-                newmargin = ((self.price + change) / self.limit) - 1.0
-                if newmargin > 0.0:
-                    self.margin_sell = newmargin
-                    self.margin = newmargin
-                # set the price from limit and profit-margin
-                self.price = int(round(self.limit * (1.0 + self.margin), 0))
-
+        self.type = type
         num_contracts = 0
         if self.type == 'seller':
+            self.costs = values
             # seller
             for contract in contracts:
                 if contract[1] == self.name:  # second position is buyer_id
                     num_contracts = num_contracts + 1
             self.limit = self.costs[num_contracts]
-            if prev_offer == None:
-                self.price = int(round(self.limit * (1 + self.margin)), 0)
+            if prev_info == None:
+                self.price = int(round(self.limit * (1 + self.margin_sell)), 0)
             else:
-                self.price = prev_offer
+                self.price = prev_info[0]
+                self.prev_change = prev_info[2]
             if deal_status == True:  # indicates there was a deal made after the current turn
                 tradeprice = contracts[-1][0]  # most recent transaction price
                 if self.price <= tradeprice:  # if previous ask was less than or equal to most recent contract price
                     # could sell for more? raise margin
-                    target_price = target_up(tradeprice, self.ca, self.cr)
-                    profit_alter(target_price)
-                    return [self.price, self.margin]
+                    ptrb_abs = self.ca * random.random()  # absolute shift
+                    ptrb_rel = tradeprice * (1.0 + (self.cr * random.random()))  # relative shift
+                    target = int(round(ptrb_rel + ptrb_abs, 0))
+                    oldprice = self.price
+                    diff = target - oldprice
+                    change = ((1.0 - self.momntm) * (self.beta * diff)) + (self.momntm * self.prev_change)
+                    self.prev_change = change
+                    newmargin = ((self.price + change) / self.limit) - 1.0
+                    if newmargin > 0.0:
+                        self.margin_sell = newmargin
+                        self.margin = newmargin
+                    # else:
+                    #     self.margin = 0  # test  # TODO fix drop offs in code
+                    self.price = int(round(self.limit * (1.0 + self.margin), 0))
 
                 elif tradeprice < self.limit:
                     # wouldnt have got this deal, still working order, so reduce margin
-                    target_price = target_down(tradeprice, self.ca, self.cr)
-                    profit_alter(target_price)
-                    return [self.price, self.margin]
+                    ptrb_abs = self.ca * random.random()  # absolute shift
+                    ptrb_rel = tradeprice * (1.0 - (self.cr * random.random()))  # relative shift
+                    target = int(round(ptrb_rel - ptrb_abs, 0))
+                    oldprice = self.price
+                    diff = target - oldprice
+                    change = ((1.0 - self.momntm) * (self.beta * diff)) + (self.momntm * self.prev_change)
+                    self.prev_change = change
+                    newmargin = ((self.price + change) / self.limit) - 1.0
+                    if newmargin > 0.0:
+                        self.margin_sell = newmargin
+                        self.margin = newmargin
+                    # else:
+                    #     self.margin = 0  # test
+                    self.price = int(round(self.limit * (1.0 + self.margin), 0))
+
+                # else:
+                #     self.price = 0  # test
+                #     self.margin = 0
 
             else:
                 # no deal: aim for a target price higher than best bid
                 if self.price > standing_ask:
                     if standing_bid:
-                        target_price = target_up(standing_bid, self.ca, self.cr)
+                        ptrb_abs = self.ca * random.random()  # absolute shift
+                        ptrb_rel = standing_bid * (1.0 + (self.cr * random.random()))  # relative shift
+                        target = int(round(ptrb_rel + ptrb_abs, 0))
+                        oldprice = self.price
+                        diff = target - oldprice
+                        change = ((1.0 - self.momntm) * (self.beta * diff)) + (self.momntm * self.prev_change)
+                        self.prev_change = change
+                        newmargin = ((self.price + change) / self.limit) - 1.0
+                        if newmargin > 0.0:
+                            self.margin_sell = newmargin
+                            self.margin = newmargin
+                        # else:
+                        #     self.margin = 0  # test
+                        self.price = int(round(self.limit * (1.0 + self.margin), 0))
 
                     else:
-                        target_price = 401   # stub quote
-                    profit_alter(target_price)
-                    return [self.price, self.margin]
+                        target_price = 401  # stub quote
+                        oldprice = self.price
+                        diff = target_price - oldprice
+                        change = ((1.0 - self.momntm) * (self.beta * diff)) + (self.momntm * self.prev_change)
+                        self.prev_change = change
+                        newmargin = ((self.price + change) / self.limit) - 1.0
+                        if newmargin > 0.0:
+                            self.margin_sell = newmargin
+                            self.margin = newmargin
+                        # else:
+                        #     self.margin = 0  # test
+                        self.price = int(round(self.limit * (1.0 + self.margin), 0))
+                # else:
+                #     self.price = 0  # test
+                #     self.margin = 0
+                return [self.price, self.margin, self.prev_change]
 
         if self.type == 'buyer':
+            num_contracts = 0
+            self.values = values
             # buyer
-            for contract in contracts:
-                if contract[1] == self.name:  # second position is buyer_id
-                    num_contracts = num_contracts + 1
+            # for contract in contracts:
+            #     if contract[1] == self.name:  # second position is buyer_id
+            #         num_contracts = num_contracts + 1
             self.limit = self.values[num_contracts]
-            if prev_offer == None:
-                self.price = int(round(self.limit * (1 + self.margin)), 0)
+
+            if prev_info == None:
+                self.price = round(self.limit * (1 + self.margin_buy), 0)
             else:
-                self.price = prev_offer
+                self.price = prev_info[0]
+                self.prev_change = prev_info[2]
             if deal_status == True:
                 tradeprice = contracts[-1][0]
                 if self.price >= tradeprice:
                     # could buy for less? raise margin (i.e. cut the price)
-                    target_price = target_down(tradeprice, self.ca, self.cr)
-                    results = profit_alter(target_price, self.price)
-                    #return [self.price, self.margin]
-                    return ['Yes']
+                    ptrb_abs = self.ca * random.random()  # absolute shift
+                    ptrb_rel = tradeprice * (1.0 - (self.cr * random.random()))  # relative shift
+                    target = int(round(ptrb_rel - ptrb_abs, 0))
+                    oldprice = self.price
+                    diff = target - oldprice
+                    change = ((1.0 - self.momntm) * (self.beta * diff)) + (self.momntm * self.prev_change)
+                    self.prev_change = change
+                    newmargin = ((self.price + change) / self.limit) - 1.0
+                    if newmargin < 0.0:
+                        self.margin_buy = newmargin
+                        self.margin = newmargin
+                    # else:
+                    #     self.margin = 0
+                    self.price = round(self.limit * (1.0 + self.margin), 0)
 
                 elif tradeprice > self.limit:
                     # wouldnt have got this deal, still working order, so reduce margin
-                    target_price = target_up(tradeprice, self.ca, self.cr)
-                    results = profit_alter(target_price, self.price)
-                    #return [self.price, self.margin]
-                    return ['Yes']
+                    ptrb_abs = self.ca * random.random()  # absolute shift
+                    ptrb_rel = tradeprice * (1.0 + (self.cr * random.random()))  # relative shift
+                    target = int(round(ptrb_rel + ptrb_abs, 0))
+                    oldprice = self.price
+                    diff = target - oldprice
+                    change = ((1.0 - self.momntm) * (self.beta * diff)) + (self.momntm * self.prev_change)
+                    self.prev_change = change
+                    newmargin = ((self.price + change) / self.limit) - 1.0
+                    if newmargin < 0.0:
+                        self.margin_buy = newmargin
+                        self.margin = newmargin
+                    # else:
+                    #     self.margin = 0
+                    self.price = round(self.limit * (1.0 + self.margin), 0)
+                # else:
+                #     self.price = 0
+                #     self.margin = 0
 
             else:
                 # no deal: aim for target price lower than best ask
                 if self.price < standing_bid:
                     if standing_ask:
-                        target_price = target_down(standing_ask, self.ca, self.cr)
+                        ptrb_abs = self.ca * random.random()  # absolute shift
+                        ptrb_rel = standing_ask * (1.0 - (self.cr * random.random()))  # relative shift
+                        target = int(round(ptrb_rel - ptrb_abs, 0))
+                        oldprice = self.price
+                        diff = target - oldprice
+                        change = ((1.0 - self.momntm) * (self.beta * diff)) + (self.momntm * self.prev_change)
+                        self.prev_change = change
+                        newmargin = ((self.price + change) / self.limit) - 1.0
+                        if newmargin < 0.0:
+                            self.margin_buy = newmargin
+                            self.margin = newmargin
+                        # else:
+                        #     self.margin = 0
+                        self.price = round(self.limit * (1.0 + self.margin), 0)
 
                     else:
                         target_price = -1  # stub quote
-                    results = profit_alter(target_price, self.price)
-
-                    return [self.price, self.margin]
-
-
-
-        # remember the best LOB data ready for next response
-        #self.prev_best_bid_p = standing_bid
-        #self.prev_best_ask_p = standing_ask
+                        oldprice = self.price
+                        diff = target_price - oldprice
+                        change = ((1.0 - self.momntm) * (self.beta * diff)) + (self.momntm * self.prev_change)
+                        self.prev_change = change
+                        newmargin = ((self.price + change) / self.limit) - 1.0
+                        if newmargin < 0.0:
+                            self.margin_buy = newmargin
+                            self.margin = newmargin
+                        # else:
+                        #     self.margin = 0
+                        self.price = round(self.limit * (1.0 + self.margin), 0)
+                # else:
+                #     self.price = 0
+                #     self.margin = 0
+        return [self.price, self.margin, self.prev_change]
 
 class Trader_AI(object):
     """ A class that makes a trader"""
@@ -1285,23 +1318,6 @@ class Trader_AI(object):
                 return []  # You can't bid anymore
             cur_value = self.values[num_contracts]  # this is the current value working on
             if standing_bid:
-                # for i in range(len(self.market_bids)):
-                #     if standing_bid/self.market_bids[i] >= 0.95 and standing_bid/self.market_bids[i] < 1.00:
-                #         if self.market_bids[i] <= cur_value:
-                #             bid = self.market_bids[i]
-                #             return ["B", self.name, bid]
-                #         return []
-                #
-                #     elif standing_bid/self.market_bids[i] >= 0.90 and standing_bid/self.market_bids[i] < 1.00:
-                #         if self.market_bids[i] <= cur_value:
-                #             bid = self.market_bids[i]
-                #             return ["B", self.name, bid]
-                #         else:
-                #             return []
-                #
-                #     else:
-                #         pass
-                # return []
                 if standing_bid < self.market_bids[self.current_number_bids]:
                     if self.market_bids[self.current_number_bids] <= cur_value:
                                 bid = self.market_bids[self.current_number_bids]
@@ -1341,24 +1357,6 @@ class Trader_AI(object):
                 return [] # You can't ask anymore
             cur_cost = self.costs[num_contracts]
             if standing_ask:
-                # for i in range(len(self.market_asks)):
-                #     if self.market_asks[i]/standing_ask >= 0.95 and self.market_asks[i]/standing_ask < 1.0:
-                #         if self.market_asks[i] >= cur_cost:
-                #             ask = self.market_asks[i]
-                #             return ["S", self.name, ask]
-                #         else:
-                #             return []
-                #
-                #     elif self.market_asks[i]/standing_ask >= 0.90 and self.market_asks[i]/standing_ask < 1.0:
-                #         if self.market_asks[i] >= cur_cost:
-                #             ask = self.market_asks[i]
-                #             return ["S", self.name, ask]
-                #         else:
-                #             return []
-                #
-                #     else:
-                #         pass
-                # return []
                 if standing_ask > self.market_asks[self.current_number_asks]:
                     if self.market_asks[self.current_number_asks] >= cur_cost:
                         ask = self.market_asks[self.current_number_asks]

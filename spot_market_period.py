@@ -29,8 +29,8 @@ import scipy.stats as stats
 input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
 input_file = "TestVS"
 output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
-session_name = "ZIP Test 1"
-
+session_name = "Market Shock Test 1"
+input_file_market_shock = "MarketShockTest"
 '''Below are global dictionaries that will contain information needed to execute several functions'''
 all_prices = []
 theoretical_transactions = []
@@ -65,6 +65,9 @@ class SpotMarketPeriod(object):
     def init_spot_system(self, name, limits, rounds, input_path, input_file, output_path, session_name):
         self.sys.init_spot_system(name, limits, rounds, input_path, input_file, output_path, session_name)
         # initializes spot system and passes key market information
+
+    def init_spot_system_crash(self, name, limits, rounds, input_path, input_file_market_shock, output_path, session_name):
+        self.sys.init_spot_system_crash(name, limits, rounds, input_path, input_file_market_shock, output_path, session_name)
 
     def init_traders(self, trader_names, period_k):
         self.sys.init_traders(trader_names, period_k)
@@ -334,7 +337,7 @@ if __name__ == "__main__":
     # trader_names = [gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
     # trader_names = [aa, aa, aa, aa, zip, zip, zip, zip, gd, gd, gd, gd, ps, ps, ps, ps, zic, zic, zic, zic, zip, ai]
     # trader_names = [aa, zic, zic, zic, zic, zic, zic, zic, aa, aa, aa, aa, aa, zic, zic, aa, zic, aa, zic, zic, aa, aa]
-    trader_names = [aa, aa, aa, aa, zip, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa]
+    trader_names = [aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa]
     # trader_names = [ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps]
     # trader_names = [kp, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
     header = session_name
@@ -342,9 +345,13 @@ if __name__ == "__main__":
     rnd_traders = trader_names    # because shuffle shuffles the list in place, returns none
     times = []
     for k in range(num_periods):  # iterates through number of periods or "trading days"
+        if k == 2:
+            smp.init_spot_system_crash(name, limits, rounds, input_path, input_file_market_shock, output_path, session_name)
+        else:
+            pass
         timer_start = timer()
         periods_list.append(k)
-        #random.shuffle(rnd_traders)  # shuffles trader order per period
+        # random.shuffle(rnd_traders)  # shuffles trader order per period
         # print(rnd_traders)  # prints list of trader strategy
         smp.init_traders(rnd_traders, k)
         print("**** Running Period {}".format(k))  # provides visual effect in editor
