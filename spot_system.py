@@ -39,7 +39,7 @@ class SpotSystem(object):
         self.ZIC_earn = []
         self.SI_earn = []
         self.KP_earn = []
-        self.ZIP_watch = None
+        self.ZIP_watch = []
         self.deal_status = None
         self.t = None
         self.d = None
@@ -142,7 +142,7 @@ class SpotSystem(object):
             offer = trader.offer(self.da.report_contracts(), self.da.report_standing()[0], self.da.report_standing()[1],
                                  self.current_period, self.number_bids, self.number_asks, last_period_max, last_period_min,
                                  self.current_round, self.num_market_rounds, self.ZIP_watch[1])  # added periods, # bids, # asks
-        except TypeError:
+        except IndexError:
             offer = trader.offer(self.da.report_contracts(), self.da.report_standing()[0], self.da.report_standing()[1],
                                  self.current_period, self.number_bids, self.number_asks, last_period_max, last_period_min,
                                  self.current_round, self.num_market_rounds, self.ZIP_watch)  # added periods, # bids, # asks
@@ -230,7 +230,7 @@ class SpotSystem(object):
             t_strat = self.trader_info[t_id]['strat']  # trading strategy
             earn = self.trader_info[t_id]['earn']  # trader earnings
             if ep_high == ep_low:  # if high and low eqs the same
-                t_eff = (earn/maximum_surplus)*100  # trader's efficiency in %
+                t_eff = (earn/ep_high)*100  # trader's efficiency in %
             elif ep_high != ep_low:  # if eqs different
                 avg_eq = (ep_high + ep_low)/2  # take avg of eqs
                 t_eff = (earn/avg_eq)*100  # trader's efficiency in %
@@ -252,30 +252,30 @@ class SpotSystem(object):
                 if k == self.trader_info[t_id]['strat']:
                     count = count + 1  # count times strategy used
                     strat_earn += self.trader_info[t_id]['earn']
-                    if k == 'Trader_AA':
-                        self.AA_earn.append(strat_earn)  # these append trader earnings to their unique dicts
-                    elif k == 'Trader_GD':
-                        self.GD_earn.append(strat_earn)
-                    elif k == 'Trader_PS':
-                        self.PS_earn.append(strat_earn)
-                    elif k == 'Trader_AI':
-                        self.AI_earn.append(strat_earn)
-                    elif k == 'Trader_ZIP':
-                        self.ZIP_earn.append(strat_earn)
-                    elif k == 'Trader_ZIC':
-                        self.ZIC_earn.append(strat_earn)
-                    elif k == 'Trader_Shaver':
-                        self.SI_earn.append(strat_earn)
-                    elif k == 'Trader_Kaplan':
-                        self.KP_earn.append(strat_earn)
-                    else:
-                        print("Trader not listed!")  # lets the user know if trader dicts not updated
+            if k == 'Trader_AA':
+                self.AA_earn.append(strat_earn)  # these append trader earnings to their unique dicts
+            elif k == 'Trader_GD':
+                self.GD_earn.append(strat_earn)
+            elif k == 'Trader_PS':
+                self.PS_earn.append(strat_earn)
+            elif k == 'Trader_AI':
+                self.AI_earn.append(strat_earn)
+            elif k == 'Trader_ZIP':
+                self.ZIP_earn.append(strat_earn)
+            elif k == 'Trader_ZIC':
+                self.ZIC_earn.append(strat_earn)
+            elif k == 'Trader_Shaver':
+                self.SI_earn.append(strat_earn)
+            elif k == 'Trader_Kaplan':
+                self.KP_earn.append(strat_earn)
+            else:
+                print("Trader not listed!")  # lets the user know if trader dicts not updated
             if count > 0:
                 avg_earn = int(strat_earn / count)  # calculates strategies avg earning
                 result_header.extend([k, avg_earn])
             if self.display:
                 # noinspection PyUnboundLocalVariable
-                print("Strategy {} earned {} with a running average of {}.".format(k, strat_earn, avg_earn))
+                print("Strategy {} earned {} with a trader average of {}.".format(k, strat_earn, avg_earn))
 
         return result_header
 

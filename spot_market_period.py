@@ -29,7 +29,7 @@ import scipy.stats as stats
 input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
 input_file = "TestVS"
 output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
-session_name = "Market Shock Test 1"
+session_name = "Market Shock Test 2"
 input_file_market_shock = "MarketShockTest"
 '''Below are global dictionaries that will contain information needed to execute several functions'''
 all_prices = []
@@ -263,43 +263,46 @@ class SpotMarketPeriod(object):
     def save_period(self, results):
         pass
 
-    def total_avg_earns(self, trader):  # ADDED: function to call total avg earns from spot system
-        if trader == 'AA':
-            return sum(self.sys.AA_earn)/self.num_periods
-        elif trader == 'GD':
-            return sum(self.sys.GD_earn)/self.num_periods
-        elif trader == 'PS':
-            return sum(self.sys.PS_earn)/self.num_periods
-        elif trader == 'AI':
-            return sum(self.sys.AI_earn)/self.num_periods
-        elif trader == 'ZIP':
-            return sum(self.sys.ZIP_earn)/self.num_periods
-        elif trader == 'ZIC':
-            return sum(self.sys.ZIC_earn)/self.num_periods
-        elif trader == 'KP':
-            return sum(self.sys.KP_earn)/self.num_periods
-        elif trader == 'SI':
-            return sum(self.sys.SI_earn)/self.num_periods
+    def total_avg_earns(self, trader, total_count):  # ADDED: function to call total avg earns from spot system
+        if total_count == 0:
+            return "NONE"
         else:
-            return "Trader not listed!"
+            if trader == 'AA':
+                return sum(self.sys.AA_earn)/total_count
+            elif trader == 'GD':
+                return sum(self.sys.GD_earn)/total_count
+            elif trader == 'PS':
+                return sum(self.sys.PS_earn)/total_count
+            elif trader == 'AI':
+                return sum(self.sys.AI_earn)/total_count
+            elif trader == 'ZIP':
+                return sum(self.sys.ZIP_earn)/total_count
+            elif trader == 'ZIC':
+                return sum(self.sys.ZIC_earn)/total_count
+            elif trader == 'KP':
+                return sum(self.sys.KP_earn)/total_count
+            elif trader == 'SI':
+                return sum(self.sys.SI_earn)/total_count
+            else:
+                return "Trader not listed!"
 
     def total_earns(self, trader):  # ADDED: function to call total avg earns from spot system
         if trader == 'AA':
-            return sum(self.sys.AA_earn)
+            return self.sys.AA_earn
         elif trader == 'GD':
-            return sum(self.sys.GD_earn)
+            return self.sys.GD_earn
         elif trader == 'PS':
-            return sum(self.sys.PS_earn)
+            return self.sys.PS_earn
         elif trader == 'AI':
-            return sum(self.sys.AI_earn)
+            return self.sys.AI_earn
         elif trader == 'ZIP':
-            return sum(self.sys.ZIP_earn)
+            return self.sys.ZIP_earn
         elif trader == 'ZIC':
-            return sum(self.sys.ZIC_earn)
+            return self.sys.ZIC_earn
         elif trader == 'KP':
-            return sum(self.sys.KP_earn)
+            return self.sys.KP_earn
         elif trader == 'SI':
-            return sum(self.sys.SI_earn)
+            return self.sys.SI_earn
         else:
             return "Trader not listed!"
 
@@ -337,7 +340,7 @@ if __name__ == "__main__":
     # trader_names = [gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
     # trader_names = [aa, aa, aa, aa, zip, zip, zip, zip, gd, gd, gd, gd, ps, ps, ps, ps, zic, zic, zic, zic, zip, ai]
     # trader_names = [aa, zic, zic, zic, zic, zic, zic, zic, aa, aa, aa, aa, aa, zic, zic, aa, zic, aa, zic, zic, aa, aa]
-    trader_names = [aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa]
+    trader_names = [gd, aa, aa, aa, aa, aa, zic, aa, aa, aa, aa, kp, aa, aa, aa, aa, ps, aa, aa, aa, aa, aa]
     # trader_names = [ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps]
     # trader_names = [kp, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
     header = session_name
@@ -345,8 +348,9 @@ if __name__ == "__main__":
     rnd_traders = trader_names    # because shuffle shuffles the list in place, returns none
     times = []
     for k in range(num_periods):  # iterates through number of periods or "trading days"
-        if k == 2:
-            smp.init_spot_system_crash(name, limits, rounds, input_path, input_file_market_shock, output_path, session_name)
+        if k == 3:
+            #smp.init_spot_system_crash(name, limits, rounds, input_path, input_file_market_shock, output_path, session_name)
+            pass
         else:
             pass
         timer_start = timer()
@@ -386,17 +390,15 @@ if __name__ == "__main__":
     print("Trader_Kaplan: " + str(smp.total_earns('KP')))
     print("Trader_Shaver: " + str(smp.total_earns('SI')))
     print()
-    print("Strategy Total Avg. Earnings")
-    print("Trader_AA: " + str(smp.total_avg_earns('AA')))   #
-    print("Trader_GD: " + str(smp.total_avg_earns('GD')))   #
-    print("Trader_PS: " + str(smp.total_avg_earns('PS')))   # ADDED: section to list total avg earns
+    print("Strategy Total Avg. Earnings (per trader)")
+    print("Trader_AA: " + str(smp.total_avg_earns('AA', trader_names.count(aa)*num_periods)))   #
+    print("Trader_GD: " + str(smp.total_avg_earns('GD', trader_names.count(gd)*num_periods)))   #
+    print("Trader_PS: " + str(smp.total_avg_earns('PS', trader_names.count(ps)*num_periods)))   # ADDED: section to list total avg earns
     #print("Trader_AI: " + str(smp.total_avg_earns('AI')))   #
-    print("Trader_ZIP: " + str(smp.total_avg_earns('ZIP'))) #
-    print("Trader_ZIC: " + str(smp.total_avg_earns('ZIC'))) #
-    print("Trader_Kaplan: " + str(smp.total_avg_earns('KP')))
-    print("Trader_Shaver: " + str(smp.total_avg_earns('SI')))
-    '''time.sleep() is called several times below to allow data aggregation in graphing functions...
-    ... if not used, graphing functions have inheritance issues'''
+    print("Trader_ZIP: " + str(smp.total_avg_earns('ZIP', trader_names.count(zip)*num_periods))) #
+    print("Trader_ZIC: " + str(smp.total_avg_earns('ZIC', trader_names.count(zic)*num_periods))) #
+    print("Trader_Kaplan: " + str(smp.total_avg_earns('KP', trader_names.count(kp)*num_periods)))
+    print("Trader_Shaver: " + str(smp.total_avg_earns('SI', trader_names.count(si)*num_periods)))
     smp.get_avg_trade_ratio()  # prints avg trade ratio for all periods
     smp.graph_trader_eff()  # plots individual efficiency
     smp.graph_efficiency()  # plots period efficiency
@@ -405,6 +407,3 @@ if __name__ == "__main__":
     # smp.graph_surplus()  # graphs actual and max surplus
     smp.graph_alphas()  # graphs Smith's Alpha of convergence
     smp.graph_distribution()  # graphs normal distribution of trader efficiencies
-    '''graphs will open in browser of your choosing...
-    ... can download images of graphs by clicking camera icon in browser
-    ... or can create a free online plotly account which allows you to save and edit graphs'''
