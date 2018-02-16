@@ -1,16 +1,12 @@
 from trader import Trader_Shaver, Trader_ZIU, Trader_ZIC, Trader_Kaplan, Trader_PS, Trader_AA, Trader_GD, Trader_ZIP, Trader_AI
-#import build_environment as env
 import spot_environment_model as env
 import double_auction_institution as ins
 import tournament as trna  # imported but unused??
 import trader as t  # imported but unused??
 import random  # allows things to be generated randomly
-import plotly.offline as py
-import plotly.graph_objs as go
-import plotly.figure_factory as ff
 import numpy as np
 import math
-
+import spot_market_period as smp
 # noinspection PyUnboundLocalVariable,PyUnboundLocalVariable
 class SpotSystem(object):
     def __init__(self):
@@ -83,6 +79,9 @@ class SpotSystem(object):
         for i in range(self.num_market_rounds):  # iterates through each round
             random.shuffle(temp_traders)  # generates random order of traders each round
             self.current_round = i
+            # if self.current_round == 5:
+            #     self.init_spot_system_crash('Test', (400, 0), 25, smp.input_path, smp.input_file_market_shock,
+            #                                 smp.output_path, smp.session_name)
             # TODO add in market shocks here
             for trader in temp_traders:  # iterates through each trader
 
@@ -138,14 +137,9 @@ class SpotSystem(object):
         except ValueError:
             last_period_max = None
         '''below the trader generates an offer based on strategy function called in trader.py'''
-        try:
-            offer = trader.offer(self.da.report_contracts(), self.da.report_standing()[0], self.da.report_standing()[1],
-                                 self.current_period, self.number_bids, self.number_asks, last_period_max, last_period_min,
-                                 self.current_round, self.num_market_rounds, self.ZIP_watch[1])  # added periods, # bids, # asks
-        except IndexError:
-            offer = trader.offer(self.da.report_contracts(), self.da.report_standing()[0], self.da.report_standing()[1],
-                                 self.current_period, self.number_bids, self.number_asks, last_period_max, last_period_min,
-                                 self.current_round, self.num_market_rounds, self.ZIP_watch)  # added periods, # bids, # asks
+        offer = trader.offer(self.da.report_contracts(), self.da.report_standing()[0], self.da.report_standing()[1],
+                            self.current_period, self.number_bids, self.number_asks, last_period_max, last_period_min,
+                            self.current_round, self.num_market_rounds, self.ZIP_watch)  # added periods, # bids, # asks
 
         if len(offer) == 0:
             return  # if no offer then return nothing

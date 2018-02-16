@@ -1061,9 +1061,11 @@ class Trader_ZIP(object):
         self.margin_buy = -1.0 * (0.05 + 0.3 * random.random())
         self.margin_sell = 0.05 + 0.3 * random.random()
         self.price = None
+        self.prev_standingask = None
+        self.prev_standingbid = None
 
     def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num,
-              total_rounds, new_margin):
+              total_rounds, prev_info):
         # add margin to call
         num_contracts = 0
 
@@ -1076,10 +1078,10 @@ class Trader_ZIP(object):
                 return []  # You can't bid anymore
             self.limit = self.values[num_contracts]  # this is the current value working on
             self.active = True
-            if new_margin == []:
+            if prev_info[1] == None:
                 self.margin = self.margin_buy
             else:
-                self.margin = new_margin
+                self.margin = prev_info[1]
             bid = round(self.limit * (1 + self.margin), 0)
             self.price = bid
 
@@ -1094,10 +1096,10 @@ class Trader_ZIP(object):
                 return []  # You can't bid anymore
             self.limit = self.costs[num_contracts]  # this is the current value working on
             self.active = True
-            if new_margin == []:
+            if prev_info[1] == None:
                 self.margin = self.margin_sell
             else:
-                self.margin = new_margin
+                self.margin = prev_info[1]
             ask = round(self.limit * (1 + self.margin), 0)
             self.price = ask
             return["S", self.name, ask]
@@ -1120,11 +1122,13 @@ class Trader_ZIP(object):
                 if contract[2] == self.name:  # second position is buyer_id
                     num_contracts = num_contracts + 1
             self.limit = self.costs[num_contracts]
-            if prev_info == []:
+            if prev_info[0] == None:
                 self.price = int(round(self.limit * (1 + self.margin_sell)), 0)
             else:
                 self.price = prev_info[0]
                 self.prev_change = prev_info[2]
+                self.prev_standingbid = prev_info[3]
+                self.prev_standingask = prev_info[4]
             if deal_status == True:  # indicates there was a deal made after the current turn
                 tradeprice = contracts[-1][0]  # most recent transaction price
                 if self.price <= tradeprice:  # if previous ask was less than or equal to most recent contract price
@@ -1140,11 +1144,11 @@ class Trader_ZIP(object):
                     if newmargin > 0.0:
                         self.margin_sell = newmargin
                         self.margin = newmargin
-                    # else:
-                    #     self.margin = 0  # test  # TODO fix drop offs in code
+                    else:
+                        self.margin = self.margin_sell
                     self.price = int(round(self.limit * (1.0 + self.margin), 0))
 
-                elif tradeprice < self.limit:
+                else:
                     # wouldnt have got this deal, still working order, so reduce margin
                     ptrb_abs = self.ca * random.random()  # absolute shift
                     ptrb_rel = tradeprice * (1.0 - (self.cr * random.random()))  # relative shift
@@ -1157,18 +1161,14 @@ class Trader_ZIP(object):
                     if newmargin > 0.0:
                         self.margin_sell = newmargin
                         self.margin = newmargin
-                    # else:
-                    #     self.margin = 0  # test
+                    else:
+                        self.margin = self.margin_sell
                     self.price = int(round(self.limit * (1.0 + self.margin), 0))
-
-                # else:
-                #     self.price = 0  # test
-                #     self.margin = 0
 
             else:
                 # no deal: aim for a target price higher than best bid
                 if self.price > standing_ask:
-                    if standing_bid:
+                    if standing_bid != None:
                         ptrb_abs = self.ca * random.random()  # absolute shift
                         ptrb_rel = standing_bid * (1.0 + (self.cr * random.random()))  # relative shift
                         target = int(round(ptrb_rel + ptrb_abs, 0))
@@ -1180,8 +1180,8 @@ class Trader_ZIP(object):
                         if newmargin > 0.0:
                             self.margin_sell = newmargin
                             self.margin = newmargin
-                        # else:
-                        #     self.margin = 0  # test
+                        else:
+                            self.margin = self.margin_sell
                         self.price = int(round(self.limit * (1.0 + self.margin), 0))
 
                     else:
@@ -1194,18 +1194,16 @@ class Trader_ZIP(object):
                         if newmargin > 0.0:
                             self.margin_sell = newmargin
                             self.margin = newmargin
-                        # else:
-                        #     self.margin = 0  # test
+                        else:
+                            self.margin = self.margin_sell
                         self.price = int(round(self.limit * (1.0 + self.margin), 0))
-                # else:
-                #     self.price = 0  # test
-                #     self.margin = 0
-                return [self.price, self.margin, self.prev_change]
+                else:
+                    pass
 
-        if self.type == 'buyer':
+        else:
+            # buyer
             num_contracts = 0
             self.values = values
-            # buyer
             for contract in contracts:
                 if contract[1] == self.name:  # second position is buyer_id
                     num_contracts = num_contracts + 1
@@ -1220,6 +1218,7 @@ class Trader_ZIP(object):
                 tradeprice = contracts[-1][0]
                 if self.price >= tradeprice:
                     # could buy for less? raise margin (i.e. cut the price)
+                    # target down
                     ptrb_abs = self.ca * random.random()  # absolute shift
                     ptrb_rel = tradeprice * (1.0 - (self.cr * random.random()))  # relative shift
                     target = int(round(ptrb_rel - ptrb_abs, 0))
@@ -1231,12 +1230,13 @@ class Trader_ZIP(object):
                     if newmargin < 0.0:
                         self.margin_buy = newmargin
                         self.margin = newmargin
-                    # else:
-                    #     self.margin = 0
+                    else:
+                        self.margin = self.margin_buy
                     self.price = round(self.limit * (1.0 + self.margin), 0)
 
-                elif tradeprice > self.limit:
+                else:
                     # wouldnt have got this deal, still working order, so reduce margin
+                    # target up
                     ptrb_abs = self.ca * random.random()  # absolute shift
                     ptrb_rel = tradeprice * (1.0 + (self.cr * random.random()))  # relative shift
                     target = int(round(ptrb_rel + ptrb_abs, 0))
@@ -1248,17 +1248,14 @@ class Trader_ZIP(object):
                     if newmargin < 0.0:
                         self.margin_buy = newmargin
                         self.margin = newmargin
-                    # else:
-                    #     self.margin = 0
+                    else:
+                        self.margin = self.margin_buy
                     self.price = round(self.limit * (1.0 + self.margin), 0)
-                # else:
-                #     self.price = 0
-                #     self.margin = 0
 
             else:
                 # no deal: aim for target price lower than best ask
-                if self.price < standing_bid:
-                    if standing_ask:
+                if self.prev_standingbid < standing_bid and self.price < standing_bid or self.prev_standingbid == None:
+                    if standing_ask != None:
                         ptrb_abs = self.ca * random.random()  # absolute shift
                         ptrb_rel = standing_ask * (1.0 - (self.cr * random.random()))  # relative shift
                         target = int(round(ptrb_rel - ptrb_abs, 0))
@@ -1270,8 +1267,8 @@ class Trader_ZIP(object):
                         if newmargin < 0.0:
                             self.margin_buy = newmargin
                             self.margin = newmargin
-                        # else:
-                        #     self.margin = 0
+                        else:
+                            self.margin = self.margin_buy
                         self.price = round(self.limit * (1.0 + self.margin), 0)
 
                     else:
@@ -1284,13 +1281,14 @@ class Trader_ZIP(object):
                         if newmargin < 0.0:
                             self.margin_buy = newmargin
                             self.margin = newmargin
-                        # else:
-                        #     self.margin = 0
+                        else:
+                            self.margin = self.margin_buy
                         self.price = round(self.limit * (1.0 + self.margin), 0)
-                # else:
-                #     self.price = 0
-                #     self.margin = 0
-        return [self.price, self.margin, self.prev_change]
+                else:
+                    pass
+        self.prev_standingbid = standing_bid
+        self.prev_standingask = standing_ask
+        return [self.price, self.margin, self.prev_change, self.prev_standingbid, self.prev_standingask]
 
 class Trader_AI(object):
     """ A class that makes a trader"""

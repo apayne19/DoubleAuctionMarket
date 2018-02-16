@@ -46,19 +46,19 @@ import spot_environment_controller  # condensed modules/commands from spot_env_m
 """This class is using the control center commands from spot_market_controller (condensed methods 
 from spot_market_model).... the HAND of the simulator"""
 
-class SpotEnviornmentGui():
+class SpotEnvironmentGui():
     def __init__(self, root, sec, name, debug=False):
         assert name != "", "Gui must have a name"
 
         self.root = root  # root builds tkinter app
         '''Can maybe add an os function for resolutions to adapt'''
-        root.geometry("1600x1200")
+        self.root.geometry("1600x1200")
         self.sec = sec  # will bring in spot_env_model and use debugger
         self.name = name  # name of gui
         self.debug = debug  # used as error checker...when false will return errors or warnings
-        root.title(name)  # giving root a name
+        self.root.title(name)  # giving root a name
         '''Added a messagebox for when escape button pressed... calls on_escape_chosen()'''
-        root.protocol("WM_DELETE_WINDOW", self.on_quit_chosen)
+        self.root.protocol("WM_DELETE_WINDOW", self.on_quit_chosen)
         self.num_buyers = 0  # setting number of buyers to 0
         self.num_sellers = 0  # setting number of sellers to 0
         self.num_units = 0  # setting number of units to 0
@@ -144,7 +144,7 @@ class SpotEnviornmentGui():
         about_menu.add_command(label='About', command=self.display_about_messagebox)  # click = display about message
         about_menu.add_command(label='Help', command=self.display_help_messagebox)  # click = display help message
         menu_bar.add_cascade(label='Misc', menu=about_menu)  # drop down menu
-        root.config(menu=menu_bar)  # makes menu setup final
+        self.root.config(menu=menu_bar)  # makes menu setup final
 
     def show_shortcut(self):
         shortcut_bar = tk.Frame(self.root)  # creates a frame within the tkinter object
@@ -210,7 +210,7 @@ class SpotEnviornmentGui():
     def on_quit_chosen(self):
         """This gives a messagebox when either quit or escape is chosen"""
         if tkinter.messagebox.askokcancel("Exit?", "Have you saved your work?"):
-            root.destroy()  # closes window and destroys tkinter object
+            self.root.destroy()  # closes window and destroys tkinter object
 
     def process_sd_string1(self):
         if self.num_buyers == 0:
@@ -228,7 +228,7 @@ class SpotEnviornmentGui():
             return s_d_list[int(len(s_d_list)/2) + 17:]
 
     def on_calc_eq_clicked(self):
-        qt, pl, ph, ms = sec.get_equilibrium()  # click = calls get_eq() from spot_env_model
+        qt, pl, ph, ms = self.sec.get_equilibrium()  # click = calls get_eq() from spot_env_model
         self.string_eq.set(str(qt))
         self.string_pl.set(str(pl))  # these change n/a displays to new calc values
         self.string_ph.set(str(ph))
@@ -238,14 +238,14 @@ class SpotEnviornmentGui():
         if self.debug:  # if error trap not tripped and still set to False
             print("In GUI -> on_show_clicked -> begin")
         self.set_market()
-        lfr1_show = tk.LabelFrame(root, text="List of Supply and Demand")
+        lfr1_show = tk.LabelFrame(self.root, text="List of Supply and Demand")
         lfr1_show.grid(row=1, rowspan=5, column=4, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
         lbl1_show = tk.Label(lfr1_show, text=self.process_sd_string1())
         lbl1_show.grid(row=0, column=0)
 
         '''Added a second frame for supply/demand list to spill over onto'''
         # TODO maybe add scrollbar feature for one supply/demand list
-        lfr2_show = tk.LabelFrame(root, text="List of Supply and Demand")
+        lfr2_show = tk.LabelFrame(self.root, text="List of Supply and Demand")
         lfr2_show.grid(row=1, rowspan=5, column=5, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
         lbl2_show = tk.Label(lfr2_show, text=self.process_sd_string2())
         lbl2_show.grid(row=0, column=0)
@@ -261,9 +261,9 @@ class SpotEnviornmentGui():
         self.set_market()
 
         # set up frame to plot in
-        fr_plot = tk.LabelFrame(root, text="Plot of Supply and Demand")
+        fr_plot = tk.LabelFrame(self.root, text="Plot of Supply and Demand")
         fr_plot.grid(row=2, rowspan=1, column=2, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
-        c_plot = tk.LabelFrame(root, text="Plot of Contracts")
+        c_plot = tk.LabelFrame(self.root, text="Plot of Contracts")
         c_plot.grid(row=3, rowspan=1, column=2, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
         # set up graph to plot in frame
         f = Figure(figsize=(4, 4), dpi=100)
@@ -283,7 +283,7 @@ class SpotEnviornmentGui():
 
 
         # get some model information here
-        dunits, sunits, munits, demand_values, supply_costs, eq_price_high, eq_price_low = sec.get_supply_demand_plot_info()
+        dunits, sunits, munits, demand_values, supply_costs, eq_price_high, eq_price_low = self.sec.get_supply_demand_plot_info()
         if self.debug:
             print("In Gui --> 0n_plot_clicked  --> info from model")
             print("demand = {}".format(demand_values))
@@ -601,9 +601,9 @@ class SpotEnviornmentGui():
         tkinter.messagebox.showinfo("Help", help_msg)
 
     def show_project(self):
-        self.num_buyers = sec.get_num_buyers()
-        self.num_sellers = sec.get_num_sellers()
-        self.num_units = sec.get_num_units()
+        self.num_buyers = self.sec.get_num_buyers()
+        self.num_sellers = self.sec.get_num_sellers()
+        self.num_units = self.sec.get_num_units()
         self.string_project_name.set(self.name)
         self.string_num_buyers.set(str(self.num_buyers))
         self.string_num_sellers.set(str(self.num_sellers))
@@ -621,12 +621,12 @@ class SpotEnviornmentGui():
 
     def set_all_buyer_values(self):
         for buyer in range(self.num_buyers):
-            values = sec.get_buyer_values(buyer)
+            values = self.sec.get_buyer_values(buyer)
             self.set_buyer_values(buyer, values)
 
     def set_all_seller_costs(self):
         for seller in range(self.num_sellers):
-            costs = sec.get_seller_costs(seller)
+            costs = self.sec.get_seller_costs(seller)
             self.set_seller_costs(seller, costs)
 
     def set_buyer_values(self, buyer, values):
@@ -657,7 +657,7 @@ if __name__ == "__main__":
     if debug_test:
         print("In Gui -> START")
     sec = spot_environment_controller.SpotEnvironmentController(debug_test)
-    gui = SpotEnviornmentGui(root, sec, "Trading Platform", debug_test)
+    gui = SpotEnvironmentGui(root, sec, "Trading Platform", debug_test)
     root.mainloop()
     if debug_test:
         print("In Gui -> END")

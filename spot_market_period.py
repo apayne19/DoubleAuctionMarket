@@ -29,8 +29,8 @@ import scipy.stats as stats
 input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
 input_file = "TestVS"
 output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
-session_name = "Market Shock Test 2"
-input_file_market_shock = "MarketShockTest"
+session_name = "Round Shock Test 5"
+input_file_market_shock = "Trader_Shock"
 '''Below are global dictionaries that will contain information needed to execute several functions'''
 all_prices = []
 theoretical_transactions = []
@@ -56,7 +56,7 @@ class SpotMarketPeriod(object):
         self.num_buyers = 11  # number of buyers
         self.num_sellers = 11  # number of sellers
         self.limits = (400, 0)  # ceiling and floor for bidding
-        self.num_market_periods = 5  # number of periods auction run
+        self.num_market_periods = 10  # number of periods auction run
         self.trader_names = []
         self.traders = []
         self.trader_info = {}  # dictionary of all trader info
@@ -83,7 +83,7 @@ class SpotMarketPeriod(object):
     def get_contracts(self):
         self.prices = []  # temp dictionary for contract prices
         self.ends = []  # temp dictionary for end of period (end of contracts)
-        print(self.sys.da.report_contracts())
+        # print(self.sys.da.report_contracts())
         for contract in self.sys.da.report_contracts():
             price = contract[0]  # pulls price from contracts
             self.prices.append(price)  # appends to temp dict
@@ -139,7 +139,8 @@ class SpotMarketPeriod(object):
             plt.ylabel("Efficiency (%)")  # y-axis = U(x) = utility
             plt.title("Simulation Market Efficiencies by Period")
             plt.savefig(output_path + session_name + "\\" + "Period Efficiencies.png")
-            plt.close()
+            plt.show()
+            #plt.close()
 
     '''Graphs the contracts from all periods'''
     def graph_contracts(self):
@@ -174,7 +175,8 @@ class SpotMarketPeriod(object):
             plt.ylabel("Transaction Price")  # y-axis = U(x) = utility
             plt.title("Simulation Market Contract Prices")
             plt.savefig(output_path + session_name + "\\" + "Transactions.png")
-            plt.close()
+            plt.show()
+            #plt.close()
 
 
     def graph_alphas(self):
@@ -188,7 +190,8 @@ class SpotMarketPeriod(object):
             plt.ylabel("Smith's Alpha")  # y-axis = U(x) = utility
             plt.title("Simulation Market Equilibrium Convergence")
             plt.savefig(output_path + session_name + "\\" + "Convergence Alphas.png")
-            plt.close()
+            plt.show()
+            #plt.close()
 
     '''Obtains Avg trade ratio for all periods: actual transactions/equilibrium quantity'''
     def get_avg_trade_ratio(self):
@@ -208,7 +211,7 @@ class SpotMarketPeriod(object):
             file_1.close()  # closes file
         with open(session_folder + "Contract_History.csv", "a") as file_2:  # creates csv file
             output_2 = csv.writer(file_2)
-            output_2.writerow(['Price', 'Buyer', 'Seller', "Prd. " + str(period)])  # header
+            output_2.writerow(['Price', 'Buyer', 'Seller'])  # header
             file_2.close()
         with open(session_folder + "Contract_History.csv", "a") as file_2:  # creates csv file
             output_2 = csv.writer(file_2)
@@ -228,7 +231,8 @@ class SpotMarketPeriod(object):
             plt.ylabel("Efficiency (%)")  # y-axis = U(x) = utility
             plt.title("Simulation Efficiencies by Trader")
             plt.savefig(output_path + session_name + "\\" + "Trader Efficiencies.png")
-            plt.close()
+            plt.show()
+            #plt.close()
 
     # TODO create normal distribution graph of trader efficiencies
     def graph_distribution(self):
@@ -248,6 +252,7 @@ class SpotMarketPeriod(object):
             plt.title('Simulation Market Trader Efficiency Distribution')
             plt.legend(bbox_to_anchor=(0.85, 0.98))  # places a legend on the plot
             plt.savefig(output_path + session_name + "\\" + "Efficiency Distribution.png")
+            plt.show()
         '''Print statements below '''
         print("Trader Efficiency Mean:" + str(mean))
         print("Trader Efficiency Std. Deviation:" + str(std_dev))
@@ -312,7 +317,7 @@ class SpotMarketPeriod(object):
 
 '''This program iterates through the number of rounds'''
 if __name__ == "__main__":
-    num_periods = 5  # periods or trading days
+    num_periods = 6  # periods or trading days
     limits = (400, 0)  # price ceiling, price floor
     rounds = 25  # rounds in each period (can substitute time clock)
     name = "trial"
@@ -340,7 +345,7 @@ if __name__ == "__main__":
     # trader_names = [gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
     # trader_names = [aa, aa, aa, aa, zip, zip, zip, zip, gd, gd, gd, gd, ps, ps, ps, ps, zic, zic, zic, zic, zip, ai]
     # trader_names = [aa, zic, zic, zic, zic, zic, zic, zic, aa, aa, aa, aa, aa, zic, zic, aa, zic, aa, zic, zic, aa, aa]
-    trader_names = [gd, aa, aa, aa, aa, aa, zic, aa, aa, aa, aa, kp, aa, aa, aa, aa, ps, aa, aa, aa, aa, aa]
+    trader_names = [aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa]
     # trader_names = [ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps]
     # trader_names = [kp, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
     header = session_name
@@ -349,8 +354,13 @@ if __name__ == "__main__":
     times = []
     for k in range(num_periods):  # iterates through number of periods or "trading days"
         if k == 3:
-            #smp.init_spot_system_crash(name, limits, rounds, input_path, input_file_market_shock, output_path, session_name)
-            pass
+            rnd_traders.append(zic)
+            rnd_traders.append(gd)
+            smp.num_buyers = 12
+            smp.num_sellers = 12
+            print(rnd_traders)
+            smp.init_spot_system_crash(name, limits, rounds, input_path, input_file_market_shock, output_path, session_name)
+
         else:
             pass
         timer_start = timer()
@@ -375,7 +385,7 @@ if __name__ == "__main__":
     print("Period Times: " + str(times))
     print("Market Efficiencies:" + str(eff))  # print market efficiencies
     print("Avg. Efficiency:" + str(sum(eff)/num_periods))  # print avg efficiency
-    print("Total Avg. Transaction Price:" + str(sum(avg_prices[1:])/(num_periods - 1)))
+    #print("Total Avg. Transaction Price:" + str(sum(avg_prices[1:])/(num_periods - 1)))
     print("Actual Surpluses:" + str(act_surplus))  # print actual surpluses
     print("Maximum Surpluses:" + str(maxi_surplus))  # print max surpluses
     print()
