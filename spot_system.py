@@ -79,10 +79,12 @@ class SpotSystem(object):
         for i in range(self.num_market_rounds):  # iterates through each round
             random.shuffle(temp_traders)  # generates random order of traders each round
             self.current_round = i
+            # TODO round shocks happen below
+            # TODO will be moved to tkinter dialog box
             # if self.current_round == 5:
             #     self.init_spot_system_crash('Test', (400, 0), 25, smp.input_path, smp.input_file_market_shock,
             #                                 smp.output_path, smp.session_name)
-            # TODO add in market shocks here
+
             for trader in temp_traders:  # iterates through each trader
 
                 self.number_bids = 0  # starting bid offers = 0
@@ -97,7 +99,7 @@ class SpotSystem(object):
                     if self.display:  # if display still true (tournament still running)
                         '''need to put ZIP respond() here'''
                         self.deal_status = True
-                        # TODO fix ZIP response to not be hard coded... need values and type
+                        # TODO fix ZIP memory to be stored in ZIP trader class
                         # print("DEAL")
                         # print("ZIP Before: " + str(self.ZIP_watch))
                         # self.ZIP_watch = Trader_ZIP().respond(self.t['t3'].values, self.t['t3'].type, contracts, self.deal_status, self.da.report_standing()[0],

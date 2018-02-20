@@ -4,13 +4,9 @@ import random
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
-import plotly.offline as py
-import plotly.graph_objs as go
-import plotly.figure_factory as ff
 import os
 import time
 import trader as tdr
-import math
 from timeit import default_timer as timer
 import scipy.stats as stats
 
@@ -26,10 +22,10 @@ import scipy.stats as stats
 ... session_name is the unique identifier for each session run
     --> ex. "filename-tradestrategy-#buyers-#sellers-$limit-version" '''
 
-input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
+input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"  # TODO change to your file path
 input_file = "TestVS"
-output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
-session_name = "Round Shock Test 5"
+output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"  # TODO change to your file path
+session_name = "Round Shock Test 6"  # TODO implement time stamps so file error not generated
 input_file_market_shock = "Trader_Shock"
 '''Below are global dictionaries that will contain information needed to execute several functions'''
 all_prices = []
@@ -322,6 +318,8 @@ if __name__ == "__main__":
     rounds = 25  # rounds in each period (can substitute time clock)
     name = "trial"
     period = 0  # ...??
+    '''The code below creates a file for your session name for market run info to be dumped into...
+    ... will raise file error if session name not changed --> prevents overwriting previous runs'''
     try:
         os.makedirs(output_path + session_name)  # creates folder for session data
     except FileExistsError:
@@ -353,14 +351,16 @@ if __name__ == "__main__":
     rnd_traders = trader_names    # because shuffle shuffles the list in place, returns none
     times = []
     for k in range(num_periods):  # iterates through number of periods or "trading days"
-        if k == 3:
-            rnd_traders.append(zic)
-            rnd_traders.append(gd)
-            smp.num_buyers = 12
-            smp.num_sellers = 12
-            print(rnd_traders)
-            smp.init_spot_system_crash(name, limits, rounds, input_path, input_file_market_shock, output_path, session_name)
-
+        if k == 3:  # if round = 3 then shock or change traders
+            # TODO trader shocks happen below
+            # rnd_traders.append(zic)
+            # rnd_traders.append(gd)
+            # smp.num_buyers = 12
+            # smp.num_sellers = 12
+            # print(rnd_traders)
+            # TODO period shocks happen below
+            # smp.init_spot_system_crash(name, limits, rounds, input_path, input_file_market_shock, output_path, session_name)
+            pass
         else:
             pass
         timer_start = timer()

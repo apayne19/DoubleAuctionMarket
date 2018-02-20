@@ -394,8 +394,8 @@ class Trader_PS(object):
             if num_contracts >= len(self.values):
                 return []  # You can't bid anymore
             cur_value = self.values[num_contracts]  # this is the current value working on
-            # beta = 0.3  # learning rate... adjustment speed
-            # gamma = 0.05  # momentum... damps oscillation
+            beta = 0.3  # learning rate... adjustment speed
+            gamma = 0.05  # momentum... damps oscillation
             r_1 = random.uniform(0, 0.2)  # random variable between 0 and 20
             r_2 = random.uniform(0, 0.2)
             if standing_ask > standing_bid:  # ask greater than bid
@@ -405,18 +405,16 @@ class Trader_PS(object):
                 else:
                     sigma = r_1*standing_bid + r_2  # bidders price change
                     target = standing_bid + sigma  # target valuation
-                    bid = round(target, 0)
+                    bid = gamma * cur_value + (1 - gamma) * beta * (target - cur_value)  # learning rule
                     if bid <= cur_value:
-                        # bid = gamma*cur_value + (1-gamma)*beta*(target-cur_value)  # learning rule
                         return ["B", self.name, bid]
                     else:
                         return []
             elif standing_ask <= standing_bid:  # ask less than or equal to bid
                 sigma = r_1*standing_ask + r_2  # bidders price change
                 target = standing_ask - sigma  # target valuation
-                bid = round(target, 0)
+                bid = gamma * cur_value + (1 - gamma) * beta * (target - cur_value)  # learning rule
                 if bid <= cur_value:
-                    # bid = gamma*cur_value + (1-gamma)*beta*(target-cur_value)  # learning rule
                     return ["B", self.name, bid]
                 else:
                     return []
@@ -431,25 +429,23 @@ class Trader_PS(object):
             if num_contracts >= len(self.costs):
                 return []  # You can't ask anymore
             cur_cost = self.costs[num_contracts]  # this is the current value working on
-            # beta = 0.3  # learning rate... adjustment speed
-            # gamma = 0.05  # momentum... damps oscillation
+            beta = 0.3  # learning rate... adjustment speed
+            gamma = 0.05  # momentum... damps oscillation
             r_1 = random.uniform(0, 0.2)  # random variable between 0 and 20
             r_2 = random.uniform(0, 0.2)
             if standing_ask > standing_bid:  # ask greater than bid
                 sigma = r_1*standing_ask + r_2  # sellers price change
                 target = standing_ask - sigma  # sellers target valuation
-                ask = round(target, 0)
+                ask = gamma * cur_cost + (1 - gamma) * beta * (target - cur_cost)  # learning rule
                 if ask >= cur_cost:
-                    # ask = gamma*cur_cost + (1-gamma)*beta*(target-cur_cost)  # learning rule
                     return ["S", self.name, ask]
                 else:
                     return []
             elif standing_ask <= standing_bid:  # ask less than or equal to bid
                 sigma = r_1*standing_bid + r_2  # sellers price change
                 target = standing_bid + sigma  # sellers target valuation
-                ask = round(target, 0)
+                ask = gamma * cur_cost + (1 - gamma) * beta * (target - cur_cost)  # learning rule
                 if ask >= cur_cost:
-                    # ask = gamma*cur_cost + (1-gamma)*beta*(target-cur_cost)  # learning rule
                     return ["S", self.name, ask]
                 else:
                     return []
@@ -701,6 +697,8 @@ class Trader_AA(object):
                 ask = (self.prev_best_ask_p - (self.prev_best_ask_p - self.target_sell) / self.eta)
                 return ["S", self.name, round(ask, 0)]
 
+    # TODO for respond() function to be used will need AA memory added into class
+    # TODO code below has not yet been changed to our formatting
     def respond(self, time, lob, trade, verbose):
         # what, if anything, has happened on the bid LOB?
         bid_improved = False
@@ -751,7 +749,7 @@ class Trader_AA(object):
         if self.spin_up_time > 0: self.spin_up_time -= 1
         if deal:
             price = trade['price']
-            #self.updateEq(price)  #TODO allow equilibrium updating or no??
+            #self.updateEq(price)  #TODO allow equilibrium updating or no?
             self.updateSmithsAlpha(price)
             self.updateTheta()
 
