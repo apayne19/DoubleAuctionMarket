@@ -454,6 +454,7 @@ class Trader_PS(object):
 
 
 class Trader_AA(object):
+    ##### Copyright(c) 2012 Dave Cliff #####
     '''Adaptive-Agressiveness trading strategy from Cliff et al.(2008)
     ## sellers and buyers given aggressiveness levels and use to alter profit margins for bids/asks
     --> more aggressive = trade off profit for higher chance of transaction
@@ -778,6 +779,7 @@ class Trader_AA(object):
         self.updateTarget()
 
 class Trader_GD(object):
+    ##### Copyright(c) 2012 Dave Cliff #####
     '''Trader using strategy from Gjerstadt/Dickhaut(1998)
     ## uses market history to calculate belief function to estimate prob of bid/ask being accepted at price p
     --> suffers from excessive volatility when rejected orders = 0
@@ -1029,6 +1031,7 @@ class Trader_GD(object):
                 updatehistory()
 
 class Trader_ZIP(object):
+    ##### Copyright(c) 2012 Dave Cliff #####
     '''Trader using Zero Intelligence Plus strategy from Cliff(1997)
     ## uses prior trading information and limit values to alter profit margin up or down
     --> potential error at bottom of class when calling def respond() traders need memory +++
