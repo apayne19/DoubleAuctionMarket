@@ -82,6 +82,7 @@ class SpotEnvironmentGui():
         self.seller_costs = self.build_array(self.num_sellers, self.num_units)  # matrix of sellers and number of units
 
         # have to set local file path for icon images and project data
+        #  TODO change these to your file path
         self.file_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\icons\\"
         self.project_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\"
 
