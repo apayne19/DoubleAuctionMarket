@@ -1,59 +1,59 @@
-import operator #https://docs.python.org/2/library/operator.html
-import matplotlib.pyplot as plt  # import matplotlib #graphing
+import operator  # https://docs.python.org/2/library/operator.html
+import matplotlib.pyplot as plt  # matplotlib #graphing
 import numpy as np  # import numpy
-import time
-import random
-import csv #import comma seperated values excel
+import time  # time functions
+import random  # random number generator
+import csv  # reads csv files from excel
 
+"""This class is where all the information is brought into and where the output information is
+sent back.... the HEART of the simulator"""
 
 class SpotEnvironmentModel(object):
     """ A class that makes a market"""
 
     def __init__(self, debug=False):
         self.env = {"demand": [], "dem": [], "supply": [], "sup": [],
-               "buyers": {}, "sellers": {}, "eq": {}}
+                    "buyers": {}, "sellers": {}, "eq": {}}
         self.name = ""
         self.num_buyers = 0
         self.num_sellers = 0
         self.num_units = 0  # num_units is the number of units
-                            # buyers can buy and sellers can sell
         self.debug = debug
         if debug:
-            print("...,... In Model -> __init__")
+            print("...... In Model -> __init__")
 
         # This should never run for now
         for buyer in range(self.num_buyers):
-            buyer_id = "buyer" + str(buyer)
+            buyer_id = "buyer" + str(buyer)  # buyer_id = 'buyer0', 'buyer1', etc.
             self.env["buyers"][buyer_id] = []   # env['buyers'] is a dictionary
-                                                # env['buyers'][buyer_id] is a list of values
-                                                # buyer_id = 'buyer0', 'buyer1', etc.
-        for seller in range(self.num_sellers):
-            seller_id = "seller" + str(seller)
-            self.env["sellers"][seller_id] = [] # env['sellers'] is a dictionary
-                                                # env['sellers'][seller_id] is a list of costs
-                                                # seller_id = 'seller0', 'seller1', etc.
+            # env['buyers'][buyer_id] is a list of values
 
-    def reset_market(self):
-        self.name = ""
-        self.num_buyers = 0
-        self.num_sellers = 0
-        self.num_units = 0  # num_units is the number of units
-        self.env["demand"] = []
-        self.env["dem"] = []
-        self.env["supply"] = []
-        self.env["sup"] = []
-        self.env["buyers"] = {}
-        self.env["sellers"] = {}
-        self.env["eq"] = {}
+        for seller in range(self.num_sellers):
+            seller_id = "seller" + str(seller)  # seller_id = 'seller0', 'seller1', etc.
+            self.env["sellers"][seller_id] = []  # env['sellers'] is a dictionary
+            #  env['sellers'][seller_id] is a list of costs
+
+    def reset_market(self):  # clears all values and dictionaries
+        self.name = ""  # resets market name
+        self.num_buyers = 0  # resets number of buyers
+        self.num_sellers = 0  # resets number of sellers
+        self.num_units = 0  # resets number of units
+        self.env["demand"] = []  # resets list of demand values
+        self.env["dem"] = []  # resets list of ????
+        self.env["supply"] = []  # resets list of supply values
+        self.env["sup"] = []  # resets list of ????
+        self.env["buyers"] = {}  # resets list of buyers
+        self.env["sellers"] = {}  # resets list of sellers
+        self.env["eq"] = {}  # resets list of equilibrium values
         if self.debug:
-            print("...,... In Model -> reset_market")
+            print("...... In Model -> reset_market")
             self.show_environment()
 
     def make_market(self, make_d):
 
         if self.debug:  # Creates a log
-            print ("...,... In Model --> set_market_parms")
-            print("...,... parms = {}".format([self.name, self.num_buyers, self.num_sellers, self.num_units]))
+            print ("...... In Model --> set_market_parms")
+            print("...... params = {}".format([self.name, self.num_buyers, self.num_sellers, self.num_units]))
 
         for buyer in range(self.num_buyers):
             buyer_id = "buyer" + str(buyer)
@@ -64,28 +64,30 @@ class SpotEnvironmentModel(object):
             self.env["sellers"][seller_id] = make_d["sellers"][seller]
 
     def set_market_parms(self, parms):
-        """Initialize Environment
-        """
+        """Initialize Environment"""
         if self.debug:  # Creates a log
-            print("...,... In Model --> set_market_parms --> begin")
-        # test to make sure parms will not kill model
-        test_flag = False
-        if parms[0] == "": test_flag = True  # no name
-        if parms[1] <= 0:  test_flag = True  # no buyers
-        if parms[2] <= 0 : test_flag = True  # no sellers
-        if parms[3] <= 0 : test_flag = True  # no units
-        if test_flag == True:
+            print("...... In Model --> set_market_params --> begin")
+        # test to make sure params will not kill model
+        test_flag = False  # arms the error trap
+        if parms[0] == "":  # if project name is blank
+            test_flag = True  # triggers project name trap
+        if parms[1] <= 0:  # if buyers <= 0
+            test_flag = True  # triggers buyer trap
+        if parms[2] <= 0:  # if sellers <= 0
+            test_flag = True  # triggers seller trap
+        if parms[3] <= 0:  # if units <= 0
+            test_flag = True  # triggers unit trap
+        if test_flag == True:  # error trap if any above = false then passes test
             if self.debug:  # Creates a log
-                print("...,... In Model --> set_market_parms --> early exit on parms warning")
+                print("...... In Model --> set_market_params --> early exit on params warning")
             print("WARNING: Project parameters not set")
-            self.name = "Untitled"  # name of environmnet
+            self.name = "Untitled"  # name of environment
             self.num_buyers = 0  # number of buyers
             self.num_sellers = 0  # number of sellers
             self.num_units = 0  # number of units
-
             return
 
-        self.name = parms[0]         # name of environmnet
+        self.name = parms[0]         # name of environment
         self.num_buyers = parms[1]   # number of buyers
         self.num_sellers = parms[2]  # number of sellers
         self.num_units = parms[3]    # number of units
@@ -110,25 +112,25 @@ class SpotEnvironmentModel(object):
 
         return
 
-    def show_environment(self):
+    def show_environment(self):  # displays all data to user
 
-        print("...,... In Model -> show_enviornment")
-        print("...,...,... name = {}".format(self.name))
-        print("...,...,... num_buyers = {}".format(self.num_buyers))
-        print("...,...,... num_sellers = {}".format(self.num_sellers))
-        print("...,...,... num_units = {}\n".format(self.num_units))
+        print("...... In Model -> show_environment")
+        print("......... name = {}".format(self.name))  # printing dictionary with values
+        print("......... num_buyers = {}".format(self.num_buyers))
+        print("......... num_sellers = {}".format(self.num_sellers))
+        print("......... num_units = {}\n".format(self.num_units))
 
-        print("...,...,... demand = {}".format(self.env["demand"]))
-        print("...,...,... dem = {}".format(self.env["dem"]))
-        print("...,...,... supply = {}".format(self.env["supply"]))
-        print("...,...,... sup = {}\n".format(self.env["sup"]))
+        print("......... demand = {}".format(self.env["demand"]))
+        print("......... dem = {}".format(self.env["dem"]))
+        print("......... supply = {}".format(self.env["supply"]))
+        print("......... sup = {}\n".format(self.env["sup"]))
 
         for k in range(self.num_buyers):
             id = "buyer" + str(k)
-            print("...,...,...,... buyer {} values {}".format(k, self.env["buyers"][id]))
+            print("............ buyer {} values {}".format(k, self.env["buyers"][id]))
         for k in range(self.num_sellers):
             id = "seller" + str(k)
-            print("...,...,...,... seller {} costs {}".format(k, self.env["sellers"][id]))
+            print("............ seller {} costs {}".format(k, self.env["sellers"][id]))
 
         print("\n")
 
@@ -142,19 +144,14 @@ class SpotEnvironmentModel(object):
         return len(self.get_seller_costs(0))
 
     def show(self):
-        """Prints basic information about environmnet
-
-                    This is mainly used in stand alone mode without gui.
-        """
-        print("I am environment {} with {} buyers and {} sellers."
-                            .format(self.name, self.num_buyers, self.num_sellers))
+        """Prints basic information about environment --> used in stand alone mode without gui."""
+        print("I am environment {} with {} buyers and {} sellers.".format(self.name,
+                                                                          self.num_buyers,
+                                                                          self.num_sellers))
         print("")
 
     def show_participants(self):
-        """ Prints buyers/values and sellers/costs
-
-            This is mainly used in stand alone mode without gui.
-        """
+        """ Prints buyers/values and sellers/costs --> used in stand alone mode without gui."""
         print("Market Participants")
         print("-------------------")
         print("BUYERS")
@@ -170,28 +167,27 @@ class SpotEnvironmentModel(object):
         print("")
 
     def add_buyer(self, buyer_number, values):
-        """Add buyer and buyer values to environment
-
-        """
+        """Add buyer and buyer values to environment"""
         if self.debug:
-            print("...,... In Model -> add_buyer -> on entry")
-            print("...,... Buyer {} Values {}".format(buyer_number, values))
+            print("...... In Model -> add_buyer -> on entry")
+            print("...... Buyer {} Values {}".format(buyer_number, values))
 
-        if buyer_number >= self.num_buyers: return
-        if len(values) != self.num_units: return
+        if buyer_number >= self.num_buyers:
+            return
+        if len(values) != self.num_units:
+            return
 
         buyer_id = "buyer" + str(buyer_number)
         self.env["buyers"][buyer_id] = values
 
         if self.debug:
-            print("...,... In Model -> add_buyer -> upon good exit")
-            print("...,... buyer_id = {} env/buyers/buyer_id = {}"
+            print("...... In Model -> add_buyer -> upon good exit")
+            print("...... buyer_id = {} env/buyers/buyer_id = {}"
                   .format(buyer_id, self.env["buyers"][buyer_id]))
             self.show_env_buyers()
             print("\n")
 
     def get_buyer_values(self, buyer_number):
-
         if buyer_number > self.num_buyers - 1:
             return [-1]
         else:
@@ -203,15 +199,17 @@ class SpotEnvironmentModel(object):
             print("...,... Seller {} Costs {}".format(seller_number, costs))
             self.show_env_buyers()
 
-        if seller_number >= self.num_sellers: return
-        if len(costs) != self.num_units: return
+        if seller_number >= self.num_sellers:
+            return
+        if len(costs) != self.num_units:
+            return
 
         seller_id = "seller" + str(seller_number)
         self.env["sellers"][seller_id] = costs
 
         if self.debug:
-            print("...,... In Model -> add_seller -> upon good exit")
-            print("...,... seller_id = {} env/sellers/costs = {}"
+            print("...... In Model -> add_seller -> upon good exit")
+            print("...... seller_id = {} env/sellers/costs = {}"
                   .format(seller_id, self.env["sellers"][seller_id]))
             self.show_env_buyers()
             print("\n")
@@ -224,14 +222,14 @@ class SpotEnvironmentModel(object):
 
     def show_env_buyers(self):
         if self.debug:
-            print("...,... In Model -> show_env_buyers")
-            print('...,... env[buyers] = {}'.format(self.env["buyers"]))
+            print("...... In Model -> show_env_buyers")
+            print('...... env[buyers] = {}'.format(self.env["buyers"]))
 
     def make_demand(self):
 
         if self.debug:
-            print("...,... In Model ->  make_demand -> starting")
-            print('...,...,... env[buyers] = {}'.format(self.env["buyers"]))
+            print("...... In Model ->  make_demand -> starting")
+            print('......... env[buyers] = {}'.format(self.env["buyers"]))
 
         dem = []
         for buyer in range(self.num_buyers):
@@ -241,15 +239,15 @@ class SpotEnvironmentModel(object):
         sdem = sorted(dem, key=operator.itemgetter(1), reverse=True)
         self.env["demand"] = sdem
         if self.debug:
-            print("...,... In Model -> make_demand -> ending")
-            print('...,...,... dem = {}'.format(dem))
-            print("...,...,... sdem = {}".format(sdem))
+            print("...... In Model -> make_demand -> ending")
+            print('......... dem = {}'.format(dem))
+            print("......... sdem = {}".format(sdem))
 
     def make_supply(self):
 
         if self.debug:
-            print("...,... In Model ->  make_supply -> starting")
-            print('...,...,... env[sellers] = {}'.format(self.env["sellers"]))
+            print("...... In Model ->  make_supply -> starting")
+            print('......... env[sellers] = {}'.format(self.env["sellers"]))
 
         sup = []
         for seller in range(self.num_sellers):
@@ -259,14 +257,14 @@ class SpotEnvironmentModel(object):
         ssup = sorted(sup, key=operator.itemgetter(1))
         self.env["supply"] = ssup
         if self.debug:
-            print("...,... In Model -> make_supply -> ending")
-            print('...,...,... sup = {}'.format(sup))
-            print("...,...,... ssup = {}".format(ssup))
+            print("...... In Model -> make_supply -> ending")
+            print('......... sup = {}'.format(sup))
+            print("......... ssup = {}".format(ssup))
 
     def get_supply_demand_list(self):
 
         if self.debug:
-            print("...,... In Model -> get_supply_demand_list -> beginning")
+            print("...... In Model -> get_supply_demand_list -> beginning")
 
         dem = self.env["demand"]
         sup = self.env["supply"]
@@ -278,10 +276,9 @@ class SpotEnvironmentModel(object):
         s_d_string += "---------------------------------- \n"
         eq_flag = False  # set to True when equilibrium found
 
-        if self.debug: print(" ...,... In get_supply_demand_list -> max_list = {}".format(max_list))
-        if self.debug: print(" ...,... In get_supply_demand_list -> len(dem_list) = {}".format(len(dem_list)))
-        if self.debug: print(" ...,... In get_supply_demand_list -> len(sup"
-                             "_list) = {}".format(len(sup_list)))
+        if self.debug: print(" ...... In get_supply_demand_list -> max_list = {}".format(max_list))
+        if self.debug: print(" ...... In get_supply_demand_list -> len(dem_list) = {}".format(len(dem_list)))
+        if self.debug: print(" ...... In get_supply_demand_list -> len(sup_list) = {}".format(len(sup_list)))
 
         for x in range(max_list):
             if x < len(dem_list) and x < len(sup_list):
@@ -300,7 +297,7 @@ class SpotEnvironmentModel(object):
                 s_d_string += "\n"
 
         if self.debug:
-            print("...,... In Model -> get_supply_demand_list -> ending")
+            print("...... In Model -> get_supply_demand_list -> ending")
             print(s_d_string)
 
         return s_d_string
@@ -321,9 +318,7 @@ class SpotEnvironmentModel(object):
         print("")
 
     def get_supply_demand_plot_info(self):
-        """
-               First define supply and demand curves
-               """
+        """First define supply and demand curves"""
         # make dunits = list of deman units, sunits = list of supply units
         dunits = [units for units in range(len(self.env["demand"]) + 2)]
         sunits = [units for units in range(len(self.env["supply"]) + 1)]
@@ -331,9 +326,8 @@ class SpotEnvironmentModel(object):
 
         self.calc_equilibrium()  # this is where env["dem"] and env["sup"] created
 
-        """
-        Then plot the curves
-        """
+        # Then plot the curves
+
         demand_values = self.env["dem"]
         supply_costs = self.env["sup"]
 
@@ -341,46 +335,46 @@ class SpotEnvironmentModel(object):
         eq_price_low = self.env["eq"]["price_low"]
 
         if self.debug:
-            print("...,... In Model --> get_supply_demand_plot_info")
-            print("...,... demand = {}".format(demand_values))
-            print("...,... supply = {}".format(supply_costs))
+            print("...... In Model --> get_supply_demand_plot_info")
+            print("...... demand = {}".format(demand_values))
+            print("...... supply = {}".format(supply_costs))
 
         return dunits, sunits, munits, demand_values, supply_costs, eq_price_high, eq_price_low
 
-    def plot_supply_demand(self):
-        """
-        First define supply and demand curves
-        """
-        # # make dunits = list of deman units, sunits = list of supply units
-        dunits = [units for units in range(len(self.env["demand"]) + 2)]
-        sunits = [units for units in range(len(self.env["supply"]) + 1)]
-        munits = [units for units in range(max(len(dunits), len(sunits)))]
+    def plot_supply_demand(self, output_path, session_name):
+        """First define supply and demand curves"""
+        with plt.style.context('seaborn'):
+            # make dunits = list of deman units, sunits = list of supply units
+            dunits = [units for units in range(len(self.env["demand"]) + 2)]
+            sunits = [units for units in range(len(self.env["supply"]) + 1)]
+            munits = [units for units in range(max(len(dunits), len(sunits)))]
 
-        self.calc_equilibrium() # this is where env["dem"] and env["sup"] created
+            self.calc_equilibrium()  # this is where env["dem"] and env["sup"] created
 
-        """
-        Then plot the curves
-        """
-        demand_values = self.env["dem"]
-        supply_costs = self.env["sup"]
+            # Then plot the curves
 
-        plt.step(dunits, demand_values, label='Demand')  # generate demand plot
-        plt.step(sunits, supply_costs, label='Supply')  # generate supply plot
+            demand_values = self.env["dem"]
+            supply_costs = self.env["sup"]
 
-        eq_price_high = self.env["eq"]["price_high"]
-        eq_price_low = self.env["eq"]["price_low"]
+            plt.step(dunits, demand_values, label='Demand', color='orangered')  # generate demand plot
+            plt.step(sunits, supply_costs, label='Supply', color='darkorange')  # generate supply plot
 
-        if eq_price_high != eq_price_low:
-            plt.plot(munits, [eq_price_high for x in munits], label='Price High')
-            plt.plot(munits, [eq_price_low for x in munits], label='Price Low')
-        else:
-            plt.plot(munits, [eq_price_high for x in munits], label='Price') # one price
+            eq_price_high = self.env["eq"]["price_high"]
+            eq_price_low = self.env["eq"]["price_low"]
 
-        plt.legend(bbox_to_anchor=(0.65, 0.98))  # places a legend on the plot
-        plt.title('Supply and Demand')  # add the title
-        plt.xlabel('Units')  # add the x axis label
-        plt.ylabel('$')  # add the y axis label
-        plt.show()  # display the plot
+            if eq_price_high != eq_price_low:
+                plt.plot(munits, [eq_price_high for x in munits], linestyle='--', color='darkslategray', label='Eq. Price High')
+                plt.plot(munits, [eq_price_low for x in munits], linestyle='--', color='darkslategray', label='Eq. Price Low')
+            else:
+                plt.plot(munits, [eq_price_high for x in munits], linestyle='--', color='darkslategray', label='Eq. Price') # one price
+
+            plt.legend(bbox_to_anchor=(0.65, 0.98))  # places a legend on the plot
+            plt.title('Simulation Market Supply and Demand')  # add the title
+            plt.xlabel('Units')  # add the x axis label
+            plt.ylabel('Value ($)')  # add the y axis label
+            plt.savefig(output_path + session_name + "\\" + "Supply Demand.png")  # display the plot
+            plt.close()
+
 
     def calc_equilibrium(self):
         # make demand values
@@ -407,9 +401,9 @@ class SpotEnvironmentModel(object):
         max_length = max(len(self.env["demand"]), len(self.env["supply"])) + 1
 
         # now make equilibrium and surplus calculations
-        # TODO need to test for supply and dmeand not crossing
-        #      this can happen at beginning or at end
-        #
+        # TODO need to test for supply and demand not crossing
+        # this can happen at beginning or at end
+
         max_surplus = 0  # max_surplus is the area up to equilibrium units
         eq_units = 0  # this is the maximum number of units that can sell
         for unit in range(1, min_length):  # only go as far as shortest schedule
@@ -423,7 +417,7 @@ class SpotEnvironmentModel(object):
                 first_rejected_cost = supply_costs[unit]  # calculate first rejected cost
                 break  # exit loop we are done here
 
-        # Now caluclate equilibrium price range
+        # Now calculate equilibrium price range
         eq_price_high = min(last_accepted_value, first_rejected_cost)
         eq_price_low = max(last_accepted_cost, first_rejected_value)
 
@@ -444,7 +438,7 @@ class SpotEnvironmentModel(object):
 
     def get_equilibrium(self):
         self.calc_equilibrium()
-        # get equilibium information and return as tupple
+        # get equilibrium information and return as tuple
         pl = self.env["eq"]["price_low"]
         ph = self.env["eq"]["price_high"]
         qt = self.env["eq"]["quantity"]
@@ -496,7 +490,7 @@ class SpotEnvironmentModel(object):
                                 self.env["eq"]["price_low"],
                                 self.env["eq"]["quantity"],
                                 self.env["eq"]["surplus"]])
-        # Thats it for now
+        # That's it for now
         output_file.close()
 
     def load_file(self, path):
@@ -510,7 +504,7 @@ class SpotEnvironmentModel(object):
                 print('...,... data = {}'.format(env_data))
 
 
-            # Process num_buyers and num_sellers  (First)
+            # Process num_buyers and num_sellers(First)
             line = 0
             self.num_buyers = int(env_data[line][0])
             self.num_sellers = int(env_data[line][1])
@@ -537,7 +531,7 @@ class SpotEnvironmentModel(object):
                 e2 = int(env_data[line][i + 1])
                 remake.append((e1, e2))
             self.env["supply"] = remake
-            #
+
             remake = []
             for i in range(0, len(env_data[line + 1]), 2):
                 e1 = env_data[line + 1][i]
@@ -557,11 +551,11 @@ class SpotEnvironmentModel(object):
         except OSError as err:
             print("File {} does not exist".format(path))
 
-    def prepare_market(self, input_path, input_file):
+    def prepare_market(self, input_path, input_file, output_path, session_name):
         self.load_file(input_path + input_file + ".csv")
-        self.plot_supply_demand()
+        self.plot_supply_demand(output_path, session_name)
         self.show_participants()
         self.show_equilibrium()
 
 if __name__ == "__main__":
-    mkt = SpotEnvironmentModel()
+    mkt = SpotEnvironmentModel()  # allows access when called in build_environment

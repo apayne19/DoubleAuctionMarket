@@ -127,7 +127,9 @@ class BuildMarketEnv(object):
         plt.title('Supply and Demand')  # add the title
         plt.xlabel('Units')  # add the x axis label
         plt.ylabel('$')  # add the y axis label
-        plt.show()  # display the plot
+        #plt.show(block=False)
+        pass
+
 
     def calc_equilibrium(self):
         # make demand values
@@ -303,7 +305,7 @@ class BuildMarketEnv(object):
 
     def prepare_market(self, input_path, input_file):
         self.load_file(input_path + input_file)
-        self.plot_supply_demand()
+        #self.plot_supply_demand()
         self.show_participants()
         self.show_equilibrium()
 
@@ -324,7 +326,7 @@ if __name__ == "__main__":
     mkt.show_equilibrium()
     print(mkt.get_buyer_values(0))
     print(mkt.get_seller_costs(0))
-    mkt.plot_supply_demand()
+    #mkt.plot_supply_demand()
     # methods not shown
     #      load_file(path)
     #      save_file(path)

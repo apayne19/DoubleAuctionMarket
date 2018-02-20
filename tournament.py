@@ -1,4 +1,4 @@
-from trader import SimpleTrader, ZeroIntelligenceTrader
+from trader import Trader_Shaver, Trader_ZIU, Trader_ZIC, Trader_Kaplan, Trader_PS, Trader_AA, Trader_GD, Trader_ZIP
 import double_auction_institution as ins
 import random
 
