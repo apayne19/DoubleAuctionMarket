@@ -8,6 +8,7 @@ import time  # https://docs.python.org/3.6/library/time.html  # time functions
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
 import random
+import spot_market_period
 
 '''1). set input/output url paths to local computer'''
 
