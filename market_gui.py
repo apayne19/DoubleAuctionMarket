@@ -12,6 +12,17 @@ import os  # https://docs.python.org/3.6/library/os.html
 import spot_environment_controller  # condensed modules/commands from spot_env_model
 import spot_market_period
 import subprocess
+import spot_system as sys
+import AI_Testing as prd
+import random
+import csv
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+import time
+import trader as tdr
+from timeit import default_timer as timer
+import scipy.stats as stats
 class MarketGui():
     def __init__(self, root, sec, name, debug=False):
         assert name != "", "Gui must have a name"
@@ -180,12 +191,12 @@ class MarketGui():
         # create Equilibrium Q label
         tk.Label(info_bar, text="Starting Data File: ").grid(row=1, column=0)  # create/grid location
         ttk.Combobox(info_bar, values=os.listdir(self.project_path)).grid(row=1, column=1)
-        plot_button = tk.Button(info_bar, text="Plot", width=4, command=None)
+        plot_button = tk.Button(info_bar, text="Plot", width=4, command=self.callback)
         plot_button.grid(row=1, column=2, padx=10, pady=5)
 
         run_frame = tk.LabelFrame(self.root, height=15, text="RUN SIMULATION")
         run_frame.grid(row=1, column=9, columnspan=2, sticky='E', padx=15, pady=5)
-        run_button = tk.Button(run_frame, text="RUN", width=4, command=self.callback())
+        run_button = tk.Button(run_frame, text="RUN", width=4, command=self.callback)
         run_button.grid(row=0, column=1)
         # # create EQ Price low label
         # tk.Label(info_bar, text="EQ Price Low: ").grid(row=1, column=4)
@@ -212,7 +223,116 @@ class MarketGui():
 
     def callback(self):
         # TODO add in process to run spot_market_period
-        pass
+        num_periods = 6  # periods or trading days
+        limits = (400, 0)  # price ceiling, price floor
+        rounds = 25  # rounds in each period (can substitute time clock)
+        name = "trial"
+        period = 0  # ...??
+        '''The code below creates a file for your session name for market run info to be dumped into...
+        ... will raise file error if session name not changed --> prevents overwriting previous runs'''
+        mkt = spot_market_period
+        smp = spot_market_period.SpotMarketPeriod(mkt.session_name, num_periods)
+
+
+        try:
+            os.makedirs(mkt.output_path + mkt.session_name)  # creates folder for session data
+        except FileExistsError:
+            print("ERROR: File Exists... must rename or delete previous session data")
+            raise  # raises error if folder already exists
+
+        #smp = spot_market_period.SpotMarketPeriod(self.string_session_name, self.num_periods)
+        '''Below trader classes are abbreviated'''
+        zic = "Trader_ZIC"  # zero intelligence constrained
+        ziu = "Trader_ZIU"  # zero intelligence unconstrained trader.. not used
+        kp = "Trader_Kaplan"  # sniping trader based on Santa Fe paper
+        si = "Trader_Shaver"  # simple trader.. not used
+        ps = "Trader_PS"  # PS trader based on Priest and Tol paper
+        aa = "Trader_AA"  # aggressiveness trader based on Cliff and Vytelingum paper
+        gd = "Trader_GD"  # GD trader based on Gjerstadt and Dickhaut paper
+        zip = "Trader_ZIP"  # zero intelligence plus trader
+        ai = "Trader_AI"
+        '''The lists below establish the number and order of traders and trading strategy'''
+        # TODO create way to automate input of trader # and strategies
+        # trader_names = [zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip]
+        # trader_names = [gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
+        # trader_names = [aa, aa, aa, aa, zip, zip, zip, zip, gd, gd, gd, gd, ps, ps, ps, ps, zic, zic, zic, zic, zip, ai]
+        # trader_names = [aa, zic, zic, zic, zic, zic, zic, zic, aa, aa, aa, aa, aa, zic, zic, aa, zic, aa, zic, zic, aa, aa]
+        trader_names = [aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa]
+        # trader_names = [ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps]
+        # trader_names = [kp, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
+        #header = session_name
+        smp.init_spot_system(name, limits, rounds, mkt.input_path, mkt.input_file, mkt.output_path, mkt.session_name)
+        rnd_traders = trader_names  # because shuffle shuffles the list in place, returns none
+        times = []
+        for k in range(num_periods):  # iterates through number of periods or "trading days"
+            if k == 3:  # if round = 3 then shock or change traders
+                # TODO trader shocks happen below
+                # rnd_traders.append(zic)
+                # rnd_traders.append(gd)
+                # smp.num_buyers = 12
+                # smp.num_sellers = 12
+                # print(rnd_traders)
+                # TODO period shocks happen below
+                # smp.init_spot_system_crash(name, limits, rounds, input_path, input_file_market_shock, output_path, session_name)
+                pass
+            else:
+                pass
+            timer_start = timer()
+            mkt.periods_list.append(k)
+            # random.shuffle(rnd_traders)  # shuffles trader order per period
+            # print(rnd_traders)  # prints list of trader strategy
+            smp.init_traders(rnd_traders, k)
+            print("**** Running Period {}".format(k))  # provides visual effect in editor
+            smp.run_period(period, mkt.session_name)
+            timer_stop = timer()
+            results = smp.eval()
+            '''the below data is appended into global dictionaries'''
+            mkt.eff.append(results[8])  # appends the efficiencies per period
+            mkt.act_surplus.append(results[7])  # appends actual surplus per period
+            mkt.maxi_surplus.append(results[6])  # appends maximum surplus per period
+            smp.get_contracts()  # gets transaction prices and period endpoints
+            session_folder = mkt.output_path + mkt.session_name + "\\"  # establishes file path for session data folder
+            smp.record_session_data(session_folder)  # records session data in excel csv
+            time = timer_start - timer_stop
+            times.append(time)
+
+        print("Period Times: " + str(times))
+        print("Market Efficiencies:" + str(mkt.eff))  # print market efficiencies
+        print("Avg. Efficiency:" + str(sum(mkt.eff) / num_periods))  # print avg efficiency
+        # print("Total Avg. Transaction Price:" + str(sum(avg_prices[1:])/(num_periods - 1)))
+        print("Actual Surpluses:" + str(mkt.act_surplus))  # print actual surpluses
+        print("Maximum Surpluses:" + str(mkt.maxi_surplus))  # print max surpluses
+        print()
+        print("Strategy Total Earnings")
+        print("Trader_AA: " + str(smp.total_earns('AA')))
+        # print("Trader_AI: " + str(smp.total_earns('AI')))
+        print("Trader_GD: " + str(smp.total_earns('GD')))  #
+        print("Trader_PS: " + str(smp.total_earns('PS')))  # ADDED: section to list total avg earns
+        # print("Trader_AI: " + str(smp.total_avg_earns('AI')))   #
+        print("Trader_ZIP: " + str(smp.total_earns('ZIP')))  #
+        print("Trader_ZIC: " + str(smp.total_earns('ZIC')))  #
+        print("Trader_Kaplan: " + str(smp.total_earns('KP')))
+        print("Trader_Shaver: " + str(smp.total_earns('SI')))
+        print()
+        print("Strategy Total Avg. Earnings (per trader)")
+        print("Trader_AA: " + str(smp.total_avg_earns('AA', trader_names.count(aa) * num_periods)))  #
+        print("Trader_GD: " + str(smp.total_avg_earns('GD', trader_names.count(gd) * num_periods)))  #
+        print("Trader_PS: " + str(
+            smp.total_avg_earns('PS', trader_names.count(ps) * num_periods)))  # ADDED: section to list total avg earns
+        # print("Trader_AI: " + str(smp.total_avg_earns('AI')))   #
+        print("Trader_ZIP: " + str(smp.total_avg_earns('ZIP', trader_names.count(zip) * num_periods)))  #
+        print("Trader_ZIC: " + str(smp.total_avg_earns('ZIC', trader_names.count(zic) * num_periods)))  #
+        print("Trader_Kaplan: " + str(smp.total_avg_earns('KP', trader_names.count(kp) * num_periods)))
+        print("Trader_Shaver: " + str(smp.total_avg_earns('SI', trader_names.count(si) * num_periods)))
+        smp.get_avg_trade_ratio()  # prints avg trade ratio for all periods
+        smp.graph_trader_eff()  # plots individual efficiency
+        smp.graph_efficiency()  # plots period efficiency
+        smp.get_endpoints()  # obtains endpoints of periods for graph
+        smp.graph_contracts()  # graphs contract transactions and avg transaction per period
+        # smp.graph_surplus()  # graphs actual and max surplus
+        smp.graph_alphas()  # graphs Smith's Alpha of convergence
+        smp.graph_distribution()  # graphs normal distribution of trader efficiencies
+        self.debug = True
 
     def set_market(self):
         """ Sends all values on screen to model"""

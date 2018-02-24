@@ -26,7 +26,7 @@ input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects\\
 input_file = "TestVS"
 output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"  # TODO change to your file path
 session_name = "Round Shock Test 6"  # TODO implement time stamps so file error not generated
-input_file_market_shock = "Trader_Shock"
+input_file_market_shock = "MarketShockTest"
 '''Below are global dictionaries that will contain information needed to execute several functions'''
 all_prices = []
 theoretical_transactions = []
@@ -135,8 +135,8 @@ class SpotMarketPeriod(object):
             plt.ylabel("Efficiency (%)")  # y-axis = U(x) = utility
             plt.title("Simulation Market Efficiencies by Period")
             plt.savefig(output_path + session_name + "\\" + "Period Efficiencies.png")
-            plt.show()
-            #plt.close()
+            # plt.show()
+            plt.close()
 
     '''Graphs the contracts from all periods'''
     def graph_contracts(self):
@@ -171,8 +171,8 @@ class SpotMarketPeriod(object):
             plt.ylabel("Transaction Price")  # y-axis = U(x) = utility
             plt.title("Simulation Market Contract Prices")
             plt.savefig(output_path + session_name + "\\" + "Transactions.png")
-            plt.show()
-            #plt.close()
+            # plt.show()
+            plt.close()
 
 
     def graph_alphas(self):
@@ -186,8 +186,8 @@ class SpotMarketPeriod(object):
             plt.ylabel("Smith's Alpha")  # y-axis = U(x) = utility
             plt.title("Simulation Market Equilibrium Convergence")
             plt.savefig(output_path + session_name + "\\" + "Convergence Alphas.png")
-            plt.show()
-            #plt.close()
+            #plt.show()
+            plt.close()
 
     '''Obtains Avg trade ratio for all periods: actual transactions/equilibrium quantity'''
     def get_avg_trade_ratio(self):
@@ -227,8 +227,8 @@ class SpotMarketPeriod(object):
             plt.ylabel("Efficiency (%)")  # y-axis = U(x) = utility
             plt.title("Simulation Efficiencies by Trader")
             plt.savefig(output_path + session_name + "\\" + "Trader Efficiencies.png")
-            plt.show()
-            #plt.close()
+            #plt.show()
+            plt.close()
 
     # TODO create normal distribution graph of trader efficiencies
     def graph_distribution(self):
@@ -248,7 +248,7 @@ class SpotMarketPeriod(object):
             plt.title('Simulation Market Trader Efficiency Distribution')
             plt.legend(bbox_to_anchor=(0.85, 0.98))  # places a legend on the plot
             plt.savefig(output_path + session_name + "\\" + "Efficiency Distribution.png")
-            plt.show()
+            #plt.show()
         '''Print statements below '''
         print("Trader Efficiency Mean:" + str(mean))
         print("Trader Efficiency Std. Deviation:" + str(std_dev))
@@ -359,8 +359,8 @@ if __name__ == "__main__":
             # smp.num_sellers = 12
             # print(rnd_traders)
             # TODO period shocks happen below
-            # smp.init_spot_system_crash(name, limits, rounds, input_path, input_file_market_shock, output_path, session_name)
-            pass
+            smp.init_spot_system_crash(name, limits, rounds, input_path, input_file_market_shock, output_path, session_name)
+            #pass
         else:
             pass
         timer_start = timer()

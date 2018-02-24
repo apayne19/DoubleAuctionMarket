@@ -46,7 +46,7 @@ class SpotSystem(object):
         self.num_market_rounds = rounds  # total number of rounds to run
         self.mkt = env.SpotEnvironmentModel()  # instantiate environment object
         self.da = ins.Auction('da', self.limits[0], self.limits[1])  # instantiate auction
-        self.load_market(input_path, input_file, output_path, session_name)  # loads market file from gui inputs
+        self.load_market(input_path, input_file, output_path, session_name, "SD Before")  # loads market file from gui inputs
 
     def init_spot_system_crash(self, name, limits, rounds, input_path, input_file_market_shock, output_path,
                                session_name):
@@ -55,15 +55,15 @@ class SpotSystem(object):
         self.num_market_rounds = rounds
         self.mkt = env.SpotEnvironmentModel()  # instantiate environment object
         self.da = ins.Auction('da', self.limits[0], self.limits[1])  # instantiate auction
-        self.load_market(input_path, input_file_market_shock, output_path, session_name)
+        self.load_market(input_path, input_file_market_shock, output_path, session_name, "SD After")
 
     def init_traders(self, trader_names, period):
         self.current_period = period  # trading period
         self.trader_names = trader_names  # trader strategies
         self.trader_info = self.prepare_traders(self.trader_names, self.mkt, self.limits)  # instantiate traders
 
-    def load_market(self, input_path, input_file, output_path, session_name):
-        self.mkt.prepare_market(input_path, input_file, output_path, session_name)  # set and show market
+    def load_market(self, input_path, input_file, output_path, session_name, fig_name):
+        self.mkt.prepare_market(input_path, input_file, output_path, session_name, fig_name)  # set and show market
 
     def run(self):
         self.run_system()  # starts market by calling method below
@@ -222,6 +222,7 @@ class SpotSystem(object):
             # print("#asks: " + str(self.number_asks))
 
         for k in range(len(self.traders)):
+            # tODO look into how trader efficiency is calculated.. should it be earns/maxsurplus or totalearns/surplus
             t_id = "t" + str(k)  # trader id
             t_strat = self.trader_info[t_id]['strat']  # trading strategy
             earn = self.trader_info[t_id]['earn']  # trader earnings
