@@ -197,22 +197,25 @@ class SpotMarketPeriod(object):
 
     '''Obtains Time, Trader, Ask/Bid, Offer Amt for experiment run, writes to csv file'''
     def record_session_data(self, session_folder):  # session_folder is new output path
-        with open(session_folder + "Bid_Ask_History.csv", "w") as file_1:  # creates csv file
+        with open(session_folder + "Market_History.csv", "w") as file_1:  # creates csv file
             output_1 = csv.writer(file_1)
-            output_1.writerow(['Time', 'Trader', 'Bid/Ask', 'Offer', 'Strategy', 'Period', 'Round'])  # header
+            output_1.writerow(['Time', 'Trader', 'Unit', 'Max', 'Earns', 'Bid/Ask', 'Offer', 'Strategy', 'Period',
+                               'Round'])  # header
             file_1.close()
-        with open(session_folder + "Bid_Ask_History.csv", "a") as file_1:  # creates csv file
+        with open(session_folder + "Market_History.csv", "a") as file_1:  # creates csv file
             output_1 = csv.writer(file_1)
-            output_1.writerows(self.sys.da.report_orders())  # saves bid/ask history in excel csv
+            orders = self.sys.da.report_orders()
+            contracts = self.sys.da.report_contracts()
+            for o in orders:
+                for c in contracts:
+                    if o[0] == c[3] or o[0] == c[3] - 0.00001 or o[0] == c[3] + 0.00001:  # TODO can it be +-?
+                        orders[orders.index(o)].append("Contract:" + str(c))
+                    else:
+                        pass
+            print(orders)
+            print(contracts)
+            output_1.writerows(orders)  # saves bid/ask history in excel csv
             file_1.close()  # closes file
-        with open(session_folder + "Contract_History.csv", "a") as file_2:  # creates csv file
-            output_2 = csv.writer(file_2)
-            output_2.writerow(['Price', 'Buyer', 'Seller'])  # header
-            file_2.close()
-        with open(session_folder + "Contract_History.csv", "a") as file_2:  # creates csv file
-            output_2 = csv.writer(file_2)
-            output_2.writerows(self.sys.da.report_contracts())  # saves contracts in excel csv
-            file_2.close()  # closes file
 
     '''Graph individual trader efficiencies'''
     def graph_trader_eff(self):
@@ -234,6 +237,7 @@ class SpotMarketPeriod(object):
     def graph_distribution(self):
         with plt.style.context('seaborn'):
             t_effs = sorted(self.sys.eff_list)  # list of trader efficiencies
+            plt.subplot(2, 1, 1)
             mean = np.mean(t_effs)  # numpy function to get average
             std_dev = np.std(t_effs)  # numpy function to get standard deviation
             median = np.median(t_effs)  # numpy function to get median
@@ -241,20 +245,53 @@ class SpotMarketPeriod(object):
             min = np.min(t_effs)  # numpy function to get minimum value
             fit = stats.norm.pdf(t_effs, mean, std_dev)
             plt.plot(t_effs, fit, '-o', linewidth=2, color='coral')
-            plt.axvline(x=mean, linewidth=2, linestyle='--', color='darkslategray', label='mean')
-            plt.axvline(x=mean+std_dev, linewidth=2, linestyle=':', color='dimgrey', label='mean+std.dev.')
-            plt.axvline(x=mean+(std_dev*2), linewidth=2, linestyle=':', color='dimgrey', label='mean+2*std.dev.')
+            plt.annotate("n_samples = " + str(len(t_effs)), xy=(0, 0.0075))
+            plt.annotate("out of market: " + str(t_effs.count(0)), xy=(0, 0.0050))
+            plt.axvline(x=mean, linewidth=2, linestyle='--', color='darkslategray', label='µ')
+            plt.axvline(x=mean+std_dev, linewidth=2, linestyle=':', color='dimgrey', label='σ')
+            plt.axvline(x=mean+(std_dev*2), linewidth=2, linestyle=':', color='dimgrey', label='2σ')
             plt.xlabel('Trader Efficiency (%)')
             plt.title('Simulation Market Trader Efficiency Distribution')
+            plt.legend(bbox_to_anchor=(0.85, 0.98))  # places a legend on the plot
+            plt.subplot(2, 1, 2)
+            print(t_effs)
+            for i in range(t_effs.count(0)):
+                t_effs.remove(0)
+            print(t_effs)
+            mean2 = np.mean(t_effs)  # numpy function to get average
+            std_dev2 = np.std(t_effs)  # numpy function to get standard deviation
+            median2 = np.median(t_effs)  # numpy function to get median
+            max2 = np.max(t_effs)  # numpy function to get maximum value
+            min2 = np.min(t_effs)  # numpy function to get minimum value
+            fit2 = stats.norm.pdf(t_effs, mean2, std_dev2)
+            plt.plot(t_effs, fit2, '-o', linewidth=2, color='coral')
+            plt.annotate("n_samples = " + str(len(t_effs)), xy=(0, 0.0075))
+            plt.annotate("out of market: " + str(t_effs.count(0)), xy=(0, 0.0050))
+            plt.axvline(x=mean2, linewidth=2, linestyle='--', color='darkslategray', label='µ')
+            plt.axvline(x=mean2 + std_dev2, linewidth=2, linestyle=':', color='dimgrey', label='σ')
+            plt.axvline(x=mean2 + (std_dev2 * 2), linewidth=2, linestyle=':', color='dimgrey', label='2σ')
+            plt.xlabel('Trader Efficiency (%)')
+            plt.title('Traders Out of Market Removed')
             plt.legend(bbox_to_anchor=(0.85, 0.98))  # places a legend on the plot
             plt.savefig(output_path + session_name + "\\" + "Efficiency Distribution.png")
             #plt.show()
         '''Print statements below '''
+        print()
+        print("All Trader Efficiencies")
         print("Trader Efficiency Mean:" + str(mean))
         print("Trader Efficiency Std. Deviation:" + str(std_dev))
         print("Trader Efficiency Median:" + str(median))
         print("Trader Efficiency Max:" + str(max))
         print("Trader Efficiency Min:" + str(min))
+        print("---------------------------------------------------")
+        print("Out of Market Traders Removed")
+        print("Trader Efficiency Mean:" + str(mean2))
+        print("Trader Efficiency Std. Deviation:" + str(std_dev2))
+        print("Trader Efficiency Median:" + str(median2))
+        print("Trader Efficiency Max:" + str(max2))
+        print("Trader Efficiency Min:" + str(min2))
+        print()
+
 
 
     def run_period(self, period, header):
@@ -317,7 +354,7 @@ if __name__ == "__main__":
     limits = (400, 0)  # price ceiling, price floor
     rounds = 25  # rounds in each period (can substitute time clock)
     name = "trial"
-    period = 0  # ...??
+    period = 1  # ...??
     '''The code below creates a file for your session name for market run info to be dumped into...
     ... will raise file error if session name not changed --> prevents overwriting previous runs'''
     try:
@@ -360,7 +397,7 @@ if __name__ == "__main__":
             # print(rnd_traders)
             # TODO period shocks happen below
             smp.init_spot_system_crash(name, limits, rounds, input_path, input_file_market_shock, output_path, session_name)
-            #pass
+
         else:
             pass
         timer_start = timer()

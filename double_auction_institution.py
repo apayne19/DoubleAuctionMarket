@@ -1,5 +1,5 @@
 from timeit import default_timer as timer
-
+import spot_system
 class Auction(object):
     """ A class that makes a market"""
     board = {"is_open": False, "orders": [], "contracts": [], "standing": {}}
@@ -15,7 +15,7 @@ class Auction(object):
         self.srt = timer()
         self.strategy = None
         self.player_id = None
-
+        self.sys = spot_system.SpotSystem()
     def show(self):
         print("I am auction {}, with ceiling {} and floor {}.".format(self.name, self.ceiling, self.floor))
 
@@ -35,16 +35,22 @@ class Auction(object):
 
     def bid(self, player_id, amt, strategies, period, round):
         self.strategy = strategies[player_id]['strat']
+        current_unit = strategies[player_id]['units']
+        if len(strategies[player_id]['values']) == 1:
+            current_value = strategies[player_id]['values'][0]  # TODO is trader's max value still the 1st if no trade?
+        else:
+            current_value = strategies[player_id]['values'][current_unit]
+        current_earns = strategies[player_id]['earn']
         self.player_id = player_id
         if self.board["is_open"]:
-            self.board["orders"].append((self.time_index(), self.player_id, "bid", amt, self.strategy, period, round))
+            self.board["orders"].append([self.time_index(), self.player_id, current_unit, current_value, current_earns, "bid", amt, self.strategy, period, round])
         else:
             return "closed"
 
         if amt > self.board["standing"]["bid"] and amt < self.ceiling:  # check for valid amount
             if amt > self.board["standing"]["ask"]:
                 status = "contract"  # contract = (price, buyer, seller) price = standing ask
-                contract = (self.board["standing"]["ask"], player_id, self.board["standing"]["asker"])
+                contract = (self.board["standing"]["ask"], player_id, self.board["standing"]["asker"], self.time_index())
                 # TODO contract price should be random between bid and ask...??
                 self.board["contracts"].append(contract)
                 # reinitalize standing bid and ask
@@ -62,15 +68,21 @@ class Auction(object):
 
     def ask(self, player_id, amt, strategies, period, round):
         self.strategy = strategies[player_id]['strat']
+        current_unit = strategies[player_id]['units']
+        if len(strategies[player_id]['costs']) == 1:
+            current_cost = strategies[player_id]['costs'][0]
+        else:
+            current_cost = strategies[player_id]['costs'][current_unit]
+        current_earns = strategies[player_id]['earn']
         self.player_id = player_id
         if self.board["is_open"]:
-            self.board["orders"].append((self.time_index(), self.player_id, "ask", amt, self.strategy, period, round))
+            self.board["orders"].append([self.time_index(), self.player_id, current_unit, current_cost, current_earns, "ask", amt, self.strategy, period, round])
         else:
             return "closed"
         if amt < self.board["standing"]["ask"] and amt > self.floor:  # check for valid ask
             if amt < self.board["standing"]["bid"]:  # check for contract
                 status = "contract"  # contract = (price, buyer, seller) price = standing bid
-                contract = (self.board["standing"]["bid"], self.board["standing"]["bidder"], player_id)
+                contract = (self.board["standing"]["bid"], self.board["standing"]["bidder"], player_id, self.time_index())
                 self.board["contracts"].append(contract)
                 # reinitalize standing bid and ask
                 self.board["standing"]["bid"] = self.floor  # Start at smallest possible bid

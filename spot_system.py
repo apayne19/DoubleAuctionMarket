@@ -314,6 +314,7 @@ class SpotSystem(object):
         self.traders = [t[t_id] for t_id in t.keys()]
         self.t = t
         self.d = d
+
         return d
 
 
