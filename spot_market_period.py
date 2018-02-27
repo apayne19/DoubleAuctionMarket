@@ -302,6 +302,7 @@ class SpotMarketPeriod(object):
         pass
 
     def total_avg_earns(self, trader, total_count):  # ADDED: function to call total avg earns from spot system
+        # TODO way to condense into one line?
         if total_count == 0:
             return "NONE"
         else:
@@ -325,6 +326,7 @@ class SpotMarketPeriod(object):
                 return "Trader not listed!"
 
     def total_earns(self, trader):  # ADDED: function to call total avg earns from spot system
+        # TODO way to condense into one line?
         if trader == 'AA':
             return self.sys.AA_earn
         elif trader == 'GD':

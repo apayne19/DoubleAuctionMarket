@@ -23,6 +23,7 @@ import time
 import trader as tdr
 from timeit import default_timer as timer
 import scipy.stats as stats
+import spot_environment_gui
 class MarketGui():
     def __init__(self, root, sec, name, debug=False):
         assert name != "", "Gui must have a name"
@@ -39,12 +40,17 @@ class MarketGui():
         self.num_periods = 0  # setting number of buyers to 0
         self.num_p_shocks = 0  # setting number of sellers to 0
         self.num_r_shocks = 0  # setting number of units to 0
+        self.floor = 0
+        self.ceiling = 0
 
         self.string_periods = tk.StringVar()    # creates a tkinter variable
         self.string_round_shocks = tk.StringVar()   # StringVar() returns either an ASCII string or Unicode string
         self.string_period_shocks = tk.StringVar()     # can also be used to trace when changes made to variables
-
+        self.price_floor = tk.StringVar()
+        self.price_ceiling = tk.StringVar()
         self.string_session_name = tk.StringVar()  # BooleanVar() will return 0 for false and 1 for true...
+        self.string_data = tk.StringVar()
+        self.box = None
         self.string_eq = tk.StringVar()
         self.string_pl = tk.StringVar()
         self.string_ph = tk.StringVar()
@@ -62,6 +68,7 @@ class MarketGui():
         #  TODO change these to your file path
         self.file_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\icons\\"
         self.project_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\projects"
+        self.output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMisc\\period data\\"
 
         # have to create small images for tkinter display... open file, save, etc.
         self.new_file_icon = tk.PhotoImage(file=self.file_path + 'new.png')
@@ -78,6 +85,7 @@ class MarketGui():
         self.show_shortcut()  # executes frame build in tkinter
         self.show_infobar()  # executes sub-frame for user entering number buyers, number sellers, units
         self.process_new_project()
+
 
     def build_array(self, num_1, num_2):  # builds an array for buyers:values and sellers:costs
         x = []
@@ -115,6 +123,10 @@ class MarketGui():
     #             print("In Gui -> on_plot_clicked --> early end")
     #         self.set_market()  # why is this called twice?
     #         return
+
+    def update_data(self):
+        self.string_data = self.box.get()
+
 
     def show_menu(self):
         # getting icons ready for compound menu
@@ -162,20 +174,20 @@ class MarketGui():
 
         # create project name label
         tk.Label(info_bar, text="Session Name:").grid(row=0, column=0)
-        tk.Entry(info_bar, width=15, justify=tk.LEFT, textvariable=self.string_session_name).grid(row=0, column=1, padx=5)
+        tk.Entry(info_bar, width=15, justify=tk.LEFT, textvariable=self.string_session_name).grid(row=0, column=1)
 
         # create number of buyers label
-        tk.Label(info_bar, text="Number of Period Shocks: ").grid(row=0, column=2)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_period_shocks).grid(row=0, column=3, padx=5)
+        tk.Label(info_bar, text="Period Shocks:").grid(row=0, column=2)
+        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_period_shocks).grid(row=0, column=3)
         self.string_period_shocks.set(str(self.num_p_shocks))  # sets initial display value at self.num_buyers = 0
 
         # create number of sellers label
-        tk.Label(info_bar, text="Number of Round Shocks: ").grid(row=0, column=4, padx=5)
+        tk.Label(info_bar, text="Round Shocks:").grid(row=0, column=4)
         tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_round_shocks).grid(row=0, column=5)
         self.string_round_shocks.set(str(self.num_r_shocks))  # sets initial display value at self.num_sellers = 0
 
         # create number of units label
-        tk.Label(info_bar, text="Number of Periods: ").grid(row=0, column=6, padx=5)
+        tk.Label(info_bar, text="Periods:").grid(row=0, column=6)
         tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_periods).grid(row=0, column=7)
         self.string_periods.set(str(self.num_periods))  # sets initial display value at self.num_units = 0
 
@@ -189,15 +201,23 @@ class MarketGui():
                             --> builds a frame for each group'''
         info_button.grid(row=0, column=8, padx=10, pady=5)  # creates grids in both built frames
         # create Equilibrium Q label
-        tk.Label(info_bar, text="Starting Data File: ").grid(row=1, column=0)  # create/grid location
-        ttk.Combobox(info_bar, values=os.listdir(self.project_path)).grid(row=1, column=1)
+        tk.Label(info_bar, text="Starting Data File:").grid(row=1, column=0)  # create/grid location
+        self.box = ttk.Combobox(info_bar, values=os.listdir(self.project_path), textvariable=self.string_data).grid(row=1, column=1)
+
         plot_button = tk.Button(info_bar, text="Plot", width=4, command=self.callback)
-        plot_button.grid(row=1, column=2, padx=10, pady=5)
+        plot_button.grid(row=1, column=2)
+
+        tk.Label(info_bar, text="Price Floor:").grid(row=1, column=3)
+        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.price_floor).grid(row=1, column=4)
+        self.price_floor.set(str(self.floor))
+        tk.Label(info_bar, text="Price Ceiling:").grid(row=1, column=5)
+        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.price_ceiling).grid(row=1, column=6)
+        self.price_ceiling.set(str(self.ceiling))
 
         run_frame = tk.LabelFrame(self.root, height=15, text="RUN SIMULATION")
         run_frame.grid(row=1, column=9, columnspan=2, sticky='E', padx=15, pady=5)
         run_button = tk.Button(run_frame, text="RUN", width=4, command=self.callback)
-        run_button.grid(row=0, column=1)
+        run_button.grid(row=0, column=1, padx=30)
         # # create EQ Price low label
         # tk.Label(info_bar, text="EQ Price Low: ").grid(row=1, column=4)
         # tk.Label(info_bar, width=4, justify=tk.CENTER,
@@ -222,7 +242,21 @@ class MarketGui():
             self.root.destroy()  # closes window and destroys tkinter object
 
     def callback(self):
-        # TODO add in process to run spot_market_period
+        print(self.string_data.get())
+        print(self.string_session_name.get())
+        print(self.string_periods.get())
+        print(self.string_round_shocks.get())
+        print(self.string_period_shocks.get())
+
+        all_prices = []
+        theoretical_transactions = []
+        all_ends = []
+        avg_prices = []
+        endpoints = []
+        eff = []
+        periods_list = []
+        act_surplus = []
+        maxi_surplus = []
         num_periods = 6  # periods or trading days
         limits = (400, 0)  # price ceiling, price floor
         rounds = 25  # rounds in each period (can substitute time clock)
@@ -230,12 +264,12 @@ class MarketGui():
         period = 0  # ...??
         '''The code below creates a file for your session name for market run info to be dumped into...
         ... will raise file error if session name not changed --> prevents overwriting previous runs'''
-        mkt = spot_market_period
-        smp = spot_market_period.SpotMarketPeriod(mkt.session_name, num_periods)
+
+        smp = spot_market_period.SpotMarketPeriod(self.string_session_name.get(), self.string_periods.get())
 
 
         try:
-            os.makedirs(mkt.output_path + mkt.session_name)  # creates folder for session data
+            os.makedirs(self.output_path + self.string_session_name.get())  # creates folder for session data
         except FileExistsError:
             print("ERROR: File Exists... must rename or delete previous session data")
             raise  # raises error if folder already exists
@@ -261,7 +295,8 @@ class MarketGui():
         # trader_names = [ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps]
         # trader_names = [kp, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
         #header = session_name
-        smp.init_spot_system(name, limits, rounds, mkt.input_path, mkt.input_file, mkt.output_path, mkt.session_name)
+        smp.init_spot_system(name, limits, rounds, self.project_path, self.string_data.get(), self.output_path,
+                             self.string_session_name.get())
         rnd_traders = trader_names  # because shuffle shuffles the list in place, returns none
         times = []
         for k in range(num_periods):  # iterates through number of periods or "trading days"
@@ -278,30 +313,30 @@ class MarketGui():
             else:
                 pass
             timer_start = timer()
-            mkt.periods_list.append(k)
+            periods_list.append(k)
             # random.shuffle(rnd_traders)  # shuffles trader order per period
             # print(rnd_traders)  # prints list of trader strategy
             smp.init_traders(rnd_traders, k)
             print("**** Running Period {}".format(k))  # provides visual effect in editor
-            smp.run_period(period, mkt.session_name)
+            smp.run_period(period, self.string_session_name.get())
             timer_stop = timer()
             results = smp.eval()
             '''the below data is appended into global dictionaries'''
-            mkt.eff.append(results[8])  # appends the efficiencies per period
-            mkt.act_surplus.append(results[7])  # appends actual surplus per period
-            mkt.maxi_surplus.append(results[6])  # appends maximum surplus per period
+            eff.append(results[8])  # appends the efficiencies per period
+            act_surplus.append(results[7])  # appends actual surplus per period
+            maxi_surplus.append(results[6])  # appends maximum surplus per period
             smp.get_contracts()  # gets transaction prices and period endpoints
-            session_folder = mkt.output_path + mkt.session_name + "\\"  # establishes file path for session data folder
+            session_folder = self.output_path + self.string_session_name.get() + "\\"  # establishes file path for session data folder
             smp.record_session_data(session_folder)  # records session data in excel csv
             time = timer_start - timer_stop
             times.append(time)
 
         print("Period Times: " + str(times))
-        print("Market Efficiencies:" + str(mkt.eff))  # print market efficiencies
-        print("Avg. Efficiency:" + str(sum(mkt.eff) / num_periods))  # print avg efficiency
+        print("Market Efficiencies:" + str(eff))  # print market efficiencies
+        print("Avg. Efficiency:" + str(sum(eff) / num_periods))  # print avg efficiency
         # print("Total Avg. Transaction Price:" + str(sum(avg_prices[1:])/(num_periods - 1)))
-        print("Actual Surpluses:" + str(mkt.act_surplus))  # print actual surpluses
-        print("Maximum Surpluses:" + str(mkt.maxi_surplus))  # print max surpluses
+        print("Actual Surpluses:" + str(act_surplus))  # print actual surpluses
+        print("Maximum Surpluses:" + str(maxi_surplus))  # print max surpluses
         print()
         print("Strategy Total Earnings")
         print("Trader_AA: " + str(smp.total_earns('AA')))
@@ -332,7 +367,6 @@ class MarketGui():
         # smp.graph_surplus()  # graphs actual and max surplus
         smp.graph_alphas()  # graphs Smith's Alpha of convergence
         smp.graph_distribution()  # graphs normal distribution of trader efficiencies
-        self.debug = True
 
     def set_market(self):
         """ Sends all values on screen to model"""
@@ -569,11 +603,13 @@ class MarketGui():
 if __name__ == "__main__":
     # setup gui
     root = tk.Tk()
+    #root2 = tk.Tk()
     debug_test = True
     if debug_test:
         print("In Gui -> START")
     sec = spot_environment_controller.SpotEnvironmentController(debug_test)
     gui = MarketGui(root, sec, "Data Entry", debug_test)
+    #gui2 = spot_environment_gui.SpotEnvironmentGui(root2, sec, "Creation", debug_test)
     root.mainloop()
     if debug_test:
         print("In Gui -> END")

@@ -19,6 +19,10 @@ class SpotEnvironmentModel(object):
         self.num_sellers = 0
         self.num_units = 0  # num_units is the number of units
         self.debug = debug
+        self.last_accepted_value = None
+        self.last_accepted_cost = None
+        self.first_rejected_value = None
+        self.first_rejected_cost = None
         if debug:
             print("...... In Model -> __init__")
 
@@ -418,6 +422,7 @@ class SpotEnvironmentModel(object):
                 break  # exit loop we are done here
 
         # Now calculate equilibrium price range
+        # TODO throwing error here... without self throws a reference error... with self throws type error
         eq_price_high = min(last_accepted_value, first_rejected_cost)
         eq_price_low = max(last_accepted_cost, first_rejected_value)
 
