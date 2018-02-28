@@ -19,10 +19,10 @@ class SpotEnvironmentModel(object):
         self.num_sellers = 0
         self.num_units = 0  # num_units is the number of units
         self.debug = debug
-        self.last_accepted_value = None
-        self.last_accepted_cost = None
-        self.first_rejected_value = None
-        self.first_rejected_cost = None
+        self.last_accepted_value = 0
+        self.last_accepted_cost = 0
+        self.first_rejected_value = 0
+        self.first_rejected_cost = 0
         if debug:
             print("...... In Model -> __init__")
 
@@ -380,6 +380,39 @@ class SpotEnvironmentModel(object):
             plt.close()
 
 
+    def plot_supply_demand_gui(self, name):
+        """First define supply and demand curves"""
+        with plt.style.context('seaborn'):
+            # make dunits = list of deman units, sunits = list of supply units
+            dunits = [units for units in range(len(self.env["demand"]) + 2)]
+            sunits = [units for units in range(len(self.env["supply"]) + 1)]
+            munits = [units for units in range(max(len(dunits), len(sunits)))]
+
+            self.calc_equilibrium()  # this is where env["dem"] and env["sup"] created
+
+            # Then plot the curves
+
+            demand_values = self.env["dem"]
+            supply_costs = self.env["sup"]
+
+            plt.step(dunits, demand_values, label='Demand', color='orangered')  # generate demand plot
+            plt.step(sunits, supply_costs, label='Supply', color='darkorange')  # generate supply plot
+
+            eq_price_high = self.env["eq"]["price_high"]
+            eq_price_low = self.env["eq"]["price_low"]
+
+            if eq_price_high != eq_price_low:
+                plt.plot(munits, [eq_price_high for x in munits], linestyle='--', color='darkslategray', label='Eq. Price High')
+                plt.plot(munits, [eq_price_low for x in munits], linestyle='--', color='darkslategray', label='Eq. Price Low')
+            else:
+                plt.plot(munits, [eq_price_high for x in munits], linestyle='--', color='darkslategray', label='Eq. Price') # one price
+
+            plt.legend(bbox_to_anchor=(0.65, 0.98))  # places a legend on the plot
+            plt.title(str(name))  # add the title
+            plt.xlabel('Units')  # add the x axis label
+            plt.ylabel('Value ($)')  # add the y axis label
+            plt.show()
+
     def calc_equilibrium(self):
         # make demand values
         max_value = 0
@@ -414,17 +447,17 @@ class SpotEnvironmentModel(object):
             if demand_values[unit] >= supply_costs[unit]:  # As long as value is above or equal to cost
                 eq_units = eq_units + 1  # unit should sell in equilibrium
                 max_surplus = max_surplus + demand_values[unit] - supply_costs[unit]  # add surplus
-                last_accepted_value = demand_values[unit]  # update last accepted value
-                last_accepted_cost = supply_costs[unit]  # update last accepted cost
+                self.last_accepted_value = demand_values[unit]  # update last accepted value
+                self.last_accepted_cost = supply_costs[unit]  # update last accepted cost
             else:  # now value is below cost
-                first_rejected_value = demand_values[unit]  # calculate first rejected value
-                first_rejected_cost = supply_costs[unit]  # calculate first rejected cost
+                self.first_rejected_value = demand_values[unit]  # calculate first rejected value
+                self.first_rejected_cost = supply_costs[unit]  # calculate first rejected cost
                 break  # exit loop we are done here
 
         # Now calculate equilibrium price range
         # TODO throwing error here... without self throws a reference error... with self throws type error
-        eq_price_high = min(last_accepted_value, first_rejected_cost)
-        eq_price_low = max(last_accepted_cost, first_rejected_value)
+        eq_price_high = min(self.last_accepted_value, self.first_rejected_cost)
+        eq_price_low = max(self.last_accepted_cost, self.first_rejected_value)
 
         self.env["eq"]["price_high"] = eq_price_high
         self.env["eq"]["price_low"] = eq_price_low
@@ -558,6 +591,13 @@ class SpotEnvironmentModel(object):
 
     def prepare_market(self, input_path, input_file, output_path, session_name, fig_name):
         self.load_file(input_path + input_file + ".csv")
+        self.plot_supply_demand(output_path, session_name, fig_name)
+        self.show_participants()
+        self.show_equilibrium()
+
+    # added for gui
+    def prepare_market_gui(self, input_path, input_file, output_path, session_name, fig_name):
+        self.load_file(input_path + "\\" + input_file)
         self.plot_supply_demand(output_path, session_name, fig_name)
         self.show_participants()
         self.show_equilibrium()

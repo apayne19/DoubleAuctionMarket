@@ -86,3 +86,8 @@ class SpotEnvironmentController():
         self.sem.make_demand()
         self.sem.make_supply()
         self.sem.plot_supply_demand()
+
+    def plot_gui(self, name):
+        self.sem.make_demand()
+        self.sem.make_supply()
+        self.sem.plot_supply_demand_gui(name)

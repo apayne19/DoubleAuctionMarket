@@ -42,17 +42,17 @@ maxi_surplus = []
 
 class SpotMarketPeriod(object):
 
-    def __init__(self, session_name, num_periods):  # creates name and number of periods for market
+    def __init__(self, session_name, num_periods, limits):  # creates name and number of periods for market
         self.display = True
         self.session_name = session_name
         self.period = 0
 
         # self.period_number = None
         self.num_periods = num_periods
-        self.num_buyers = 11  # number of buyers
-        self.num_sellers = 11  # number of sellers
-        self.limits = (400, 0)  # ceiling and floor for bidding
-        self.num_market_periods = 10  # number of periods auction run
+        self.num_buyers = 0  # number of buyers
+        self.num_sellers = 0  # number of sellers
+        self.limits = limits  # ceiling and floor for bidding
+        self.num_market_periods = num_periods  # number of periods auction run
         self.trader_names = []
         self.traders = []
         self.trader_info = {}  # dictionary of all trader info
@@ -62,8 +62,12 @@ class SpotMarketPeriod(object):
         self.sys.init_spot_system(name, limits, rounds, input_path, input_file, output_path, session_name)
         # initializes spot system and passes key market information
 
-    def init_spot_system_crash(self, name, limits, rounds, input_path, input_file_market_shock, output_path, session_name):
-        self.sys.init_spot_system_crash(name, limits, rounds, input_path, input_file_market_shock, output_path, session_name)
+    # added for gui
+    def init_spot_system_gui(self, name, limits, rounds, input_path, input_file, output_path, session_name):
+        self.sys.init_spot_system_gui(name, limits, rounds, input_path, input_file, output_path, session_name)
+
+    def init_shock(self, name, limits, rounds, input_path, input_file_market_shock, output_path, session_name):
+        self.sys.init_shock(name, limits, rounds, input_path, input_file_market_shock, output_path, session_name)
 
     def init_traders(self, trader_names, period_k):
         self.sys.init_traders(trader_names, period_k)
@@ -125,7 +129,7 @@ class SpotMarketPeriod(object):
         py.offline.plot(fig)
 
     '''Graphs market efficiencies by period.. use matplotlib until plot error fixed'''
-    def graph_efficiency(self):
+    def graph_efficiency(self, output, session):
         with plt.style.context('seaborn'):
             x = periods_list  # list of period numbers
             y = eff  # list of period efficiency calculations
@@ -134,12 +138,12 @@ class SpotMarketPeriod(object):
             plt.xlabel("Period")  # x-axis = items
             plt.ylabel("Efficiency (%)")  # y-axis = U(x) = utility
             plt.title("Simulation Market Efficiencies by Period")
-            plt.savefig(output_path + session_name + "\\" + "Period Efficiencies.png")
+            plt.savefig(output + session + "\\" + "Period Efficiencies.png")
             # plt.show()
             plt.close()
 
     '''Graphs the contracts from all periods'''
-    def graph_contracts(self):
+    def graph_contracts(self, output, session):
         with plt.style.context('seaborn'):
             eq_low = self.sys.trader_info['equilibrium'][1]
             eq_high = self.sys.trader_info['equilibrium'][2]
@@ -170,12 +174,12 @@ class SpotMarketPeriod(object):
             plt.xlabel("Contract Number")  # x-axis = items
             plt.ylabel("Transaction Price")  # y-axis = U(x) = utility
             plt.title("Simulation Market Contract Prices")
-            plt.savefig(output_path + session_name + "\\" + "Transactions.png")
+            plt.savefig(output + session + "\\" + "Transactions.png")
             # plt.show()
             plt.close()
 
 
-    def graph_alphas(self):
+    def graph_alphas(self, output, session):
         with plt.style.context('seaborn'):
             alphas = self.sys.alphas
             x = periods_list
@@ -185,7 +189,7 @@ class SpotMarketPeriod(object):
             plt.xlabel("Period")  # x-axis = items
             plt.ylabel("Smith's Alpha")  # y-axis = U(x) = utility
             plt.title("Simulation Market Equilibrium Convergence")
-            plt.savefig(output_path + session_name + "\\" + "Convergence Alphas.png")
+            plt.savefig(output + session + "\\" + "Convergence Alphas.png")
             #plt.show()
             plt.close()
 
@@ -218,7 +222,7 @@ class SpotMarketPeriod(object):
             file_1.close()  # closes file
 
     '''Graph individual trader efficiencies'''
-    def graph_trader_eff(self):
+    def graph_trader_eff(self, output, session):
         with plt.style.context('seaborn'):
             t_i_eff = self.sys.eff_list
             t_i = self.sys.t_list
@@ -229,12 +233,12 @@ class SpotMarketPeriod(object):
             plt.xlabel("Trader Number")  # x-axis = items
             plt.ylabel("Efficiency (%)")  # y-axis = U(x) = utility
             plt.title("Simulation Efficiencies by Trader")
-            plt.savefig(output_path + session_name + "\\" + "Trader Efficiencies.png")
+            plt.savefig(output + session + "\\" + "Trader Efficiencies.png")
             #plt.show()
             plt.close()
 
     # TODO create normal distribution graph of trader efficiencies
-    def graph_distribution(self):
+    def graph_distribution(self, output, session):
         with plt.style.context('seaborn'):
             t_effs = sorted(self.sys.eff_list)  # list of trader efficiencies
             plt.subplot(2, 1, 1)
@@ -273,7 +277,7 @@ class SpotMarketPeriod(object):
             plt.xlabel('Trader Efficiency (%)')
             plt.title('Traders Out of Market Removed')
             plt.legend(bbox_to_anchor=(0.85, 0.98))  # places a legend on the plot
-            plt.savefig(output_path + session_name + "\\" + "Efficiency Distribution.png")
+            plt.savefig(output + session + "\\" + "Efficiency Distribution.png")
             #plt.show()
         '''Print statements below '''
         print()
@@ -355,6 +359,7 @@ if __name__ == "__main__":
     num_periods = 6  # periods or trading days
     limits = (400, 0)  # price ceiling, price floor
     rounds = 25  # rounds in each period (can substitute time clock)
+
     name = "trial"
     period = 1  # ...??
     '''The code below creates a file for your session name for market run info to be dumped into...
@@ -365,7 +370,7 @@ if __name__ == "__main__":
         print("ERROR: File Exists... must rename or delete previous session data")
         raise  # raises error if folder already exists
     header = session_name
-    smp = SpotMarketPeriod(session_name, num_periods)
+    smp = SpotMarketPeriod(session_name, num_periods, limits)
     '''Below trader classes are abbreviated'''
     zic = "Trader_ZIC"  # zero intelligence constrained
     ziu = "Trader_ZIU"  # zero intelligence unconstrained trader.. not used
@@ -398,7 +403,7 @@ if __name__ == "__main__":
             # smp.num_sellers = 12
             # print(rnd_traders)
             # TODO period shocks happen below
-            smp.init_spot_system_crash(name, limits, rounds, input_path, input_file_market_shock, output_path, session_name)
+            smp.init_shock(name, limits, rounds, input_path, input_file_market_shock, output_path, session_name)
 
         else:
             pass
@@ -449,10 +454,10 @@ if __name__ == "__main__":
     print("Trader_Kaplan: " + str(smp.total_avg_earns('KP', trader_names.count(kp)*num_periods)))
     print("Trader_Shaver: " + str(smp.total_avg_earns('SI', trader_names.count(si)*num_periods)))
     smp.get_avg_trade_ratio()  # prints avg trade ratio for all periods
-    smp.graph_trader_eff()  # plots individual efficiency
-    smp.graph_efficiency()  # plots period efficiency
+    smp.graph_trader_eff(output_path, session_name)  # plots individual efficiency
+    smp.graph_efficiency(output_path, session_name)  # plots period efficiency
     smp.get_endpoints()  # obtains endpoints of periods for graph
-    smp.graph_contracts()  # graphs contract transactions and avg transaction per period
+    smp.graph_contracts(output_path, session_name)  # graphs contract transactions and avg transaction per period
     # smp.graph_surplus()  # graphs actual and max surplus
-    smp.graph_alphas()  # graphs Smith's Alpha of convergence
-    smp.graph_distribution()  # graphs normal distribution of trader efficiencies
+    smp.graph_alphas(output_path, session_name)  # graphs Smith's Alpha of convergence
+    smp.graph_distribution(output_path, session_name)  # graphs normal distribution of trader efficiencies

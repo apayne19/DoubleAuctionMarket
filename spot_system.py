@@ -48,8 +48,16 @@ class SpotSystem(object):
         self.da = ins.Auction('da', self.limits[0], self.limits[1])  # instantiate auction
         self.load_market(input_path, input_file, output_path, session_name, "SD Before")  # loads market file from gui inputs
 
-    def init_spot_system_crash(self, name, limits, rounds, input_path, input_file_market_shock, output_path,
-                               session_name):
+    # added for gui
+    def init_spot_system_gui(self, name, limits, rounds, input_path, input_file, output_path, session_name):
+        self.name = name  # session name
+        self.limits = limits  # price ceiling and floor
+        self.num_market_rounds = rounds  # total number of rounds to run
+        self.mkt = env.SpotEnvironmentModel()  # instantiate environment object
+        self.da = ins.Auction('da', self.limits[0], self.limits[1])  # instantiate auction
+        self.load_market(input_path, input_file, output_path, session_name, "SD Before")  # loads market file from gui inputs
+
+    def init_shock(self, name, limits, rounds, input_path, input_file_market_shock, output_path, session_name):
         self.name = name
         self.limits = limits
         self.num_market_rounds = rounds
@@ -64,6 +72,10 @@ class SpotSystem(object):
 
     def load_market(self, input_path, input_file, output_path, session_name, fig_name):
         self.mkt.prepare_market(input_path, input_file, output_path, session_name, fig_name)  # set and show market
+
+    # added for gui
+    def load_market_gui(self, input_path, input_file, output_path, session_name, fig_name):
+        self.mkt.prepare_market_gui(input_path, input_file, output_path, session_name, fig_name)  # set and show market
 
     def run(self):
         self.run_system()  # starts market by calling method below

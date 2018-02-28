@@ -37,24 +37,34 @@ class MarketGui():
         self.root.title(name)  # giving root a name
         '''Added a messagebox for when escape button pressed... calls on_escape_chosen()'''
         self.root.protocol("WM_DELETE_WINDOW", self.on_quit_chosen)
+
         self.num_periods = 0  # setting number of buyers to 0
+        self.num_rounds = 0
         self.num_p_shocks = 0  # setting number of sellers to 0
         self.num_r_shocks = 0  # setting number of units to 0
+        self.num_buyers = 0  # setting number of buyers to 0
+        self.num_sellers = 0  # setting number of sellers to 0
+        self.num_units = 0  # setting number of units to 0
         self.floor = 0
         self.ceiling = 0
 
         self.string_periods = tk.StringVar()    # creates a tkinter variable
+        self.string_rounds = tk.StringVar()
         self.string_round_shocks = tk.StringVar()   # StringVar() returns either an ASCII string or Unicode string
         self.string_period_shocks = tk.StringVar()     # can also be used to trace when changes made to variables
         self.price_floor = tk.StringVar()
         self.price_ceiling = tk.StringVar()
         self.string_session_name = tk.StringVar()  # BooleanVar() will return 0 for false and 1 for true...
         self.string_data = tk.StringVar()
-        self.box = None
+        self.new_string_data = tk.StringVar()
+        self.string_num_buyers = tk.StringVar()  # creates a tkinter variable
+        self.string_num_sellers = tk.StringVar()  # StringVar() returns either an ASCII string or Unicode string
+        self.string_num_units = tk.StringVar()
         self.string_eq = tk.StringVar()
         self.string_pl = tk.StringVar()
         self.string_ph = tk.StringVar()
         self.string_ms = tk.StringVar()
+
         self.current_row = 0  # setting current read row to 0... self.current_row+1 would read next row
         self.current_row_contents = []
         self.ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]  # is this limiting the amount to 10 buyers and 10 sellers?
@@ -63,6 +73,8 @@ class MarketGui():
         # have to build matrices for future tkinter display
         self.pshock_values = self.build_array(self.num_r_shocks, self.num_r_shocks)  # matrix of buyers and number of units
         self.rshock_values = self.build_array(self.num_p_shocks, self.num_p_shocks)  # matrix of sellers and number of units
+        self.buyer_values = self.build_array(self.num_buyers, self.num_units)  # matrix of buyers and number of units
+        self.seller_costs = self.build_array(self.num_sellers, self.num_units)  # matrix of sellers and number of units
 
         # have to set local file path for icon images and project data
         #  TODO change these to your file path
@@ -124,10 +136,6 @@ class MarketGui():
     #         self.set_market()  # why is this called twice?
     #         return
 
-    def update_data(self):
-        self.string_data = self.box.get()
-
-
     def show_menu(self):
         # getting icons ready for compound menu
         menu_bar = tk.Menu(self.root)  # menu begins
@@ -140,7 +148,7 @@ class MarketGui():
                               compound='left', image=self.open_file_icon, underline=0, command=self.open_file)
         file_menu.add_command(label='Save', accelerator='Ctrl+S',
                               compound='left', image=self.save_file_icon, underline=0, command=self.save)
-        file_menu.add_command(label='Save as', accelerator='Shift+Ctrl+S', command=self.save_as)
+        #file_menu.add_command(label='Save as', accelerator='Shift+Ctrl+S', command=self.save_as)
         file_menu.add_separator()
         file_menu.add_command(label='Quit', accelerator='Alt+F4', command=self.on_quit_chosen)
         menu_bar.add_cascade(label='File', menu=file_menu)  # allows toolbar tab to drop down with multiple choices
@@ -191,20 +199,21 @@ class MarketGui():
         tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_periods).grid(row=0, column=7)
         self.string_periods.set(str(self.num_periods))  # sets initial display value at self.num_units = 0
 
+        tk.Label(info_bar, text="Rounds:").grid(row=0, column=8)
+        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_rounds).grid(row=0, column=9)
+        self.string_periods.set(str(self.num_rounds))  # sets initial display value at self.num_units = 0
+
 
         # create a button with action input (command = click)
         info_button = tk.Button(info_bar, text="Set", width=4,
                                 command=self.on_set_parms_clicked)
-        '''Click = calls on_set_parms_clicked 
-                    --> calls show_player_frames() 
-                        --> calls show_buyer_frames() and show_seller_frames()
-                            --> builds a frame for each group'''
+
         info_button.grid(row=0, column=8, padx=10, pady=5)  # creates grids in both built frames
         # create Equilibrium Q label
         tk.Label(info_bar, text="Starting Data File:").grid(row=1, column=0)  # create/grid location
-        self.box = ttk.Combobox(info_bar, values=os.listdir(self.project_path), textvariable=self.string_data).grid(row=1, column=1)
+        ttk.Combobox(info_bar, values=os.listdir(self.project_path), textvariable=self.string_data).grid(row=1, column=1)
 
-        plot_button = tk.Button(info_bar, text="Plot", width=4, command=self.callback)
+        plot_button = tk.Button(info_bar, text="Show", width=4, command=self.on_show_clicked)
         plot_button.grid(row=1, column=2)
 
         tk.Label(info_bar, text="Price Floor:").grid(row=1, column=3)
@@ -241,12 +250,231 @@ class MarketGui():
         if tkinter.messagebox.askokcancel("Exit?", "Have you saved your work?"):
             self.root.destroy()  # closes window and destroys tkinter object
 
+    def set_market(self):
+        """ Sends all values on screen to model"""
+        # Start with name and all that
+        if self.debug:
+            print("In Gui -> set_market -> begin")
+        self.sec.set_market_parms([self.string_session_name.get(), self.num_p_shocks, self.num_r_shocks,
+                                   self.num_periods])
+        make_d = {}
+
+        # Now Add Buyer Values and Seller Costs
+        make_d["buyers"] = {}
+        for k in range(self.num_p_shocks):
+            make_d["buyers"][k] = []
+            for j in range(self.num_periods):
+                make_d["buyers"][k].append(int(self.pshock_values[k][j].get()))
+
+        # make_d["sellers"] = {}
+        # for k in range(self.num_sellers):
+        #     make_d["sellers"][k] = []
+        #     for j in range(self.num_units):
+        #         make_d["sellers"][k].append(int(self.seller_costs[k][j].get()))
+
+        # now make supply and demand
+        if self.debug:
+            print("In Gui -> set_market -> make_d")
+            self.show_market(make_d)
+
+        self.sec.make_market(make_d)
+        self.sec.make_supply()
+        self.sec.make_demand()
+        if self.debug:
+            print("In Gui -> set_market -> end")
+
+    def show_market(self, make_d):
+
+        if self.debug:
+            print("In Gui -> show_market -> begin")
+        print("... name = {}".format(self.name))
+        print("... num_period_shocks = {}".format(self.num_p_shocks))
+        print("... num_round_shocks = {}".format(self.num_r_shocks))
+        print("... num_periods = {}".format(self.num_periods))
+
+        # for k in range(self.num_buyers):
+        #     print("... make_d[buyers][{}] = {}".format(k, make_d["buyers"][k]))
+        # for k in range(self.num_sellers):
+        #     print("... make_d[sellers][{}] = {}".format(k, make_d["sellers"][k]))
+
+        if self.debug:
+            print("In Gui -> show_market -> end")
+
+    def on_show_clicked(self):
+        self.sec.load_file(self.project_path + "\\" + str(self.string_data.get()))
+        data_frame = tk.LabelFrame(self.root, text="Data File Information")
+        data_frame.grid(row=2, column=1)
+        tk.Label(data_frame, text="Buyers: " + str(self.sec.get_num_buyers())).grid(row=0, column=0)
+        tk.Label(data_frame, text="Sellers: " + str(self.sec.get_num_sellers())).grid(row=0, column=1)
+        tk.Label(data_frame, text="Units: " + str(self.sec.get_num_units())).grid(row=0, column=2)
+        #tk.Label(data_frame, text="Buyer Values: " + str(self.sec.get_buyer_values())).grid(row=1, column=0)
+        #tk.Label(data_frame, text="Seller Costs: " + str(self.sec.get_seller_costs())).grid(row=2, column=0)
+        self.sec.plot_gui(self.string_data.get())
+        #tk.Entry(data_frame, width=3, textvariable=self.num_buyers).grid(row=0, column=1)
+
+    def on_set_parms_clicked(self):
+        """Set parameters from info_bar, initializes a new experiment. Message box will allow the user to opt out."""
+        if not messagebox.askyesno("DESTROY WORK", "This will destroy your work \n Do you wish to continue?"):
+            return
+
+        self.num_periods = int(self.string_periods.get())
+        self.num_r_shocks = int(self.string_round_shocks.get())
+        self.num_p_shocks = int(self.string_period_shocks.get())
+        self.root.title(self.string_session_name.get())
+
+        if self.num_p_shocks > 0:  # Build array if useful
+            self.pshock_values = self.build_array(self.num_p_shocks, self.num_p_shocks)
+        if self.num_r_shocks > 0:  # Build array if useful
+            self.rshock_values = self.build_array(self.num_r_shocks, self.num_r_shocks)
+
+        self.show_shock_frames()  # calls show_player_frames --> builds frame
+        self.sec.set_market_parms([self.string_session_name.get(), self.num_buyers, self.num_sellers, self.num_units])
+
+
+
+    def show_shock_frames(self):
+        self.show_pshock_frame()
+        self.show_rshock_frame()
+
+    def show_pshock_frame(self):
+        pf = tk.LabelFrame(self.root, text="Period Shock Entries")
+        pf.grid(row=2, column=0, sticky=tk.W +
+                                        tk.E + tk.N + tk.S, padx=15, pady=4)
+        if self.num_p_shocks == 0: return   # Notihing to show
+        self.buttons = [[None for x in range(3)] for x in range(self.num_p_shocks + self.num_r_shocks)]
+
+        pshock_ids = [k for k in range(self.num_p_shocks)]
+        tk.Label(pf, text="ID").grid(row=0, column=0)
+        tk.Label(pf, text="Shock Data File").grid(row=0, column=2)
+        tk.Label(pf, text="Period").grid(row=0, column=1)
+        for i in range(self.num_p_shocks):
+            pshock_num = "P Shock #" + str(i + 1)
+            tk.Label(pf, text=pshock_num).grid(row=i+1, column=0)
+        for i in range(self.num_p_shocks):
+            pshock_ids[i] = tk.StringVar()
+            tk.Entry(pf, width=5, justify=tk.CENTER,
+                     textvariable=pshock_ids[i]).grid(row=i + 1, column=1)
+            pshock_ids[i].set("")
+        for i in range(self.num_p_shocks):
+            ttk.Combobox(pf, values=os.listdir(self.project_path), textvariable=self.new_string_data).grid(row=i + 1, column=2)
+            plot_button = tk.Button(pf, text="Show", width=4, command=self.on_show_clicked)
+            plot_button.grid(row=i + 1, column=3)
+
+    #
+    def show_rshock_frame(self):
+        rf = tk.LabelFrame(self.root, text="Round Shock Entries")
+        rf.grid(row=3, column=0, sticky=tk.W +
+                                        tk.E + tk.N + tk.S, padx=15, pady=4)
+        if self.num_r_shocks == 0: return  # Nothing to show
+        rshock_ids = [k for k in range(self.num_r_shocks)]
+        tk.Label(rf, text="ID").grid(row=0, column=0)
+        tk.Label(rf, text="Shock Data File").grid(row=0, column=2)
+        tk.Label(rf, text="Round").grid(row=0, column=1)
+        for i in range(self.num_r_shocks):
+            rshock_num = "R Shock #" + str(i + 1)
+            tk.Label(rf, text=rshock_num).grid(row=i + 1, column=0)
+        for i in range(self.num_r_shocks):
+            rshock_ids[i] = tk.StringVar()
+            tk.Entry(rf, width=5, justify=tk.CENTER,
+                     textvariable=rshock_ids[i]).grid(row=i + 1, column=1)
+            rshock_ids[i].set("")
+        for i in range(self.num_r_shocks):
+            ttk.Combobox(rf, values=os.listdir(self.project_path), textvariable=self.new_string_data).grid(row=i + 1, column=2)
+            plot_button = tk.Button(rf, text="Show", width=4, command=self.on_show_clicked)
+            plot_button.grid(row=i+1, column=3)
+    #
+    def show_info_bar_parms(self):
+        self.string_period_shocks.set(str(self.num_p_shocks))
+        self.string_round_shocks.set(str(self.num_r_shocks))
+        self.string_periods.set(str(self.num_periods))
+
+    def process_new_project(self, event=None):
+        if self.debug == True:
+            print("In GUI -> process_new_project -> begin")
+        self.root.title("Untitled")
+        self.file_name = None
+        self.string_session_name.set("Untitled")
+
+        self.num_p_shocks = 0
+        self.num_r_shocks = 0
+        self.num_periods = 0
+
+        self.show_info_bar_parms()
+        self.show_shock_frames()
+
+
+        #self.set_market()
+        #self.sec.reset_market()
+        self.sec.show_environment()
+
+        if self.debug == True:
+            print("In GUI -> process_new_project -> end")
+
+    def open_file(self, event=None):
+        input_file_name = tkinter.filedialog.askopenfilename(defaultextension=".csv",
+                                                             filetypes=[("All Files", "*.*"),
+                                                                        ("Text Documents", "*.txt")])  # accepts chosen file
+        if input_file_name:
+            # global file_name
+            self.file_name = input_file_name
+            self.name = os.path.basename(self.file_name)
+            index = self.name.find(".")   # look for start of .csv
+            self.name = self.name[:index]  # pulls file from directory/file path
+            self.root.title('{}'.format(self.name))
+            self.sec.load_file(self.file_name)
+            #self.show_project()
+
+    def save(self, event=None):  # saves file in it's path location
+        """We want to create a messagebox that asks if the user wants to overwrite the current file"""
+        # TODO:  Add existing file check
+        self.set_market()
+        self.project_path += self.string_session_name.get()
+        self.sec.save_project(self.project_path)
+
+    def display_about_messagebox(self, event=None):
+        # displays about message
+        tkinter.messagebox.showinfo("About", "{}{}".format(self.name,
+                                                           "\n\nCenter for the Study of Neuroeconomics\n\nOctober, 2017"))
+
+    def display_help_messagebox(self, event=None):  # displays help messages when message link clicked
+        help_msg = "Quick Help: \n\n"
+        help_msg += "   Getting Started \n"
+        help_msg += "      1). Enter unique session name \n"
+        help_msg += "      2). Enter number of period shocks \n"
+        help_msg += "      3). Enter number of round shocks \n"
+        help_msg += "      4). Enter starting data set \n"
+        help_msg += "      5). Click Set Button \n"
+        help_msg += "          a). Say yes to message box \n"
+        help_msg += "          b). Period and round shock entries displayed \n"
+        tkinter.messagebox.showinfo("Help", help_msg)
+
+    # def show_project(self):
+    #     self.num_buyers = self.sec.get_num_buyers()
+    #     self.num_sellers = self.sec.get_num_sellers()
+    #     self.num_units = self.sec.get_num_units()
+    #     self.string_session_name.set(self.name)
+    #     self.string_period_shocks.set(str(self.num_p_shocks))
+    #     self.string_round_shocks.set(str(self.num_r_shocks))
+    #     self.string_periods.set(str(self.num_periods))
+    #     self.periodshock_values = self.build_array(self.num_p_shocks, self.num_p_shocks)
+    #     self.roundshock_values = self.build_array(self.num_r_shocks, self.num_r_shocks)
+    #
+    #     self.buyer_values = self.build_array(self.num_buyers, self.num_units)
+    #     self.show_pshock_frame()
+        #self.set_all_buyer_values()
+
+        # self.seller_costs = self.build_array(self.num_sellers, self.num_units)
+        # self.show_sellers_frame()
+        # self.set_all_seller_costs()
+
     def callback(self):
-        print(self.string_data.get())
-        print(self.string_session_name.get())
-        print(self.string_periods.get())
-        print(self.string_round_shocks.get())
-        print(self.string_period_shocks.get())
+        if not messagebox.askyesno("PROGRESS CHECK", "Have all the parameters been set? \n If not please set parameters"):
+            return
+        print(self.string_data)
+        print(self.string_session_name)
+        print(self.string_periods)
+        print(self.string_round_shocks)
+        print(self.string_period_shocks)
 
         all_prices = []
         theoretical_transactions = []
@@ -257,15 +485,17 @@ class MarketGui():
         periods_list = []
         act_surplus = []
         maxi_surplus = []
-        num_periods = 6  # periods or trading days
-        limits = (400, 0)  # price ceiling, price floor
-        rounds = 25  # rounds in each period (can substitute time clock)
+        session = self.string_session_name.get()
+
+        num_periods = int(self.string_periods.get())  # periods or trading days
+        limits = (int(self.price_ceiling.get()), int(self.price_floor.get()))  # price ceiling, price floor
+        rounds = int(self.string_rounds.get())  # rounds in each period (can substitute time clock)
         name = "trial"
         period = 0  # ...??
         '''The code below creates a file for your session name for market run info to be dumped into...
         ... will raise file error if session name not changed --> prevents overwriting previous runs'''
 
-        smp = spot_market_period.SpotMarketPeriod(self.string_session_name.get(), self.string_periods.get())
+        smp = spot_market_period.SpotMarketPeriod(session, num_periods, limits)
 
 
         try:
@@ -295,11 +525,11 @@ class MarketGui():
         # trader_names = [ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps]
         # trader_names = [kp, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
         #header = session_name
-        smp.init_spot_system(name, limits, rounds, self.project_path, self.string_data.get(), self.output_path,
+        smp.init_spot_system_gui(name, limits, rounds, self.project_path, self.string_data.get(), self.output_path,
                              self.string_session_name.get())
         rnd_traders = trader_names  # because shuffle shuffles the list in place, returns none
         times = []
-        for k in range(num_periods):  # iterates through number of periods or "trading days"
+        for k in range(int(self.string_periods.get())):  # iterates through number of periods or "trading days"
             if k == 3:  # if round = 3 then shock or change traders
                 # TODO trader shocks happen below
                 # rnd_traders.append(zic)
@@ -360,244 +590,13 @@ class MarketGui():
         print("Trader_Kaplan: " + str(smp.total_avg_earns('KP', trader_names.count(kp) * num_periods)))
         print("Trader_Shaver: " + str(smp.total_avg_earns('SI', trader_names.count(si) * num_periods)))
         smp.get_avg_trade_ratio()  # prints avg trade ratio for all periods
-        smp.graph_trader_eff()  # plots individual efficiency
-        smp.graph_efficiency()  # plots period efficiency
+        smp.graph_trader_eff(self.output_path, session)  # plots individual efficiency
+        smp.graph_efficiency(self.output_path, session)  # plots period efficiency
         smp.get_endpoints()  # obtains endpoints of periods for graph
-        smp.graph_contracts()  # graphs contract transactions and avg transaction per period
+        smp.graph_contracts(self.output_path, session)  # graphs contract transactions and avg transaction per period
         # smp.graph_surplus()  # graphs actual and max surplus
-        smp.graph_alphas()  # graphs Smith's Alpha of convergence
-        smp.graph_distribution()  # graphs normal distribution of trader efficiencies
-
-    def set_market(self):
-        """ Sends all values on screen to model"""
-        # Start with name and all that
-        if self.debug:
-            print("In Gui -> set_market -> begin")
-        self.sec.set_market_parms([self.string_session_name.get(), self.num_p_shocks, self.num_r_shocks,
-                                   self.num_periods])
-        make_d = {}
-
-        # Now Add Buyer Values and Seller Costs
-        make_d["buyers"] = {}
-        for k in range(self.num_p_shocks):
-            make_d["buyers"][k] = []
-            for j in range(self.num_periods):
-                make_d["buyers"][k].append(int(self.pshock_values[k][j].get()))
-
-        # make_d["sellers"] = {}
-        # for k in range(self.num_sellers):
-        #     make_d["sellers"][k] = []
-        #     for j in range(self.num_units):
-        #         make_d["sellers"][k].append(int(self.seller_costs[k][j].get()))
-
-        # now make supply and demand
-        if self.debug:
-            print("In Gui -> set_market -> make_d")
-            self.show_market(make_d)
-
-        self.sec.make_market(make_d)
-        self.sec.make_supply()
-        self.sec.make_demand()
-        if self.debug:
-            print("In Gui -> set_market -> end")
-
-    def show_market(self, make_d):
-
-        if self.debug:
-            print("In Gui -> show_market -> begin")
-        print("... name = {}".format(self.name))
-        print("... num_period_shocks = {}".format(self.num_p_shocks))
-        print("... num_round_shocks = {}".format(self.num_r_shocks))
-        print("... num_periods = {}".format(self.num_periods))
-
-        # for k in range(self.num_buyers):
-        #     print("... make_d[buyers][{}] = {}".format(k, make_d["buyers"][k]))
-        # for k in range(self.num_sellers):
-        #     print("... make_d[sellers][{}] = {}".format(k, make_d["sellers"][k]))
-
-        if self.debug:
-            print("In Gui -> show_market -> end")
-
-
-    def on_set_parms_clicked(self):
-        """Set parameters from info_bar, initializes a new experiment. Message box will allow the user to opt out."""
-        if not messagebox.askyesno("DESTROY WORK", "This will destroy your work \n Do you wish to continue?"):
-            return
-
-        self.num_periods = int(self.string_periods.get())
-        self.num_r_shocks = int(self.string_round_shocks.get())
-        self.num_p_shocks = int(self.string_period_shocks.get())
-        self.root.title(self.string_session_name.get())
-
-        if self.num_p_shocks > 0:  # Build array if useful
-            self.pshock_values = self.build_array(self.num_p_shocks, self.num_p_shocks)
-        if self.num_r_shocks > 0:  # Build array if useful
-            self.rshock_values = self.build_array(self.num_r_shocks, self.num_r_shocks)
-
-        self.show_shock_frames()  # calls show_player_frames --> builds frame
-        self.sec.set_market_parms([self.string_session_name.get(), self.num_buyers, self.num_sellers, self.num_units])
-
-
-
-    def show_shock_frames(self):
-        self.show_pshock_frame()
-        self.show_rshock_frame()
-
-    def show_pshock_frame(self):
-        pf = tk.LabelFrame(self.root, text="Period Shock Entries")
-        pf.grid(row=2, column=0, sticky=tk.W +
-                                        tk.E + tk.N + tk.S, padx=15, pady=4)
-        if self.num_p_shocks == 0: return   # Notihing to show
-        self.buttons = [[None for x in range(3)] for x in range(self.num_p_shocks + self.num_r_shocks)]
-
-        pshock_ids = [k for k in range(self.num_p_shocks)]
-        tk.Label(pf, text="ID").grid(row=0, column=0)
-        for i in range(self.num_p_shocks):
-            pshock_num = "P Shock #" + str(i + 1)
-            tk.Label(pf, text=pshock_num).grid(row=i+1, column=0)
-        for i in range(self.num_p_shocks):
-            pshock_ids[i] = tk.StringVar()
-            tk.Entry(pf, width=5, justify=tk.CENTER,
-                     textvariable=pshock_ids[i]).grid(row=i + 1, column=1)
-            pshock_ids[i].set("")
-        for i in range(self.num_p_shocks):
-            ttk.Combobox(pf, values=os.listdir(self.project_path)).grid(row=i + 1, column=2)
-
-    #
-    def show_rshock_frame(self):
-        rf = tk.LabelFrame(self.root, text="Round Shock Entries")
-        rf.grid(row=3, column=0, sticky=tk.W +
-                                        tk.E + tk.N + tk.S, padx=15, pady=4)
-        if self.num_r_shocks == 0: return  # Nothing to show
-        rshock_ids = [k for k in range(self.num_r_shocks)]
-        tk.Label(rf, text="ID").grid(row=0, column=0)
-        tk.Label(rf, text="Shock Data File").grid(row=0, column=3)
-        for i in range(self.num_r_shocks):
-            rshock_num = "R Shock #" + str(i + 1)
-            tk.Label(rf, text=rshock_num).grid(row=i + 1, column=0)
-        for i in range(self.num_r_shocks):
-            rshock_ids[i] = tk.StringVar()
-            tk.Entry(rf, width=5, justify=tk.CENTER,
-                     textvariable=rshock_ids[i]).grid(row=i + 1, column=1)
-            rshock_ids[i].set("")
-        for i in range(self.num_r_shocks):
-            ttk.Combobox(rf, values=os.listdir(self.project_path)).grid(row=i + 1, column=2)
-    #
-    def show_info_bar_parms(self):
-        self.string_period_shocks.set(str(self.num_p_shocks))
-        self.string_round_shocks.set(str(self.num_r_shocks))
-        self.string_periods.set(str(self.num_periods))
-
-    def process_new_project(self, event=None):
-        if self.debug == True:
-            print("In GUI -> process_new_project -> begin")
-        self.root.title("Untitled")
-        self.file_name = None
-        self.string_session_name.set("Untitled")
-
-        self.num_p_shocks = 0
-        self.num_r_shocks = 0
-        self.num_periods = 0
-
-        self.show_info_bar_parms()
-        self.show_shock_frames()
-
-
-        #self.set_market()
-        #self.sec.reset_market()
-        self.sec.show_environment()
-
-        if self.debug == True:
-            print("In GUI -> process_new_project -> end")
-
-    def open_file(self, event=None):
-        input_file_name = tkinter.filedialog.askopenfilename(defaultextension=".csv",
-                                                             filetypes=[("All Files", "*.*"),
-                                                                        ("Text Documents", "*.txt")])  # accepts chosen file
-        if input_file_name:
-            # global file_name
-            self.file_name = input_file_name
-            self.name = os.path.basename(self.file_name)
-            index = self.name.find(".")   # look for start of .csv
-            self.name = self.name[:index]  # pulls file from directory/file path
-            self.root.title('{}'.format(self.name))
-            self.sec.load_file(self.file_name)
-            self.show_project()
-
-    def write_to_file(self, file_name):  # creates ability to write directly in file  # can use when users put in info
-        pass
-        """
-        try:
-            content = content_text.get(1.0, 'end')
-            with open(self.file_name, 'w') as the_file:
-                the_file.write(content)
-        except IOError:
-            pass  # in actual we will show a error message box.
-            # we discuss message boxes in the next section so ignored here.
-        """
-
-    '''Created tkinter frame for save_as for file naming and creating'''
-    def save_as(self, event=None):  # TODO create ability to save work anywhere on the computer
-        """We want to create a dialog box that will accept a file name, then create that file, then save to that file"""
-        top = tk.Toplevel(self.root)
-        top.geometry("100x100")
-        frm = tk.Frame(top, borderwidth=4, relief='ridge')
-        frm.pack(fill='both', expand=True)
-        label = tk.Label(frm, text="Name your file")
-        label.pack()
-        self.entry = tk.Entry(frm)
-        self.entry.pack(pady=4)
-        b_submit = tk.Button(frm, label='Save As', command=self.save_as_file())
-        '''opening the file before the button is pressed...how to fix??'''
-        b_submit.pack()
-
-    def save_as_file(self):
-        open(self.project_path + self.entry.get() + '.csv', 'w', newline='')
-
-    def save(self, event=None):  # saves file in it's path location
-        """We want to create a messagebox that asks if the user wants to overwrite the current file"""
-        # TODO:  Add existing file check
-        self.set_market()
-        self.project_path += self.string_session_name.get()
-        self.sec.save_project(self.project_path)
-
-    def display_about_messagebox(self, event=None):
-        # displays about message
-        tkinter.messagebox.showinfo("About", "{}{}".format(self.name,
-                                                           "\n\nCenter for the Study of Neuroeconomics\n\nOctober, 2017"))
-
-    def display_help_messagebox(self, event=None):  # displays help messages when message link clicked
-        help_msg = "Quick Help: \n\n"
-        help_msg += "   Getting Started \n"
-        help_msg += "      1). Enter unique session name \n"
-        help_msg += "      2). Enter number of period shocks \n"
-        help_msg += "      3). Enter number of round shocks \n"
-        help_msg += "      4). Enter starting data set \n"
-        help_msg += "      5). Click Set Button \n"
-        help_msg += "          a). Say yes to message box \n"
-        help_msg += "          b). Period and round shock entries displayed \n"
-        tkinter.messagebox.showinfo("Help", help_msg)
-
-    def show_project(self):
-        self.num_buyers = self.sec.get_num_buyers()
-        self.num_sellers = self.sec.get_num_sellers()
-        self.num_units = self.sec.get_num_units()
-        self.string_session_name.set(self.name)
-        self.string_period_shocks.set(str(self.num_p_shocks))
-        self.string_round_shocks.set(str(self.num_r_shocks))
-        self.string_periods.set(str(self.num_periods))
-        self.periodshock_values = self.build_array(self.num_p_shocks, self.num_p_shocks)
-        self.roundshock_values = self.build_array(self.num_r_shocks, self.num_r_shocks)
-
-        self.buyer_values = self.build_array(self.num_buyers, self.num_units)
-        self.show_pshock_frame()
-        #self.set_all_buyer_values()
-
-        # self.seller_costs = self.build_array(self.num_sellers, self.num_units)
-        # self.show_sellers_frame()
-        # self.set_all_seller_costs()
-
-
+        #smp.graph_alphas(self.output_path, session)  # graphs Smith's Alpha of convergence
+        smp.graph_distribution(self.output_path, session)  # graphs normal distribution of trader efficiencies
 
 
 if __name__ == "__main__":
