@@ -1,29 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AnalysisUIOptions">
-    <option name="SCOPE_TYPE" value="3" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="20ab1217-fded-4f2a-a544-19f32ae10eb8" name="Default" comment="simulator working in market_gui now">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.gitattributes" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.gitignore" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AI_Testing.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/build_environment.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/doc_test.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/double_auction_institution.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/market_gui.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/spot_environment_controller.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/spot_environment_gui.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/spot_environment_model.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/spot_market.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/spot_market_period.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/spot_system.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tournament.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/trader.py" afterPath="" />
+    <list default="true" id="8fe4be80-9f42-41ae-9672-4ce268fbf62a" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/DoubleAuctionMarket.iml" afterPath="$PROJECT_DIR$/.idea/DoubleAuctionMarket.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
-    <ignored path=".idea/" />
-    <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -33,12 +17,32 @@
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="spot_market_period.py" pinned="false" current-in-tab="true">
+    <leaf>
+      <file leaf-file-name="market_gui.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/GUI/market_gui.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="187">
+              <caret line="596" column="61" lean-forward="true" selection-start-line="596" selection-start-column="61" selection-end-line="596" selection-end-column="61" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="spot_environment_gui.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/GUI/spot_environment_gui.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-2890">
+              <caret line="87" column="48" lean-forward="false" selection-start-line="87" selection-start-column="48" selection-end-line="87" selection-end-column="48" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="spot_market_period.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Simulator/spot_market_period.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="647">
-              <caret line="258" column="25" lean-forward="false" selection-start-line="258" selection-start-column="25" selection-end-line="258" selection-end-column="25" />
+            <state relative-caret-position="4542">
+              <caret line="451" column="56" lean-forward="false" selection-start-line="451" selection-start-column="56" selection-end-line="451" selection-end-column="56" />
               <folding>
                 <element signature="e#0#42#0" expanded="true" />
               </folding>
@@ -49,40 +53,24 @@
       <file leaf-file-name="spot_system.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Institution/spot_system.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="807">
-              <caret line="241" column="28" lean-forward="false" selection-start-line="241" selection-start-column="28" selection-end-line="241" selection-end-column="28" />
-              <folding>
-                <element signature="e#0#134#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="612">
+              <caret line="53" column="53" lean-forward="false" selection-start-line="53" selection-start-column="53" selection-end-line="53" selection-end-column="53" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="trader.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Trader/trader.py">
+      <file leaf-file-name="spot_environment_model.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Environment/spot_environment_model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="51">
-              <caret line="3" column="47" lean-forward="false" selection-start-line="3" selection-start-column="47" selection-end-line="3" selection-end-column="47" />
-              <folding>
-                <element signature="e#0#13#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="-9246">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
-  </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Python Script" />
-      </list>
-    </option>
-  </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>\\</find>
-    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -90,37 +78,11 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch.py" />
-        <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch_1.py" />
-        <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch_2.py" />
-        <option value="$APPLICATION_CONFIG_DIR$/scratches/test.py" />
-        <option value="$PROJECT_DIR$/test.py" />
-        <option value="$PROJECT_DIR$/spot_market.py" />
-        <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch_3.py" />
-        <option value="$USER_HOME$/OneDrive/Documents/Econ 496/Make File OG.py" />
-        <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch_4.py" />
-        <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch_5.py" />
-        <option value="$PROJECT_DIR$/tournament.py" />
-        <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch_6.py" />
-        <option value="$PROJECT_DIR$/build_environment.py" />
-        <option value="$PROJECT_DIR$/AI_Testing.py" />
-        <option value="$PROJECT_DIR$/trader.py" />
-        <option value="$PROJECT_DIR$/spot_environment_gui.py" />
-        <option value="$PROJECT_DIR$/market_gui_adv.py" />
-        <option value="$PROJECT_DIR$/double_auction_institution.py" />
-        <option value="$PROJECT_DIR$/spot_environment_controller.py" />
-        <option value="$PROJECT_DIR$/spot_environment_model.py" />
-        <option value="$PROJECT_DIR$/spot_system.py" />
-        <option value="$PROJECT_DIR$/spot_market_period.py" />
-        <option value="$PROJECT_DIR$/market_gui.py" />
-        <option value="$PROJECT_DIR$/Institution/double_auction_institution.py" />
         <option value="$PROJECT_DIR$/GUI/spot_environment_gui.py" />
-        <option value="$PROJECT_DIR$/Environment/spot_environment_controller.py" />
-        <option value="$PROJECT_DIR$/GUI/market_gui.py" />
-        <option value="$PROJECT_DIR$/Simulator/tournament.py" />
-        <option value="$PROJECT_DIR$/Trader/trader.py" />
+        <option value="$PROJECT_DIR$/Simulator/spot_market.py" />
         <option value="$PROJECT_DIR$/Institution/spot_system.py" />
         <option value="$PROJECT_DIR$/Simulator/spot_market_period.py" />
+        <option value="$PROJECT_DIR$/GUI/market_gui.py" />
       </list>
     </option>
   </component>
@@ -129,25 +91,6 @@
     <option name="y" value="-8" />
     <option name="width" value="1066" />
     <option name="height" value="1666" />
-  </component>
-  <component name="ProjectInspectionProfilesVisibleTreeState">
-    <entry key="Project Default">
-      <profile-state>
-        <expanded-state>
-          <State>
-            <id />
-          </State>
-          <State>
-            <id>Python</id>
-          </State>
-        </expanded-state>
-        <selected-state>
-          <State>
-            <id>PyUnresolvedReferencesInspection</id>
-          </State>
-        </selected-state>
-      </profile-state>
-    </entry>
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -175,6 +118,76 @@
               <option name="myItemId" value="DoubleAuctionMarket" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Trader" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="DoubleAuctionMarket" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="DoubleAuctionMarket" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Simulator" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="DoubleAuctionMarket" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="DoubleAuctionMarket" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="DoubleAuctionMarket" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="DoubleAuctionMarket" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Institution" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="DoubleAuctionMarket" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="DoubleAuctionMarket" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="GUI" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="DoubleAuctionMarket" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="DoubleAuctionMarket" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Environment" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
@@ -183,10 +196,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$USER_HOME$/OneDrive/Documents/CSN Intern/Holt Laury Project/Data EV.xkcd.py" />
-    <property name="com.intellij.ide.scratch.LRUPopupBuilder$2/Languages" value="Python" />
-    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Ignored.Files" />
-    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -200,80 +210,8 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.spot_market_period (1)">
-    <configuration default="false" name="spot_market_period" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="DoubleAuctionMarket" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/spot_market_period.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <method />
-    </configuration>
+  <component name="RunManager" selected="Python.market_gui">
     <configuration default="false" name="market_gui" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="DoubleAuctionMarket" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/market_gui.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="market_gui_adv" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="DoubleAuctionMarket" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/market_gui_adv.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="spot_market_period (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Simulator" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="DoubleAuctionMarket" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Simulator/spot_market_period.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="market_gui (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -286,6 +224,24 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="DoubleAuctionMarket" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/GUI/market_gui.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="spot_market_period" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Simulator" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="DoubleAuctionMarket" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Simulator/spot_market_period.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -356,20 +312,14 @@
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method />
     </configuration>
-    <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="Python.spot_market_period" />
-      <item index="1" class="java.lang.String" itemvalue="Python.market_gui" />
-      <item index="2" class="java.lang.String" itemvalue="Python.market_gui_adv" />
-      <item index="3" class="java.lang.String" itemvalue="Python.spot_market_period (1)" />
-      <item index="4" class="java.lang.String" itemvalue="Python.market_gui (1)" />
+    <list size="2">
+      <item index="0" class="java.lang.String" itemvalue="Python.market_gui" />
+      <item index="1" class="java.lang.String" itemvalue="Python.spot_market_period" />
     </list>
     <recent_temporary>
-      <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.spot_market_period (1)" />
-        <item index="1" class="java.lang.String" itemvalue="Python.market_gui (1)" />
-        <item index="2" class="java.lang.String" itemvalue="Python.market_gui" />
-        <item index="3" class="java.lang.String" itemvalue="Python.spot_market_period" />
-        <item index="4" class="java.lang.String" itemvalue="Python.market_gui_adv" />
+      <list size="2">
+        <item index="0" class="java.lang.String" itemvalue="Python.market_gui" />
+        <item index="1" class="java.lang.String" itemvalue="Python.spot_market_period" />
       </list>
     </recent_temporary>
   </component>
@@ -378,678 +328,131 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="20ab1217-fded-4f2a-a544-19f32ae10eb8" name="Default" comment="" />
-      <created>1506029649273</created>
+      <changelist id="8fe4be80-9f42-41ae-9672-4ce268fbf62a" name="Default" comment="" />
+      <created>1520870458800</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1506029649273</updated>
+      <updated>1520870458800</updated>
     </task>
-    <task id="LOCAL-00007" summary="1). Fixed TODO: fixed figure title and axis label errors&#10;2). TODO keep commenting and fixing">
-      <created>1506720817018</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1506720817018</updated>
-    </task>
-    <task id="LOCAL-00008" summary="1). Made some TODOs for spot market period">
-      <created>1506723144630</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1506723144630</updated>
-    </task>
-    <task id="LOCAL-00009" summary="Commented and looked through spot_system and double_auction_institution. Fixed spot_system to run">
-      <created>1506984064798</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1506984064798</updated>
-    </task>
-    <task id="LOCAL-00010" summary="Updated and commented on code. Fixed spot_market and spot_market_periods to run">
-      <created>1507069439451</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1507069439451</updated>
-    </task>
-    <task id="LOCAL-00011" summary="Added graphs to spot_market_periods, almost done adding save feature for period data">
-      <created>1507247123310</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1507247123310</updated>
-    </task>
-    <task id="LOCAL-00012" summary="Accomplished period data save">
-      <created>1507319159668</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1507319159668</updated>
-    </task>
-    <task id="LOCAL-00013" summary="Created message box for click on escape. Will continue working on save and save as functionality.">
-      <created>1507679124906</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1507679124906</updated>
-    </task>
-    <task id="LOCAL-00014" summary="Made gui fit window. Created random value generator for gui. Added frame for contract graph">
-      <created>1508271348688</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1508271348688</updated>
-    </task>
-    <task id="LOCAL-00015" summary="Created save_as tkinter dialog entry in gui. Created graph method for period contracts.">
-      <created>1508451712657</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1508451712657</updated>
-    </task>
-    <task id="LOCAL-00016" summary="Added period lines to contract graph in spot_market_periods">
-      <created>1508522921872</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1508522921872</updated>
-    </task>
-    <task id="LOCAL-00017" summary="Continued work on contract graphing. Added some code to da_institutions and spot_system so that bids,asks and contract transactions are displayed in real time. Started building ZIP trader">
-      <created>1509413074554</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1509413074554</updated>
-    </task>
-    <task id="LOCAL-00018" summary="Built time index based on process time. Adam started build on zip --&gt; need to change order to fit spot_system. Built HaveToWin and Kaplan traders.">
-      <created>1509665366736</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1509665366736</updated>
-    </task>
-    <task id="LOCAL-00019" summary="Almost done with Kaplan trader. Adam/Nick made csv files of vernon smith and santa fe experiments. TODO make time index clock for bid/ask. TODO finish ZIP trader.">
-      <created>1509739558539</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1509739558539</updated>
-    </task>
-    <task id="LOCAL-00020" summary="Built function to graph bids/ask by time index into tables using plotly. TODO finish Kaplan trader">
-      <created>1510015424680</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1510015424680</updated>
-    </task>
-    <task id="LOCAL-00021" summary="Finished Kaplan and HaveToWin traders">
-      <created>1510277848942</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1510277848942</updated>
-    </task>
-    <task id="LOCAL-00022" summary="Ready to merge with master">
-      <created>1510344685005</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1510344685005</updated>
-    </task>
-    <task id="LOCAL-00023" summary="Created ability to measure individual efficiency">
-      <created>1510620327560</created>
-      <option name="number" value="00023" />
-      <option name="presentableId" value="LOCAL-00023" />
-      <option name="project" value="LOCAL" />
-      <updated>1510620327560</updated>
-    </task>
-    <task id="LOCAL-00024" summary="Graphed individual efficiencies. Improved transaction graph">
-      <created>1510698806597</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1510698806597</updated>
-    </task>
-    <task id="LOCAL-00025" summary="Compared data outputs to findings of prior research">
-      <created>1511824573253</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1511824573253</updated>
-    </task>
-    <task id="LOCAL-00026" summary="Added Smith's Alpha of convergence in code, added trade ratio to code, modified efficiency graph, fixed plotly graph error">
-      <created>1511906060102</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1511906060102</updated>
-    </task>
-    <task id="LOCAL-00027" summary="Created PS trader that uses learning rule strategy... problems with it but fixing">
-      <created>1512075156268</created>
-      <option name="number" value="00027" />
-      <option name="presentableId" value="LOCAL-00027" />
-      <option name="project" value="LOCAL" />
-      <updated>1512075156268</updated>
-    </task>
-    <task id="LOCAL-00028" summary="Fixed PStrader.. I think. Graphed convergence alphas.. possible error in calculation">
-      <created>1512165414449</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
-      <option name="project" value="LOCAL" />
-      <updated>1512165414449</updated>
-    </task>
-    <task id="LOCAL-00029" summary="Created AA trader based on Vytelingum, Cliff, Jennings 2008 and open-source code created by Ash Roth on Github">
-      <created>1512514770305</created>
-      <option name="number" value="00029" />
-      <option name="presentableId" value="LOCAL-00029" />
-      <option name="project" value="LOCAL" />
-      <updated>1512514770305</updated>
-    </task>
-    <task id="LOCAL-00030" summary="Messed with AA_trader and started work on plotting normal distribution">
-      <created>1512683811519</created>
-      <option name="number" value="00030" />
-      <option name="presentableId" value="LOCAL-00030" />
-      <option name="project" value="LOCAL" />
-      <updated>1512683811519</updated>
-    </task>
-    <task id="LOCAL-00031" summary="Finished adapting GD trader into our program. TODO test and work out potential errors.">
-      <created>1513629075089</created>
-      <option name="number" value="00031" />
-      <option name="presentableId" value="LOCAL-00031" />
-      <option name="project" value="LOCAL" />
-      <updated>1513629075089</updated>
-    </task>
-    <task id="LOCAL-00032" summary="Finished adapting ZIP trader into our model, will need to work out problems. Also found better code for kaplan trader. Will look into contract price decision process.">
-      <created>1513715029336</created>
-      <option name="number" value="00032" />
-      <option name="presentableId" value="LOCAL-00032" />
-      <option name="project" value="LOCAL" />
-      <updated>1513715029336</updated>
-    </task>
-    <task id="LOCAL-00033" summary="Created process for saving experiment data into excel csv file. Found way to save plotly graphs">
-      <created>1515443574484</created>
-      <option name="number" value="00033" />
-      <option name="presentableId" value="LOCAL-00033" />
-      <option name="project" value="LOCAL" />
-      <updated>1515443574484</updated>
-    </task>
-    <task id="LOCAL-00034" summary="Work done from home... created machine learning algorithm for bid/ask value predictions and transaction value predictions... still learning">
-      <created>1516296569677</created>
-      <option name="number" value="00034" />
-      <option name="presentableId" value="LOCAL-00034" />
-      <option name="project" value="LOCAL" />
-      <updated>1516296569677</updated>
-    </task>
-    <task id="LOCAL-00035" summary="Updated report.order so that trader strategy is saved to excel csv... will use in AI predictions">
-      <created>1516309436964</created>
-      <option name="number" value="00035" />
-      <option name="presentableId" value="LOCAL-00035" />
-      <option name="project" value="LOCAL" />
-      <updated>1516309436964</updated>
-    </task>
-    <task id="LOCAL-00036" summary="Created algorithm for AI that predicts trader strategy">
-      <created>1516321874120</created>
-      <option name="number" value="00036" />
-      <option name="presentableId" value="LOCAL-00036" />
-      <option name="project" value="LOCAL" />
-      <updated>1516321874120</updated>
-    </task>
-    <task id="LOCAL-00037" summary="Extended AI algorithms to predict bid/ask in multi-strategy situations (~92% accuracy), will build AI trader next">
-      <created>1516408723026</created>
-      <option name="number" value="00037" />
-      <option name="presentableId" value="LOCAL-00037" />
-      <option name="project" value="LOCAL" />
-      <updated>1516408723026</updated>
-    </task>
-    <task id="LOCAL-00038" summary="Finished AI predictor class, almost done with AI trader... throwing error">
-      <created>1516665787493</created>
-      <option name="number" value="00038" />
-      <option name="presentableId" value="LOCAL-00038" />
-      <option name="project" value="LOCAL" />
-      <updated>1516665787493</updated>
-    </task>
-    <task id="LOCAL-00039" summary="AI trader is now operational and placing bids/asks correctly, but still refining. Added function to obtain strategy total avg earn. Added function to obtain current number of bids and asks placed">
-      <created>1516839898478</created>
-      <option name="number" value="00039" />
-      <option name="presentableId" value="LOCAL-00039" />
-      <option name="project" value="LOCAL" />
-      <updated>1516839898478</updated>
-    </task>
-    <task id="LOCAL-00040" summary="Worked on AI trader">
-      <created>1516927117345</created>
-      <option name="number" value="00040" />
-      <option name="presentableId" value="LOCAL-00040" />
-      <option name="project" value="LOCAL" />
-      <updated>1516927117345</updated>
-    </task>
-    <task id="LOCAL-00041" summary="test VCS error">
-      <created>1517334277719</created>
-      <option name="number" value="00041" />
-      <option name="presentableId" value="LOCAL-00041" />
-      <option name="project" value="LOCAL" />
-      <updated>1517334277719</updated>
-    </task>
-    <task id="LOCAL-00042" summary="clear">
-      <created>1517337858519</created>
-      <option name="number" value="00042" />
-      <option name="presentableId" value="LOCAL-00042" />
-      <option name="project" value="LOCAL" />
-      <updated>1517337858519</updated>
-    </task>
-    <task id="LOCAL-00043" summary="Added period and round written into csv file. Fixed matplotlib graphing/saving feature for session save.">
-      <created>1517878301894</created>
-      <option name="number" value="00043" />
-      <option name="presentableId" value="LOCAL-00043" />
-      <option name="project" value="LOCAL" />
-      <updated>1517878301894</updated>
-    </task>
-    <task id="LOCAL-00044" summary="Finished kaplan bidding strategy, working on selling strategy. Adjusted matplotlib graphing">
-      <created>1517964836048</created>
-      <option name="number" value="00044" />
-      <option name="presentableId" value="LOCAL-00044" />
-      <option name="project" value="LOCAL" />
-      <updated>1517964836048</updated>
-    </task>
-    <task id="LOCAL-00045" summary="Overhauled ZIP trader, still working on bug fixes. Started working with alpha go zero algorithm.">
-      <created>1518052814062</created>
-      <option name="number" value="00045" />
-      <option name="presentableId" value="LOCAL-00045" />
-      <option name="project" value="LOCAL" />
-      <updated>1518052814062</updated>
-    </task>
-    <task id="LOCAL-00046" summary="ZIP trader + ZIP response working, will check for errors. Finished market period shock with Adam, will expand to rounds.">
-      <created>1518214740225</created>
-      <option name="number" value="00046" />
-      <option name="presentableId" value="LOCAL-00046" />
-      <option name="project" value="LOCAL" />
-      <updated>1518214740225</updated>
-    </task>
-    <task id="LOCAL-00047" summary="Finished kaplan seller strategy, and fixed strategy avg earns">
-      <created>1518480216738</created>
-      <option name="number" value="00047" />
-      <option name="presentableId" value="LOCAL-00047" />
-      <option name="project" value="LOCAL" />
-      <updated>1518480216738</updated>
-    </task>
-    <task id="LOCAL-00048" summary="Added round shocks to market, and also added trader shocks to market.">
-      <created>1518815284359</created>
-      <option name="number" value="00048" />
-      <option name="presentableId" value="LOCAL-00048" />
-      <option name="project" value="LOCAL" />
-      <updated>1518815284359</updated>
-    </task>
-    <task id="LOCAL-00049" summary="Added TODOs and comments, ready to be forked">
-      <created>1519156588472</created>
-      <option name="number" value="00049" />
-      <option name="presentableId" value="LOCAL-00049" />
-      <option name="project" value="LOCAL" />
-      <updated>1519156588472</updated>
-    </task>
-    <task id="LOCAL-00050" summary="Added in copyright information for code from Dave Cliffs github, as requested by his MIT license. Will be adding our own license soon">
-      <created>1519165556060</created>
-      <option name="number" value="00050" />
-      <option name="presentableId" value="LOCAL-00050" />
-      <option name="project" value="LOCAL" />
-      <updated>1519165556075</updated>
-    </task>
-    <task id="LOCAL-00051" summary="Created market_gui to use as data entry tool, lots of fixes to make">
-      <created>1519262463111</created>
-      <option name="number" value="00051" />
-      <option name="presentableId" value="LOCAL-00051" />
-      <option name="project" value="LOCAL" />
-      <updated>1519262463113</updated>
-    </task>
-    <task id="LOCAL-00052" summary="Developed market_gui to run spot_market_period in it. Fixed graph saves to include before and after supply demand graphs.">
-      <created>1519431208273</created>
-      <option name="number" value="00052" />
-      <option name="presentableId" value="LOCAL-00052" />
-      <option name="project" value="LOCAL" />
-      <updated>1519431208274</updated>
-    </task>
-    <task id="LOCAL-00053" summary="- added descriptive stats&#10;- fixed &quot;out of market&quot; traders&#10;   --&gt; added subplot of this&#10;- added before/after shock contract graphs&#10;- added unit, value, earn to data file&#10;- merged contract history into data file">
-      <created>1519689241624</created>
-      <option name="number" value="00053" />
-      <option name="presentableId" value="LOCAL-00053" />
-      <option name="project" value="LOCAL" />
-      <updated>1519689241625</updated>
-    </task>
-    <task id="LOCAL-00054" summary="Added to market_gui. Error in spot_environment_model line 425">
-      <created>1519772899322</created>
-      <option name="number" value="00054" />
-      <option name="presentableId" value="LOCAL-00054" />
-      <option name="project" value="LOCAL" />
-      <updated>1519772899324</updated>
-    </task>
-    <task id="LOCAL-00055" summary="simulator working in market_gui now">
-      <created>1519858104933</created>
-      <option name="number" value="00055" />
-      <option name="presentableId" value="LOCAL-00055" />
-      <option name="project" value="LOCAL" />
-      <updated>1519858104935</updated>
-    </task>
-    <option name="localTasksCounter" value="56" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="1592" y="-8" width="1066" height="1666" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.13428572" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.052380953" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31362468" sideWeight="0.13904762" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17609255" sideWeight="0.8609524" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32969153" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22107969" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16893204" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Inspection Results" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32969153" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
-    <layout-to-restore>
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31362468" sideWeight="0.13904762" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17609255" sideWeight="0.8609524" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32969153" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13428572" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Inspection Results" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32969153" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16893204" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-    </layout-to-restore>
-  </component>
-  <component name="Vcs.Log.History.Properties">
-    <option name="COLUMN_ORDER">
-      <list>
-        <option value="0" />
-        <option value="2" />
-        <option value="3" />
-        <option value="1" />
-      </list>
-    </option>
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State>
-              <option name="RECENTLY_FILTERED_USER_GROUPS">
-                <collection />
-              </option>
-              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
-                <collection />
-              </option>
-              <option name="COLUMN_ORDER">
-                <list>
-                  <option value="0" />
-                  <option value="1" />
-                  <option value="2" />
-                  <option value="3" />
-                </list>
-              </option>
-            </State>
-          </value>
-        </entry>
-      </map>
-    </option>
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="Finished adapting GD trader into our program. TODO test and work out potential errors." />
-    <MESSAGE value="Finished adapting ZIP trader into our model, will need to work out problems. Also found better code for kaplan trader. Will look into contract price decision process." />
-    <MESSAGE value="Created process for saving experiment data into excel csv file. Found way to save plotly graphs" />
-    <MESSAGE value="Work done from home... created machine learning algorithm for bid/ask value predictions and transaction value predictions... still learning" />
-    <MESSAGE value="Updated report.order so that trader strategy is saved to excel csv... will use in AI predictions" />
-    <MESSAGE value="Created algorithm for AI that predicts trader strategy" />
-    <MESSAGE value="Extended AI algorithms to predict bid/ask in multi-strategy situations (~92% accuracy), will build AI trader next" />
-    <MESSAGE value="Finished AI predictor class, almost done with AI trader... throwing error" />
-    <MESSAGE value="AI trader is now operational and placing bids/asks correctly, but still refining. Added function to obtain strategy total avg earn. Added function to obtain current number of bids and asks placed" />
-    <MESSAGE value="Worked on AI trader" />
-    <MESSAGE value="test VCS error" />
-    <MESSAGE value="clear" />
-    <MESSAGE value="Added period and round written into csv file. Fixed matplotlib graphing/saving feature for session save." />
-    <MESSAGE value="Finished kaplan bidding strategy, working on selling strategy. Adjusted matplotlib graphing" />
-    <MESSAGE value="Overhauled ZIP trader, still working on bug fixes. Started working with alpha go zero algorithm." />
-    <MESSAGE value="ZIP trader + ZIP response working, will check for errors. Finished market period shock with Adam, will expand to rounds." />
-    <MESSAGE value="Finished kaplan seller strategy, and fixed strategy avg earns" />
-    <MESSAGE value="Added round shocks to market, and also added trader shocks to market." />
-    <MESSAGE value="Added TODOs and comments, ready to be forked" />
-    <MESSAGE value="Added in copyright information for code from Dave Cliffs github, as requested by his MIT license. Will be adding our own license soon" />
-    <MESSAGE value="Created market_gui to use as data entry tool, lots of fixes to make" />
-    <MESSAGE value="Developed market_gui to run spot_market_period in it. Fixed graph saves to include before and after supply demand graphs." />
-    <MESSAGE value="- added descriptive stats&#10;- fixed &quot;out of market&quot; traders&#10;   --&gt; added subplot of this&#10;- added before/after shock contract graphs&#10;- added unit, value, earn to data file&#10;- merged contract history into data file" />
-    <MESSAGE value="Added to market_gui. Error in spot_environment_model line 425" />
-    <MESSAGE value="simulator working in market_gui now" />
-    <option name="LAST_COMMIT_MESSAGE" value="simulator working in market_gui now" />
-  </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <option name="time" value="12" />
-    </breakpoint-manager>
+    <breakpoint-manager />
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/spot_environment_gui.py" />
-    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="10" lean-forward="false" selection-start-line="2" selection-start-column="10" selection-end-line="2" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build_environment.py" />
-    <entry file="file://$PROJECT_DIR$/build_environment.py" />
-    <entry file="file://$PROJECT_DIR$/spot_environment_gui.py" />
-    <entry file="file://$PROJECT_DIR$/spot_environment_controller.py" />
-    <entry file="file://$PROJECT_DIR$/spot_environment_model.py" />
-    <entry file="file://$PROJECT_DIR$/build_environment.py" />
-    <entry file="file://$PROJECT_DIR$/spot_environment_gui.py" />
-    <entry file="file://$PROJECT_DIR$/trader.py" />
-    <entry file="file://$PROJECT_DIR$/build_environment.py" />
-    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="16" lean-forward="false" selection-start-line="2" selection-start-column="16" selection-end-line="2" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="0" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="0" lean-forward="true" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test.py" />
-    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_3.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="26" lean-forward="false" selection-start-line="1" selection-start-column="26" selection-end-line="1" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/temp-plot.html" />
-    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_4.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="17" lean-forward="false" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_5.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="0" lean-forward="true" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/OneDrive/Documents/Econ 496/Make File OG.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="62" lean-forward="false" selection-start-line="3" selection-start-column="62" selection-end-line="3" selection-end-column="62" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/OneDrive/Documents/CSN Intern/Holt Laury Project/Data EV.3.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AI Testing.py" />
-    <entry file="file://$PROJECT_DIR$/tournament.py" />
-    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_6.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1105">
-          <caret line="65" column="37" lean-forward="true" selection-start-line="65" selection-start-column="37" selection-end-line="65" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/BSE_cliff.py" />
-    <entry file="file://$PROJECT_DIR$/../LinearUtility/Linear Utility.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="908">
-          <caret line="156" column="46" lean-forward="true" selection-start-line="156" selection-start-column="46" selection-end-line="156" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AI_Testing.py" />
-    <entry file="file://$PROJECT_DIR$/market_gui_adv.py" />
-    <entry file="file://$PROJECT_DIR$/build_environment.py" />
-    <entry file="file://$USER_HOME$/OneDrive/Documents/CSN Intern/Holt Laury Project/Data EV.xkcd.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trader.py" />
-    <entry file="file://$PROJECT_DIR$/double_auction_institution.py" />
-    <entry file="file://$PROJECT_DIR$/spot_environment_controller.py" />
-    <entry file="file://$PROJECT_DIR$/spot_environment_gui.py" />
-    <entry file="file://$PROJECT_DIR$/spot_environment_model.py" />
-    <entry file="file://$PROJECT_DIR$/spot_system.py" />
-    <entry file="file://$PROJECT_DIR$/market_gui.py" />
-    <entry file="file://$PROJECT_DIR$/spot_market_period.py" />
-    <entry file="file://$PROJECT_DIR$/spot_market.py" />
-    <entry file="file://$PROJECT_DIR$/doc_test.py" />
-    <entry file="file://$PROJECT_DIR$/Environment/build_environment.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/GUI/spot_environment_gui.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="11135">
-          <caret line="658" column="18" lean-forward="true" selection-start-line="658" selection-start-column="18" selection-end-line="658" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Environment/spot_environment_model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Environment/spot_environment_controller.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="17" column="0" lean-forward="false" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Institution/double_auction_institution.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#41#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Trader/trader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#13#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Simulator/tournament.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#0#123#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Institution/double_auction_institution.py">
+    <entry file="file://$PROJECT_DIR$/Simulator/spot_market.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="8" column="30" lean-forward="false" selection-start-line="8" selection-start-column="30" selection-end-line="8" selection-end-column="30" />
+        <state relative-caret-position="85">
+          <caret line="8" column="33" lean-forward="false" selection-start-line="8" selection-start-column="33" selection-end-line="8" selection-end-column="33" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/GUI/market_gui.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="528">
-          <caret line="92" column="0" lean-forward="false" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Trader/trader.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="47" lean-forward="false" selection-start-line="3" selection-start-column="47" selection-end-line="3" selection-end-column="47" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Institution/spot_system.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="807">
-          <caret line="241" column="28" lean-forward="false" selection-start-line="241" selection-start-column="28" selection-end-line="241" selection-end-column="28" />
-          <folding>
-            <element signature="e#0#134#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="612">
+          <caret line="53" column="53" lean-forward="false" selection-start-line="53" selection-start-column="53" selection-end-line="53" selection-end-column="53" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Environment/spot_environment_model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-9246">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GUI/spot_environment_gui.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2890">
+          <caret line="87" column="48" lean-forward="false" selection-start-line="87" selection-start-column="48" selection-end-line="87" selection-end-column="48" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Simulator/spot_market_period.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="647">
-          <caret line="258" column="25" lean-forward="false" selection-start-line="258" selection-start-column="25" selection-end-line="258" selection-end-column="25" />
+        <state relative-caret-position="4542">
+          <caret line="451" column="56" lean-forward="false" selection-start-line="451" selection-start-column="56" selection-end-line="451" selection-end-column="56" />
           <folding>
             <element signature="e#0#42#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GUI/market_gui.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="596" column="61" lean-forward="true" selection-start-line="596" selection-start-column="61" selection-end-line="596" selection-end-column="61" />
+          <folding />
         </state>
       </provider>
     </entry>
