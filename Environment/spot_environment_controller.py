@@ -13,8 +13,14 @@ class SpotEnvironmentController():
     def load_file(self, path):
         self.sem.load_file(path)  # loads file by pulling from file path
 
+    def load_file_json(self, path):
+        self.sem.load_file_json(path)  # loads file by pulling from file path
+
     def save_project(self, path):
         self.sem.save_file(path)
+
+    def save_project_json(self, path):
+        self.sem.save_file_json(path)
 
     def reset_market(self):
         pass

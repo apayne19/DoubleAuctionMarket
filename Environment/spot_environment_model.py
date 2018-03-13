@@ -483,6 +483,7 @@ class SpotEnvironmentModel(object):
         ms = self.env["eq"]["surplus"]
         return qt, pl, ph, ms
 
+    # TODO write error... generating extra value in excel and json files....??
     def save_file(self, path):
         # write out "env" as .csv file
         output_file = open(path + '.csv', 'w', newline='')
@@ -530,6 +531,55 @@ class SpotEnvironmentModel(object):
                                 self.env["eq"]["surplus"]])
         # That's it for now
         output_file.close()
+
+    def save_file_json(self, path):
+        """This will save files as a json"""
+        import json
+        # write out "env" as .csv file
+        outfile = open(path + ".txt", 'w')
+        data = int(self.num_buyers), int(self.num_sellers)
+        # First write out number of buyers and number of sellers
+        json.dump(data, outfile)
+
+        # Second write out buyer information
+        values = []
+        for buyer in range(self.num_buyers):
+            buyer_id = "buyer" + str(buyer)
+            values.append(self.env["buyers"][buyer_id])
+
+        # Third write out seller information
+        for seller in range(self.num_sellers):
+            seller_id = "seller" + str(seller)
+            values.append(self.env["sellers"][seller_id])
+        json.dump(values, outfile)
+
+        self.make_supply()
+        s = []
+        for element in self.env["supply"]:
+            s.append(element[0])
+            s.append(element[1])
+        json.dump(s, outfile)
+        self.make_demand()
+        s = []
+        for element in self.env["demand"]:
+            s.append(element[0])
+            s.append(element[1])
+        json.dump(s, outfile)
+
+        # Make equilibrium calculations
+        self.calc_equilibrium()
+
+        # Fifth write out supply and demand without id's
+        json.dump(self.env["sup"], outfile)
+        json.dump(self.env["dem"], outfile)
+
+        # Sixth write out equilibrium values
+        json.dump([self.env["eq"]["price_high"],
+                                self.env["eq"]["price_low"],
+                                self.env["eq"]["quantity"],
+                                self.env["eq"]["surplus"]], outfile)
+        # That's it for now
+
 
     def load_file(self, path):
         # load a .csv file
@@ -586,6 +636,69 @@ class SpotEnvironmentModel(object):
             self.env["eq"]["price_low"] = int(env_data[line + 4][1])
             self.env["eq"]["quantity"] = int(env_data[line + 4][2])
             self.env["eq"]["surplus"] = int(env_data[line + 4][3])
+        except OSError as err:
+            print("File {} does not exist".format(path))
+
+    def load_file_json(self, path):
+        """This will load json files"""
+        # load a .csv file
+        # TODO getting json decode error here
+        import json
+        try:
+            with open(path) as file:
+                input_file = json.load(file)
+                env_data = list(input_file)
+                print(input_file)
+                print(env_data)
+            if self.debug:
+                print("...,... In Model -> load_file -> first read")
+                print('...,... data = {}'.format(env_data))
+
+
+            # Process num_buyers and num_sellers(First)
+            # line = 0
+            # self.num_buyers = int(env_data[line][0])
+            # self.num_sellers = int(env_data[line][1])
+            #
+            # # Process buyer values (Second)
+            # for buyer in range(self.num_buyers):
+            #     line = 1 + buyer
+            #     values = [int(x) for x in env_data[line]]  # have to convert back to integers
+            #     buyer_id = "buyer" + str(buyer)
+            #     self.env["buyers"][buyer_id] = values
+            #
+            # # Process seller costs  (Third)
+            # for seller in range(self.num_sellers):
+            #     line = 1 + self.num_buyers + seller
+            #     costs = [int(x) for x in env_data[line]]  # have to convert back to integers
+            #     seller_id = "seller" + str(seller)
+            #     self.env["sellers"][seller_id] = costs
+            #
+            # # Process supply and demand curves with id's  (Fourth)
+            # line = 1 + self.num_buyers + self.num_sellers
+            # remake = []
+            # for i in range(0, len(env_data[line]), 2):
+            #     e1 = env_data[line][i]
+            #     e2 = int(env_data[line][i + 1])
+            #     remake.append((e1, e2))
+            # self.env["supply"] = remake
+            #
+            # remake = []
+            # for i in range(0, len(env_data[line + 1]), 2):
+            #     e1 = env_data[line + 1][i]
+            #     e2 = int(env_data[line + 1][i + 1])
+            #     remake.append((e1, e2))
+            # self.env["demand"] = remake
+            #
+            # # Process supply and demand curves without id's (Fifth)
+            # self.env["sup"] = [int(x) for x in env_data[line + 2]]
+            # self.env["dem"] = [int(x) for x in env_data[line + 3]]
+            #
+            # # Process equilibrium values
+            # self.env["eq"]["price_high"] = int(env_data[line + 4][0])
+            # self.env["eq"]["price_low"] = int(env_data[line + 4][1])
+            # self.env["eq"]["quantity"] = int(env_data[line + 4][2])
+            # self.env["eq"]["surplus"] = int(env_data[line + 4][3])
         except OSError as err:
             print("File {} does not exist".format(path))
 

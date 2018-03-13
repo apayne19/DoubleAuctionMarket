@@ -530,6 +530,7 @@ class SpotEnvironmentGui():
         if self.debug == True:
             print("In GUI -> process_new_project -> end")
 
+    # TODO will need to create open_file_json
     def open_file(self, event=None):
         input_file_name = tkinter.filedialog.askopenfilename(defaultextension=".csv",
                                                              filetypes=[("All Files", "*.*"),
@@ -580,6 +581,13 @@ class SpotEnvironmentGui():
         self.set_market()
         self.project_path += self.string_project_name.get()
         self.sec.save_project(self.project_path)
+
+    def save_json(self, event=None):  # saves file in it's path location
+        """This saves the created SD data into a json file"""
+        # TODO:  Add existing file check
+        self.set_market()
+        self.project_path += self.string_project_name.get()
+        self.sec.save_project_json(self.project_path)
 
     def display_about_messagebox(self, event=None):
         # displays about message

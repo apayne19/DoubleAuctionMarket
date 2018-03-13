@@ -11,7 +11,7 @@ import random
 import os  # https://docs.python.org/3.6/library/os.html
 import Environment.spot_environment_controller  # condensed modules/commands from spot_env_model
 import Simulator.spot_market_period
-import subprocess
+
 import Institution.spot_system as sys
 import random
 import csv
