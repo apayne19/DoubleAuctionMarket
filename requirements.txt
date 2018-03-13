@@ -1,0 +1,7 @@
+python>=3.6.1
+matplotlib>=2.0.2
+scikit-learn>=0.18.1
+seaborn>=0.7.1
+tk>=8.5.18
+numpy>=1.12.1
+pandas>=0.20.1
