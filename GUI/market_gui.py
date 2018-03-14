@@ -78,9 +78,9 @@ class MarketGui():
 
         # have to set local file path for icon images and project data
         #  TODO change these to your file path
-        self.file_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\icons\\"
-        self.project_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\projects"
-        self.output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\period data\\"
+        self.file_path = "C:\\Users\\alexd\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\icons\\"
+        self.project_path = "C:\\Users\\alexd\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\projects"
+        self.output_path = "C:\\Users\\alexd\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\period data\\"
 
         # have to create small images for tkinter display... open file, save, etc.
         self.new_file_icon = tk.PhotoImage(file=self.file_path + 'new.png')
@@ -98,6 +98,8 @@ class MarketGui():
         self.show_infobar()  # executes sub-frame for user entering number buyers, number sellers, units
         self.process_new_project()
 
+        self.trigger = False  # safety feature when rerunning in gui: if same parameters used = True
+
 
     def build_array(self, num_1, num_2):  # builds an array for buyers:values and sellers:costs
         x = []
@@ -107,34 +109,6 @@ class MarketGui():
                 a_row.append(k)
             x.append(a_row)
         return x
-
-    # def on_plot_clicked(self):
-    #     """ Plot supply and demand in a frame with toolbar."""
-    #     """Click = calls set_market()
-    #                 --> which calls methods from spot_env_model to display values in GUI"""
-    #     if self.debug:
-    #         print("In Gui -> on_plot_clicked --> begin")
-    #     self.set_market()
-    #
-    #     # set up frame to plot in
-    #     fr_plot = tk.LabelFrame(self.root, text="Plot of Supply and Demand")
-    #     fr_plot.grid(row=2, rowspan=1, column=2, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
-    #     c_plot = tk.LabelFrame(self.root, text="Plot of Contracts")
-    #     c_plot.grid(row=3, rowspan=1, column=2, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
-    #     # set up graph to plot in frame
-    #     f = Figure(figsize=(4, 4), dpi=100)
-    #     a = f.add_subplot(111)
-    #     if self.num_buyers == 0:
-    #         canvas1 = FigureCanvasTkAgg(f, fr_plot)
-    #         canvas1.get_tk_widget().pack()  # Have to use pack here to work with toolbar.  Not sure why.
-    #         canvas1.draw()
-    #         canvas2 = FigureCanvasTkAgg(f, c_plot)
-    #         canvas2.get_tk_widget().pack()  # Have to use pack here to work with toolbar.  Not sure why.
-    #         canvas2.draw()
-    #         if self.debug:
-    #             print("In Gui -> on_plot_clicked --> early end")
-    #         self.set_market()  # why is this called twice?
-    #         return
 
     def show_menu(self):
         # getting icons ready for compound menu
@@ -152,18 +126,6 @@ class MarketGui():
         file_menu.add_separator()
         file_menu.add_command(label='Quit', accelerator='Alt+F4', command=self.on_quit_chosen)
         menu_bar.add_cascade(label='File', menu=file_menu)  # allows toolbar tab to drop down with multiple choices
-
-        # create show action menu item
-        # show_menu = tk.Menu(menu_bar, tearoff=0)
-        # show_menu.add_command(label='Show Supply & Demand', command=self.on_show_clicked)  # click = show action
-        # show_menu.add_command(label='Calculate Equilibrium', command=self.on_calc_eq_clicked)  # click = calc action
-        # menu_bar.add_cascade(label='Actions', menu=show_menu)  # allows menu to drop down
-
-        # created a plot menu item
-        # plot_menu = tk.Menu(menu_bar, tearoff=0)
-        # plot_menu.add_command(label='Plot Supply & Demand', command=self.on_plot_clicked)  # click = plot action
-        # plot_menu.add_command(label='Plot Contracts', command=self.on_plot_clicked)
-        # menu_bar.add_cascade(label='Plot', menu=plot_menu)  # allows menu to drop down
 
         # create about/help menu
         about_menu = tk.Menu(menu_bar, tearoff=0)
@@ -205,6 +167,7 @@ class MarketGui():
 
         tk.Label(info_bar, text="Starting Data File:").grid(row=1, column=0)  # create/grid location
         ttk.Combobox(info_bar, values=os.listdir(self.project_path), textvariable=self.string_data).grid(row=1, column=1)
+        self.string_data.set("Select")
 
         plot_button = tk.Button(info_bar, text="Show", width=4, command=self.on_show_clicked)
         plot_button.grid(row=1, column=2)
@@ -225,31 +188,13 @@ class MarketGui():
 
         run_frame = tk.LabelFrame(self.root, height=15, text="RUN SIMULATION")
         run_frame.grid(row=1, column=11, columnspan=2, sticky='E', padx=15, pady=5)
-        run_button = tk.Button(run_frame, text="RUN", width=4, command=self.callback)
+        run_button = tk.Button(run_frame, text="RUN", width=4, command=self.run_sim)
         run_button.grid(row=0, column=1, padx=30)
 
         create_frame = tk.LabelFrame(self.root, height=15, text="New Supply Demand")
         create_frame.grid(row=1, column=9, columnspan=2, sticky='E', padx=15, pady=5)
         create_button = tk.Button(create_frame, text="CREATE", width=6, command=self.on_create_clicked)
         create_button.grid(row=0, column=1, padx=30)
-
-        # # create EQ Price low label
-        # tk.Label(info_bar, text="EQ Price Low: ").grid(row=1, column=4)
-        # tk.Label(info_bar, width=4, justify=tk.CENTER,
-        #          textvariable=self.string_pl, relief='sunken').grid(row=1, column=5)
-        # self.string_pl.set("n/a")  # display to N/A and unchangeable
-        #
-        # # create EQ high price label
-        # tk.Label(info_bar, text="EQ Price High: ").grid(row=1, column=6)
-        # tk.Label(info_bar, width=4, justify=tk.CENTER,
-        #          textvariable=self.string_ph, relief='sunken').grid(row=1, column=7)
-        # self.string_ph.set("n/a")  # display n/a and unchangeable
-        #
-        # # create Max Surplus label
-        # tk.Label(info_bar, text="   Max Surplus: ").grid(row=1, column=8, pady=15)
-        # tk.Label(info_bar, width=4, justify=tk.CENTER,
-        #          textvariable=self.string_ms, relief='sunken').grid(row=1, column=9, padx=15)
-        # self.string_ms.set("n/a")  # display n/a and unchangeable
 
     def on_create_clicked(self):
         '''Added ability to run spot_environment_gui in market_gui... allows new SD creation'''
@@ -337,9 +282,39 @@ class MarketGui():
 
 
     def on_set_parms_clicked(self):
-        """Set parameters from info_bar, initializes a new experiment. Message box will allow the user to opt out."""
-        if not messagebox.askyesno("DESTROY WORK", "This will destroy your work \n Do you wish to continue?"):
+        """The below message boxes will appear to the user if the parameters are not set"""
+
+        print(self.string_data.get())
+        # check if session name file exists
+        try:
+            os.makedirs(self.output_path + self.string_session_name.get())  # creates folder for session data
+        except FileExistsError:
+            messagebox.askokcancel("FILE ERROR", "Session file name already exists... \n Please rename session \n OR \n Please delete previous file in project_path")
+            raise  # raises error if folder already exists
+
+        # check that starting data file has been set
+        if self.string_data.get() == "Select":
+            messagebox.askokcancel("DATA ERROR", "A starting data file was not selected \n Please choose one or create one")
+
+        # check that number of periods has been set
+        elif self.string_periods.get() == '0':
+            messagebox.askokcancel("PERIOD ERROR", "Periods have not been set \n Please set the number of trading periods to run")
+
+        # check that number of rounds are set
+        elif self.string_rounds.get() == '0':
+            messagebox.askokcancel("ROUND ERROR", "Rounds have not been set \n Please set the number of rounds to run in each period")
+
+        # check that maximum price ceiling has been set
+        elif self.price_ceiling.get() == '0':
+            messagebox.askokcancel("MAX PRICE ERROR", "Price ceiling has not been set \n Please set a maximum price for the market")
+
+        # lastly ask user to make sure all parameters have been set correctly
+        else:
+            messagebox.askyesno("PROCEED?", "Please make sure all parameters are set correctly \n Do you wish to continue?")
             return
+
+        # this will be used when user presses run after already running... will need to recheck session file
+        self.trigger = True  # TODO implement in def run_sim()
 
         self.num_periods = int(self.string_periods.get())
         self.num_r_shocks = int(self.string_round_shocks.get())
@@ -472,7 +447,7 @@ class MarketGui():
         help_msg += "          b). Period and round shock entries displayed \n"
         tkinter.messagebox.showinfo("Help", help_msg)
 
-    def callback(self):
+    def run_sim(self):
         '''Adding in a new window to run simulations in market_gui'''
         if not messagebox.askyesno("PROGRESS CHECK", "Have all the parameters been set? \n If not please set parameters"):
             return
@@ -480,10 +455,6 @@ class MarketGui():
         run_root.geometry(str(GetSystemMetrics(0)) + "x" + str(GetSystemMetrics(1)))
 
         # TODO keep working on this root window!
-        run_frame = tk.LabelFrame(run_root, text="Simulation Results")
-        run_frame.grid(row=1, column=0)  # set parameters
-        tk.Label(run_frame, text="Session Name: " + str(self.string_session_name.get())).grid(row=0, column=0)
-        tk.Label(run_frame, text="Data Used: " + str(self.string_data.get())).grid(row=1, column=0)
 
 
         all_prices = []
@@ -506,13 +477,6 @@ class MarketGui():
         ... will raise file error if session name not changed --> prevents overwriting previous runs'''
 
         smp = Simulator.spot_market_period.SpotMarketPeriod(session, num_periods, limits)
-
-
-        try:
-            os.makedirs(self.output_path + self.string_session_name.get())  # creates folder for session data
-        except FileExistsError:
-            print("ERROR: File Exists... must rename or delete previous session data")
-            raise  # raises error if folder already exists
 
         #smp = spot_market_period.SpotMarketPeriod(self.string_session_name, self.num_periods)
         '''Below trader classes are abbreviated'''
@@ -564,6 +528,12 @@ class MarketGui():
             smp.record_session_data(session_folder)  # records session data in excel csv
             time = timer_start - timer_stop
             times.append(time)
+
+        # creates a frame for simulation results
+        run_frame = tk.LabelFrame(run_root, text="Simulation Results")
+        run_frame.grid(row=1, column=0)  # set parameters
+        tk.Label(run_frame, text="Session Name: " + str(self.string_session_name.get())).grid(row=0, column=0)
+        tk.Label(run_frame, text="Data Used: " + str(self.string_data.get())).grid(row=1, column=0)
         tk.Label(run_frame, text="Market Efficiencies:" + str(eff)).grid(row=3, column=0)
         tk.Label(run_frame, text="Avg. Efficiency:" + str(sum(eff) / num_periods)).grid(row=4, column=0)
         tk.Label(run_frame, text="Actual Surpluses:" + str(act_surplus)).grid(row=5, column=0)
@@ -576,9 +546,11 @@ class MarketGui():
         print("Actual Surpluses:" + str(act_surplus))  # print actual surpluses
         print("Maximum Surpluses:" + str(maxi_surplus))  # print max surpluses
         print()
+
         # TODO trader info below can be functionalized further
+        # builds frame for trader total earnings
         trader_frame1 = tk.LabelFrame(run_root, text="Strategy Total Earnings (per period)")
-        trader_frame1.grid(row=1, column=2)  # set parameters
+        trader_frame1.grid(row=1, column=1)  # set parameters
         tk.Label(trader_frame1, text="Trader_AA: " + str(smp.total_earns('AA'))).grid(row=0, column=0)
         tk.Label(trader_frame1, text="Trader_GD: " + str(smp.total_earns('GD'))).grid(row=1, column=0)
         tk.Label(trader_frame1, text="Trader_PS: " + str(smp.total_earns('PS'))).grid(row=2, column=0)
@@ -596,8 +568,10 @@ class MarketGui():
         print("Trader_Kaplan: " + str(smp.total_earns('KP')))
         print("Trader_Shaver: " + str(smp.total_earns('SI')))
         print()
+
+        # builds frame for trader avg earnings
         trader_frame2 = tk.LabelFrame(run_root, text="Strategy Total Avg. Earnings (per trader)")
-        trader_frame2.grid(row=1, column=3)  # set parameters
+        trader_frame2.grid(row=1, column=2)  # set parameters
         tk.Label(trader_frame2, text="Trader_AA: " + str(smp.total_avg_earns('AA', trader_names.count(aa) * num_periods))).grid(row=0, column=0)
         tk.Label(trader_frame2, text="Trader_GD: " + str(smp.total_avg_earns('GD', trader_names.count(gd) * num_periods))).grid(row=1, column=0)
         tk.Label(trader_frame2, text="Trader_PS: " + str(
@@ -605,6 +579,7 @@ class MarketGui():
         tk.Label(trader_frame2, text="Trader_ZIP: " + str(smp.total_avg_earns('ZIP', trader_names.count(zip) * num_periods))).grid(row=3, column=0)
         tk.Label(trader_frame2, text="Trader_Kaplan: " + str(smp.total_avg_earns('KP', trader_names.count(kp) * num_periods))).grid(row=4, column=0)
         tk.Label(trader_frame2, text="Trader_Shaver: " + str(smp.total_avg_earns('SI', trader_names.count(si) * num_periods))).grid(row=5, column=0)
+
         print("Strategy Total Avg. Earnings (per trader)")
         print("Trader_AA: " + str(smp.total_avg_earns('AA', trader_names.count(aa) * num_periods)))  #
         print("Trader_GD: " + str(smp.total_avg_earns('GD', trader_names.count(gd) * num_periods)))  #
@@ -615,6 +590,8 @@ class MarketGui():
         print("Trader_ZIC: " + str(smp.total_avg_earns('ZIC', trader_names.count(zic) * num_periods)))  #
         print("Trader_Kaplan: " + str(smp.total_avg_earns('KP', trader_names.count(kp) * num_periods)))
         print("Trader_Shaver: " + str(smp.total_avg_earns('SI', trader_names.count(si) * num_periods)))
+
+        """The below function calls create graphs from the simulation results and save in project path"""
         smp.get_avg_trade_ratio()  # prints avg trade ratio for all periods
         smp.graph_trader_eff(self.output_path, session)  # plots individual efficiency
         smp.graph_efficiency_gui(self.output_path, session, eff, periods_list)  # plots period efficiency
@@ -623,20 +600,42 @@ class MarketGui():
         # smp.graph_surplus()  # graphs actual and max surplus
         #smp.graph_alphas(self.output_path, session)  # graphs Smith's Alpha of convergence
         smp.graph_distribution(self.output_path, session)  # graphs normal distribution of trader efficiencies
-        graph_frame1 = tk.LabelFrame(run_root, text="Transactions")
-        graph_frame1.grid(row=2, column=0, columnspan=4)
-        photo = tk.PhotoImage(file=self.output_path + session + '\\' + "Transactions.png")
-        # TODO resize image, but how?
-        label = tk.Label(graph_frame1, image=photo)
+
+        from PIL import Image  # import python image library
+        new_size = 400, 225  # makes original image smaller
+
+        # below builds a frame to display the smaller transactions graph
+        graph_frame1 = tk.LabelFrame(run_root, text="Transactions")  # frame created in run root
+        graph_frame1.grid(row=2, column=1)
+        edit = Image.open(self.output_path + session + '\\' + "Transactions.png")  # accesses original image
+        edit.thumbnail(new_size, Image.ANTIALIAS)  # turns the image into a thumbnail size
+        edit.save(self.output_path + session + '\\' + "Transactions Mini.png")  # saves new file
+        photo = tk.PhotoImage(file=self.output_path + session + '\\' + "Transactions Mini.png")  # accesses new image
+        label = tk.Label(graph_frame1, image=photo)  # turns into tk label and packs into frame
         label.pack()
-        sd_frame = tk.LabelFrame(run_root, text="Supply and Demand")
-        sd_frame.grid(row=2, column=4)
-        photo2 = tk.PhotoImage(file=self.output_path + session + '\\' + "SD Before.png")
-        # TODO resize image, but how?
-        label2 = tk.Label(sd_frame, image=photo2)
+
+        # below builds a frame to display the smaller SD graph
+        sd_frame = tk.LabelFrame(run_root, text="Supply and Demand")  # new frame in run root
+        sd_frame.grid(row=2, column=0)
+        edit2 = Image.open(self.output_path + session + '\\' + "SD Before.png") # old image accessed
+        edit2.thumbnail(new_size, Image.ANTIALIAS)  # old image turned into thumbnail
+        edit2.save(self.output_path + session + '\\' + "SD Mini.png")  # new image saved
+        photo2 = tk.PhotoImage(file=self.output_path + session + '\\' + "SD Mini.png")  # new image accessed
+        label2 = tk.Label(sd_frame, image=photo2)  # turned into label and packed into frame
         label2.pack()
-        run_root.mainloop()
+
+        stat_frame = tk.LabelFrame(run_root, text="Trader Efficiency Distribution")  # new frame in run root
+        stat_frame.grid(row=2, column=2)
+        edit3 = Image.open(self.output_path + session + '\\' + "Efficiency Distribution.png")  # old image accessed
+        edit3.thumbnail(new_size, Image.ANTIALIAS)  # old image turned into thumbnail
+        edit3.save(self.output_path + session + '\\' + "Eff Dist Mini.png")  # new image saved
+        photo3 = tk.PhotoImage(file=self.output_path + session + '\\' + "Eff Dist Mini.png")  # new image accessed
+        label3 = tk.Label(stat_frame, image=photo3)  # turned into label and packed into frame
+        label3.pack()
+
+        run_root.mainloop()  # continues running run root
         # TODO ttk error needs to be discovered and fixed
+        # TODO graphing error when rerunning inside the gui .. plots trader eff dist into SD graph..
 
 if __name__ == "__main__":
     # setup gui

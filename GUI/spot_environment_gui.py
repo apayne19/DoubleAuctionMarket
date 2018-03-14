@@ -84,8 +84,8 @@ class SpotEnvironmentGui():
 
         # have to set local file path for icon images and project data
         #  TODO change these to your file path
-        self.file_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\icons\\"
-        self.project_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\projects\\"
+        self.file_path = "C:\\Users\\alexd\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\icons\\"
+        self.project_path = "C:\\Users\\alexd\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\projects\\"
 
         # have to create small images for tkinter display... open file, save, etc.
         self.new_file_icon = tk.PhotoImage(file=self.file_path + 'new.png')

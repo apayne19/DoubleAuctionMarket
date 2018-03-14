@@ -332,7 +332,7 @@ if __name__ == "__main__":
     trader_names = [zi, si, zi, si, zi, si, zi, si]  # Order of trader strategies in generic trader array
     # trader_names = [zi, zi, zi, zi, zi, zi, zi, zi, zi, zi]  # Order of trader strategies in generic trader array
     # input - output and display options
-    input_path = "C:\\Users\\\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\projects\\"
+    input_path = "C:\\Users\\alexd\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\projects\\"
     input_file = "TEST"
     name = "Trial"
     limits = (999, 0)
