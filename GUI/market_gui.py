@@ -81,6 +81,7 @@ class MarketGui():
         self.file_path = "C:\\Users\\alexd\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\icons\\"
         self.project_path = "C:\\Users\\alexd\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\projects"
         self.output_path = "C:\\Users\\alexd\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\period data\\"
+        self.data_files = os.listdir(self.project_path)
 
         # have to create small images for tkinter display... open file, save, etc.
         self.new_file_icon = tk.PhotoImage(file=self.file_path + 'new.png')
@@ -195,6 +196,28 @@ class MarketGui():
         create_frame.grid(row=1, column=9, columnspan=2, sticky='E', padx=15, pady=5)
         create_button = tk.Button(create_frame, text="CREATE", width=6, command=self.on_create_clicked)
         create_button.grid(row=0, column=1, padx=30)
+        mini_root = tk.Toplevel()
+        mini_root.geometry("200x200")
+        path_frame = tk.LabelFrame(mini_root, text="SET FILE PATHS")
+        path_frame.grid(row=0, column=0)
+        tk.Label(path_frame, text="Project Path: ").grid(row=1, column=0)
+        tk.Button(path_frame, text="SET", command=self.project_set_button).grid(row=1, column=1)
+        tk.Label(path_frame, text="Simulation Save Path: ").grid(row=2, column=0)
+        tk.Button(path_frame, text="SET", command=self.sim_path_set_button).grid(row=2, column=2)
+        mini_root.mainloop()
+
+    def project_set_button(self):
+        chosen_file = tk.filedialog.askdirectory()
+        self.project_path = chosen_file
+        print(self.project_path)
+
+    def sim_path_set_button(self):
+        sim_save_file = tk.filedialog.askdirectory()
+        self.output_path = sim_save_file
+        print(self.output_path)
+
+    def refresh_files(self):
+        self.data_files = os.listdir(self.project_path)
 
     def on_create_clicked(self):
         '''Added ability to run spot_environment_gui in market_gui... allows new SD creation'''
@@ -640,6 +663,7 @@ class MarketGui():
 if __name__ == "__main__":
     # setup gui
     root = tk.Tk()
+    # TODO add file path set as first root window then have everything display
     #root2 = tk.Tk()
     debug_test = True
     if debug_test:

@@ -9,6 +9,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from matplotlib.figure import Figure
 import random
 import Simulator.spot_market_period
+from GUI import market_gui as mg
 
 '''1). set input/output url paths to local computer'''
 
@@ -219,15 +220,7 @@ class SpotEnvironmentGui():
             return "Empty"
         else:
             s_d_list = self.sec.get_supply_demand_list()  # calls supply_demand_list from spot_env_model
-            return s_d_list[0:(int(len(s_d_list)/2)) + 16]
-
-    '''Added 2nd sd_string process to place the spillover into the other list frame'''
-    def process_sd_string2(self):
-        if self.num_buyers == 0:
-            return "Empty"
-        else:
-            s_d_list = self.sec.get_supply_demand_list()  # calls supply_demand_list from spot_env_model
-            return s_d_list[int(len(s_d_list)/2) + 17:]
+            return s_d_list
 
     def on_calc_eq_clicked(self):
         qt, pl, ph, ms = self.sec.get_equilibrium()  # click = calls get_eq() from spot_env_model
@@ -241,16 +234,10 @@ class SpotEnvironmentGui():
             print("In GUI -> on_show_clicked -> begin")
         self.set_market()
         lfr1_show = tk.LabelFrame(self.root, text="List of Supply and Demand")
-        lfr1_show.grid(row=1, rowspan=5, column=4, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
+        lfr1_show.grid(row=1, rowspan=5, column=5, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
         lbl1_show = tk.Label(lfr1_show, text=self.process_sd_string1())
         lbl1_show.grid(row=0, column=0)
 
-        '''Added a second frame for supply/demand list to spill over onto'''
-        # TODO maybe add scrollbar feature for one supply/demand list
-        lfr2_show = tk.LabelFrame(self.root, text="List of Supply and Demand")
-        lfr2_show.grid(row=1, rowspan=5, column=5, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
-        lbl2_show = tk.Label(lfr2_show, text=self.process_sd_string2())
-        lbl2_show.grid(row=0, column=0)
         if self.debug:
             print("In GUI -> on_show_clicked -> end")
 
@@ -264,9 +251,8 @@ class SpotEnvironmentGui():
 
         # set up frame to plot in
         fr_plot = tk.LabelFrame(self.root, text="Plot of Supply and Demand")
-        fr_plot.grid(row=2, rowspan=1, column=2, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
-        c_plot = tk.LabelFrame(self.root, text="Plot of Contracts")
-        c_plot.grid(row=3, rowspan=1, column=2, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
+        fr_plot.grid(row=2, rowspan=1, column=3, sticky=tk.W + tk.E + tk.N + tk.S, padx=15, pady=4)
+
         # set up graph to plot in frame
         f = Figure(figsize=(4, 4), dpi=100)
         a = f.add_subplot(111)
@@ -274,9 +260,6 @@ class SpotEnvironmentGui():
             canvas1 = FigureCanvasTkAgg(f, fr_plot)
             canvas1.get_tk_widget().pack()  # Have to use pack here to work with toolbar.  Not sure why.
             canvas1.draw()
-            canvas2 = FigureCanvasTkAgg(f, c_plot)
-            canvas2.get_tk_widget().pack()  # Have to use pack here to work with toolbar.  Not sure why.
-            canvas2.draw()
             if self.debug:
                 print("In Gui -> on_plot_clicked --> early end")
             self.set_market()  # why is this called twice?
@@ -470,7 +453,7 @@ class SpotEnvironmentGui():
 
     def show_sellers_frame(self):
         sf = tk.LabelFrame(self.root, text="Seller Entries")
-        sf.grid(row=3, column=0, sticky=tk.W +
+        sf.grid(row=2, column=1, sticky=tk.W +
                                         tk.E + tk.N + tk.S, padx=15, pady=4)
         if self.num_sellers == 0: return  # Nothing to show
         sell_ids = [k for k in range(self.num_sellers)]
@@ -581,6 +564,7 @@ class SpotEnvironmentGui():
         self.set_market()
         self.project_path += self.string_project_name.get()
         self.sec.save_project(self.project_path)
+        # TODO add in process for refreshing self.data_files in market_gui
 
     def save_json(self, event=None):  # saves file in it's path location
         """This saves the created SD data into a json file"""
