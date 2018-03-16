@@ -20,9 +20,9 @@ import scipy.stats as stats
 ... session_name is the unique identifier for each session run
     --> ex. "filename-tradestrategy-#buyers-#sellers-$limit-version" '''
 
-input_path = "C:\\Users\\alexd\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\projects\\"  # TODO change to your file path
+input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\projects\\"  # TODO change to your file path
 input_file = "TestVS"
-output_path = "C:\\Users\\alexd\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\period data\\"  # TODO change to your file path
+output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\period data\\"  # TODO change to your file path
 session_name = "Market Test 10"  # TODO implement time stamps so file error not generated
 input_file_market_shock = "MarketShockTest"
 '''Below are global dictionaries that will contain information needed to execute several functions'''

@@ -25,7 +25,7 @@ from timeit import default_timer as timer
 import scipy.stats as stats
 import GUI.spot_environment_gui
 class MarketGui():
-    def __init__(self, root, sec, name, debug=False):
+    def __init__(self, root, sec, project_path, output_path, name, debug=False):
         assert name != "", "Gui must have a name"
 
         self.root = root  # root builds tkinter app
@@ -47,6 +47,7 @@ class MarketGui():
         self.num_units = 0  # setting number of units to 0
         self.floor = 0
         self.ceiling = 0
+        self.session = None
 
         self.string_periods = tk.StringVar()    # creates a tkinter variable
         self.string_rounds = tk.StringVar()
@@ -76,30 +77,19 @@ class MarketGui():
         self.buyer_values = self.build_array(self.num_buyers, self.num_units)  # matrix of buyers and number of units
         self.seller_costs = self.build_array(self.num_sellers, self.num_units)  # matrix of sellers and number of units
 
-        # have to set local file path for icon images and project data
-        #  TODO change these to your file path
-        self.file_path = "C:\\Users\\alexd\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\icons\\"
-        self.project_path = "C:\\Users\\alexd\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\projects"
-        self.output_path = "C:\\Users\\alexd\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\period data\\"
-        self.data_files = os.listdir(self.project_path)
+        self.project_path = project_path
+        self.output_path = output_path + '/'
 
-        # have to create small images for tkinter display... open file, save, etc.
-        self.new_file_icon = tk.PhotoImage(file=self.file_path + 'new.png')
-        self.open_file_icon = tk.PhotoImage(file=self.file_path + 'open.png')
-        self.save_file_icon = tk.PhotoImage(file=self.file_path + 'save.png')  # calling images from icons folder
-        self.cut_icon = tk.PhotoImage(file=self.file_path + 'cut.png')         # --> pulled from internet images
-        self.copy_icon = tk.PhotoImage(file=self.file_path + 'copy.png')       # --> images edited/shrunk to meet scale
-        self.paste_icon = tk.PhotoImage(file=self.file_path + 'paste.png')
-        self.undo_icon = tk.PhotoImage(file=self.file_path + 'undo.png')
-        self.redo_icon = tk.PhotoImage(file=self.file_path + 'redo.png')
 
         # have to build menu and start the project
         self.show_menu()  # executes menu build with toolbar and help/action messages
         self.show_shortcut()  # executes frame build in tkinter
         self.show_infobar()  # executes sub-frame for user entering number buyers, number sellers, units
-        self.process_new_project()
+        #self.process_new_project()
 
         self.trigger = False  # safety feature when rerunning in gui: if same parameters used = True
+        self.file_change = False
+        self.old_session = None
 
 
     def build_array(self, num_1, num_2):  # builds an array for buyers:values and sellers:costs
@@ -118,11 +108,11 @@ class MarketGui():
         # create file menu item
         file_menu = tk.Menu(menu_bar, tearoff=0)
         file_menu.add_command(label='New', accelerator='Ctrl+N',
-                              compound='left', image=self.new_file_icon, underline=0, command=self.process_new_project)
+                              compound='left', underline=0, command=None)
         file_menu.add_command(label='Open', accelerator='Ctrl+O',
-                              compound='left', image=self.open_file_icon, underline=0, command=self.open_file)
+                              compound='left', underline=0, command=self.open_file)
         file_menu.add_command(label='Save', accelerator='Ctrl+S',
-                              compound='left', image=self.save_file_icon, underline=0, command=self.save)
+                              compound='left', underline=0, command=self.save)
         #file_menu.add_command(label='Save as', accelerator='Shift+Ctrl+S', command=self.save_as)
         file_menu.add_separator()
         file_menu.add_command(label='Quit', accelerator='Alt+F4', command=self.on_quit_chosen)
@@ -132,6 +122,7 @@ class MarketGui():
         about_menu = tk.Menu(menu_bar, tearoff=0)
         about_menu.add_command(label='About', command=self.display_about_messagebox)  # click = display about message
         about_menu.add_command(label='Help', command=self.display_help_messagebox)  # click = display help message
+        # TODO add link to github readme in display_help_messagebox
         menu_bar.add_cascade(label='Misc', menu=about_menu)  # drop down menu
         self.root.config(menu=menu_bar)  # makes menu setup final
 
@@ -140,84 +131,63 @@ class MarketGui():
         shortcut_bar.grid(row=0, column=0, columnspan=4, sticky='W')  # setting parameters of frame
 
     def show_infobar(self):
-        info_bar = tk.LabelFrame(self.root, height=15, text=str(self.name))  # creates a label frame for initial inputs
-        info_bar.grid(row=1, column=0, columnspan=4, sticky='W', padx=5, pady=5)  # set parameters
-
-        # create project name label
-        tk.Label(info_bar, text="Session Name:").grid(row=0, column=0)
-        tk.Entry(info_bar, width=15, justify=tk.LEFT, textvariable=self.string_session_name).grid(row=0, column=1)
-
-        # create number of buyers label
-        tk.Label(info_bar, text="Period Shocks:").grid(row=0, column=2)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_period_shocks).grid(row=0, column=3)
-        self.string_period_shocks.set(str(self.num_p_shocks))  # sets initial display value at self.num_buyers = 0
-
-        # create number of sellers label
-        tk.Label(info_bar, text="Round Shocks:").grid(row=0, column=4)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_round_shocks).grid(row=0, column=5)
-        self.string_round_shocks.set(str(self.num_r_shocks))  # sets initial display value at self.num_sellers = 0
-
-        # create number of units label
-        tk.Label(info_bar, text="Periods:").grid(row=0, column=6)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_periods).grid(row=0, column=7)
-        self.string_periods.set(str(self.num_periods))  # sets initial display value at self.num_units = 0
-
-        tk.Label(info_bar, text="Rounds:").grid(row=0, column=8)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_rounds).grid(row=0, column=9)
-        self.string_rounds.set(str(self.num_rounds))  # sets initial display value at self.num_units = 0
-
-        tk.Label(info_bar, text="Starting Data File:").grid(row=1, column=0)  # create/grid location
-        ttk.Combobox(info_bar, values=os.listdir(self.project_path), textvariable=self.string_data).grid(row=1, column=1)
-        self.string_data.set("Select")
-
-        plot_button = tk.Button(info_bar, text="Show", width=4, command=self.on_show_clicked)
-        plot_button.grid(row=1, column=2)
-
-        tk.Label(info_bar, text="Price Floor:").grid(row=1, column=3)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.price_floor).grid(row=1, column=4)
-        self.price_floor.set(str(self.floor))
-
-        tk.Label(info_bar, text="Price Ceiling:").grid(row=1, column=5)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.price_ceiling).grid(row=1, column=6)
-        self.price_ceiling.set(str(self.ceiling))
-
-        # create a button with action input (command = click)
-        info_button = tk.Button(info_bar, text="Set", width=4,
-                                command=self.on_set_parms_clicked)
-        info_button.grid(row=1, column=7, padx=10, pady=5)  # creates grids in both built frames
-        # create Equilibrium Q label
-
+        # creates a frame in gui to set project paths
+        # creates a frame in gui to run the simulator by pressing a button
         run_frame = tk.LabelFrame(self.root, height=15, text="RUN SIMULATION")
         run_frame.grid(row=1, column=11, columnspan=2, sticky='E', padx=15, pady=5)
         run_button = tk.Button(run_frame, text="RUN", width=4, command=self.run_sim)
         run_button.grid(row=0, column=1, padx=30)
 
+        # creates a frame in gui to create a new supply/demand data file by pressing a button
         create_frame = tk.LabelFrame(self.root, height=15, text="New Supply Demand")
         create_frame.grid(row=1, column=9, columnspan=2, sticky='E', padx=15, pady=5)
         create_button = tk.Button(create_frame, text="CREATE", width=6, command=self.on_create_clicked)
         create_button.grid(row=0, column=1, padx=30)
-        mini_root = tk.Toplevel()
-        mini_root.geometry("200x200")
-        path_frame = tk.LabelFrame(mini_root, text="SET FILE PATHS")
-        path_frame.grid(row=0, column=0)
-        tk.Label(path_frame, text="Project Path: ").grid(row=1, column=0)
-        tk.Button(path_frame, text="SET", command=self.project_set_button).grid(row=1, column=1)
-        tk.Label(path_frame, text="Simulation Save Path: ").grid(row=2, column=0)
-        tk.Button(path_frame, text="SET", command=self.sim_path_set_button).grid(row=2, column=2)
-        mini_root.mainloop()
 
-    def project_set_button(self):
-        chosen_file = tk.filedialog.askdirectory()
-        self.project_path = chosen_file
-        print(self.project_path)
+        # creates a frame in gui to enter in new session data for simulator run
+        info_bar = tk.LabelFrame(self.root, height=15, text=str(self.name))  # creates a label frame for initial inputs
+        info_bar.grid(row=1, column=0, columnspan=4, sticky='W', padx=5, pady=5)  # set parameters
+        # create project name label and entry
+        tk.Label(info_bar, text="Session Name:").grid(row=0, column=0)
+        tk.Entry(info_bar, width=15, justify=tk.LEFT, textvariable=self.string_session_name).grid(row=0, column=1)
+        self.string_session_name.set(str(self.session))
+        # create number of buyers label and entry
+        tk.Label(info_bar, text="Period Shocks:").grid(row=0, column=2)
+        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_period_shocks).grid(row=0, column=3)
+        self.string_period_shocks.set(str(self.num_p_shocks))  # sets initial display value at self.num_buyers = 0
+        # create number of sellers label and entry
+        tk.Label(info_bar, text="Round Shocks:").grid(row=0, column=4)
+        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_round_shocks).grid(row=0, column=5)
+        self.string_round_shocks.set(str(self.num_r_shocks))  # sets initial display value at self.num_sellers = 0
+        # create number of units label and entry
+        tk.Label(info_bar, text="Periods:").grid(row=0, column=6)
+        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_periods).grid(row=0, column=7)
+        self.string_periods.set(str(self.num_periods))  # sets initial display value at self.num_units = 0
+        # create number of rounds label and entry
+        tk.Label(info_bar, text="Rounds:").grid(row=0, column=8)
+        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_rounds).grid(row=0, column=9)
+        self.string_rounds.set(str(self.num_rounds))  # sets initial display value at self.num_units = 0
+        # create data file label and drop down menu to choose from
+        tk.Label(info_bar, text="Starting Data File:").grid(row=1, column=0)  # create/grid location
+        ttk.Combobox(info_bar, values=os.listdir(self.project_path), textvariable=self.string_data).grid(row=1, column=1)
+        self.string_data.set("Select")
+        # creates a button to show the chosen file's supply/demand graph
+        plot_button = tk.Button(info_bar, text="Show", width=4, command=self.on_show_clicked)
+        plot_button.grid(row=1, column=2)
+        # create price floor label and entry
+        tk.Label(info_bar, text="Price Floor:").grid(row=1, column=3)
+        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.price_floor).grid(row=1, column=4)
+        self.price_floor.set(str(self.floor))
+        # create price ceiling label and entry
+        tk.Label(info_bar, text="Price Ceiling:").grid(row=1, column=5)
+        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.price_ceiling).grid(row=1, column=6)
+        self.price_ceiling.set(str(self.ceiling))
+        # create a button with action input (command = click)
+        info_button = tk.Button(info_bar, text="Set", width=4, command=self.on_set_parms_clicked)
+        info_button.grid(row=1, column=7, padx=10, pady=5)  # creates grids in both built frames
 
-    def sim_path_set_button(self):
-        sim_save_file = tk.filedialog.askdirectory()
-        self.output_path = sim_save_file
-        print(self.output_path)
 
-    def refresh_files(self):
-        self.data_files = os.listdir(self.project_path)
+
 
     def on_create_clicked(self):
         '''Added ability to run spot_environment_gui in market_gui... allows new SD creation'''
@@ -226,7 +196,8 @@ class MarketGui():
         if create_debug_test:
             print("In Gui -> START")
         create_sec = Environment.spot_environment_controller.SpotEnvironmentController(create_debug_test)
-        create_gui = GUI.spot_environment_gui.SpotEnvironmentGui(create_root, create_sec, "File Creation", create_debug_test)
+        file_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\icons\\"
+        GUI.spot_environment_gui.SpotEnvironmentGui(create_root, create_sec, file_path, self.project_path, "File Creation", create_debug_test)
         create_root.mainloop()
         if debug_test:
             print("In Gui -> END")
@@ -236,59 +207,9 @@ class MarketGui():
         if tkinter.messagebox.askokcancel("Exit?", "Have you saved your work?"):
             self.root.destroy()  # closes window and destroys tkinter object
 
-    def set_market(self):
-        """ Sends all values on screen to model"""
-        # Start with name and all that
-        if self.debug:
-            print("In Gui -> set_market -> begin")
-        self.sec.set_market_parms([self.string_session_name.get(), self.num_p_shocks, self.num_r_shocks,
-                                   self.num_periods])
-        make_d = {}
-
-        # Now Add Buyer Values and Seller Costs
-        make_d["buyers"] = {}
-        for k in range(self.num_p_shocks):
-            make_d["buyers"][k] = []
-            for j in range(self.num_periods):
-                make_d["buyers"][k].append(int(self.pshock_values[k][j].get()))
-
-        # make_d["sellers"] = {}
-        # for k in range(self.num_sellers):
-        #     make_d["sellers"][k] = []
-        #     for j in range(self.num_units):
-        #         make_d["sellers"][k].append(int(self.seller_costs[k][j].get()))
-
-        # now make supply and demand
-        if self.debug:
-            print("In Gui -> set_market -> make_d")
-            self.show_market(make_d)
-
-        self.sec.make_market(make_d)
-        self.sec.make_supply()
-        self.sec.make_demand()
-        if self.debug:
-            print("In Gui -> set_market -> end")
-
-    def show_market(self, make_d):
-
-        if self.debug:
-            print("In Gui -> show_market -> begin")
-        print("... name = {}".format(self.name))
-        print("... num_period_shocks = {}".format(self.num_p_shocks))
-        print("... num_round_shocks = {}".format(self.num_r_shocks))
-        print("... num_periods = {}".format(self.num_periods))
-
-        # for k in range(self.num_buyers):
-        #     print("... make_d[buyers][{}] = {}".format(k, make_d["buyers"][k]))
-        # for k in range(self.num_sellers):
-        #     print("... make_d[sellers][{}] = {}".format(k, make_d["sellers"][k]))
-
-        if self.debug:
-            print("In Gui -> show_market -> end")
-
     def on_show_clicked(self):
         '''When clicked will show the supply/demand graph and seller/buyer values of chosen data file'''
-        self.sec.load_file(self.project_path + "\\" + str(self.string_data.get()))
+        self.sec.load_file(self.project_path + "/" + str(self.string_data.get()))
         data_frame = tk.LabelFrame(self.root, text="Data File Information")
         data_frame.grid(row=2, column=0)
         tk.Label(data_frame, text="Buyers: " + str(self.sec.get_num_buyers())).grid(row=0, column=0)
@@ -302,21 +223,13 @@ class MarketGui():
         #tk.Label(data_frame, text="Seller Costs: " + str(self.sec.get_seller_costs())).grid(row=2, column=0)
         self.sec.plot_gui(self.string_data.get())
 
-
-
     def on_set_parms_clicked(self):
         """The below message boxes will appear to the user if the parameters are not set"""
-
-        print(self.string_data.get())
-        # check if session name file exists
-        try:
-            os.makedirs(self.output_path + self.string_session_name.get())  # creates folder for session data
-        except FileExistsError:
-            messagebox.askokcancel("FILE ERROR", "Session file name already exists... \n Please rename session \n OR \n Please delete previous file in project_path")
-            raise  # raises error if folder already exists
+        if self.string_session_name.get() == 'None':
+            messagebox.askokcancel("SESSION ERROR", "Session name has not bee set \n Please type a session name")
 
         # check that starting data file has been set
-        if self.string_data.get() == "Select":
+        elif self.string_data.get() == "Select":
             messagebox.askokcancel("DATA ERROR", "A starting data file was not selected \n Please choose one or create one")
 
         # check that number of periods has been set
@@ -333,26 +246,28 @@ class MarketGui():
 
         # lastly ask user to make sure all parameters have been set correctly
         else:
-            messagebox.askyesno("PROCEED?", "Please make sure all parameters are set correctly \n Do you wish to continue?")
-            return
+            try:
+                os.makedirs(self.output_path + "/" + self.string_session_name.get())  # creates folder for session data
 
-        # this will be used when user presses run after already running... will need to recheck session file
-        self.trigger = True  # TODO implement in def run_sim()
+            except FileExistsError:
+                messagebox.askokcancel("FILE ERROR", "Session file name already exists... \n Please rename session \n OR \n Please delete previous file in project_path")
+                raise  # raises error if folder already exists
+            box = messagebox.askyesno("PROCEED?", "Please make sure all parameters are set correctly \n Do you wish to continue?")
+            if box == True:
+                self.num_periods = int(self.string_periods.get())
+                self.num_r_shocks = int(self.string_round_shocks.get())
+                self.num_p_shocks = int(self.string_period_shocks.get())
+                self.root.title(self.string_session_name.get())
 
-        self.num_periods = int(self.string_periods.get())
-        self.num_r_shocks = int(self.string_round_shocks.get())
-        self.num_p_shocks = int(self.string_period_shocks.get())
-        self.root.title(self.string_session_name.get())
+                if self.num_p_shocks > 0:  # Build array if useful
+                    self.pshock_values = self.build_array(self.num_p_shocks, self.num_p_shocks)
+                if self.num_r_shocks > 0:  # Build array if useful
+                    self.rshock_values = self.build_array(self.num_r_shocks, self.num_r_shocks)
 
-        if self.num_p_shocks > 0:  # Build array if useful
-            self.pshock_values = self.build_array(self.num_p_shocks, self.num_p_shocks)
-        if self.num_r_shocks > 0:  # Build array if useful
-            self.rshock_values = self.build_array(self.num_r_shocks, self.num_r_shocks)
-
-        self.show_shock_frames()  # calls show_player_frames --> builds frame
-        self.sec.set_market_parms([self.string_session_name.get(), self.num_buyers, self.num_sellers, self.num_units])
-
-
+                self.show_shock_frames()  # calls show_player_frames --> builds frame
+                self.sec.set_market_parms([self.string_session_name.get(), self.num_buyers, self.num_sellers, self.num_units])
+            else:
+                print("Continuing")
 
     def show_shock_frames(self):
         self.show_pshock_frame()
@@ -360,8 +275,7 @@ class MarketGui():
 
     def show_pshock_frame(self):
         pf = tk.LabelFrame(self.root, text="Period Shock Entries")
-        pf.grid(row=2, column=1, sticky=tk.W +
-                                        tk.E + tk.N + tk.S, padx=15, pady=4)
+        pf.grid(row=2, column=1)
         if self.num_p_shocks == 0: return   # Notihing to show
         self.buttons = [[None for x in range(3)] for x in range(self.num_p_shocks + self.num_r_shocks)]
 
@@ -409,28 +323,6 @@ class MarketGui():
         self.string_period_shocks.set(str(self.num_p_shocks))
         self.string_round_shocks.set(str(self.num_r_shocks))
         self.string_periods.set(str(self.num_periods))
-
-    def process_new_project(self, event=None):
-        if self.debug == True:
-            print("In GUI -> process_new_project -> begin")
-        self.root.title("Untitled")
-        self.file_name = None
-        self.string_session_name.set("Untitled")
-
-        self.num_p_shocks = 0
-        self.num_r_shocks = 0
-        self.num_periods = 0
-
-        self.show_info_bar_parms()
-        self.show_shock_frames()
-
-
-        #self.set_market()
-        #self.sec.reset_market()
-        self.sec.show_environment()
-
-        if self.debug == True:
-            print("In GUI -> process_new_project -> end")
 
     def open_file(self, event=None):
         input_file_name = tkinter.filedialog.askopenfilename(defaultextension=".csv",
@@ -514,6 +406,7 @@ class MarketGui():
         ai = "Trader_AI"
         '''The lists below establish the number and order of traders and trading strategy'''
         # TODO create way to automate input of trader # and strategies
+        # --> could put this in json data file
         trader_names = [aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa]
         #tk.Label(run_frame, text="Traders: " + str(trader_names)).grid(row=2, column=0)
         smp.init_spot_system_gui(name, limits, rounds, self.project_path, self.string_data.get(), self.output_path,
@@ -662,14 +555,62 @@ class MarketGui():
 
 if __name__ == "__main__":
     # setup gui
-    root = tk.Tk()
-    # TODO add file path set as first root window then have everything display
-    #root2 = tk.Tk()
+    # TODO can add this into mkt_root somehow...
+    class file_path():
+        def __init__(self, path_root):
+            self.path_root = path_root
+            self.project_path = None
+            self.output_path = None
+            self.path_frame = tk.LabelFrame(self.path_root, text="SET FILE PATHS")
+            self.path_frame.grid(row=1, column=0, columnspan=3)
+            tk.Label(self.path_frame, text="Project Path: ").grid(row=1, column=0)
+            tk.Button(self.path_frame, text="Link Path", command=self.project_set_button).grid(row=1, column=2)
+
+            tk.Label(self.path_frame, text="Simulation Save Path: ").grid(row=2, column=0)
+            tk.Button(self.path_frame, text="Link Path", command=self.sim_path_set_button).grid(row=2, column=2)
+
+            tk.Button(self.path_frame, text="Submit", command=self.submit_button).grid(row=3, column=0)
+            self.path_root.mainloop()
+
+        def project_set_button(self):
+            chosen_file = tk.filedialog.askdirectory()
+            self.project_path = chosen_file
+            tk.Label(self.path_frame, text=self.project_path).grid(row=1, column=1)
+
+        def sim_path_set_button(self):
+            sim_save_file = tk.filedialog.askdirectory()
+            self.output_path = sim_save_file
+            tk.Label(self.path_frame, text=self.output_path).grid(row=2, column=1)
+
+        def submit_button(self):
+            if self.project_path == None:
+                tk.messagebox.askokcancel("ERROR", "Project path has not been set \n Please set this file path")
+            elif self.output_path == None:
+                tk.messagebox.askokcancel("ERROR", "Sim Save Path has not been set \n Please set this file path")
+            else:
+                box = tk.messagebox.askyesno("File Check", "Have you set the right file paths?")
+                if box == True:
+                    self.path_root.destroy()
+                else:
+                    print("Continuing")
+
+        def return_paths(self):
+            return self.project_path, self.output_path
+
+
+
+    path_root = tk.Tk()
+    results = file_path(path_root)
+    final_project_path = results.return_paths()[0]
+    final_output_path = results.return_paths()[1]
+    mkt_root = tk.Tk()
     debug_test = True
     if debug_test:
         print("In Gui -> START")
-    sec = Environment.spot_environment_controller.SpotEnvironmentController(debug_test)
-    gui = MarketGui(root, sec, "Data Entry", debug_test)
-    root.mainloop()
+        print("---> Project Path: " + str(final_project_path))
+        print("---> Output Path: " + str(final_output_path))
+        sec = Environment.spot_environment_controller.SpotEnvironmentController(debug_test)
+        gui = MarketGui(mkt_root, sec, final_project_path, final_output_path, "Data Entry", debug_test)
+        mkt_root.mainloop()
     if debug_test:
         print("In Gui -> END")

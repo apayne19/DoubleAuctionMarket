@@ -49,7 +49,7 @@ from win32api import GetSystemMetrics  # gets your computer's resolution size
 from spot_market_model).... the HAND of the simulator"""
 
 class SpotEnvironmentGui():
-    def __init__(self, root, sec, name, debug=False):
+    def __init__(self, root, sec, file_path, project_path, name, debug=False):
         assert name != "", "Gui must have a name"
 
         self.root = root  # root builds tkinter app
@@ -83,10 +83,8 @@ class SpotEnvironmentGui():
         self.buyer_values = self.build_array(self.num_buyers, self.num_units)  # matrix of buyers and number of units
         self.seller_costs = self.build_array(self.num_sellers, self.num_units)  # matrix of sellers and number of units
 
-        # have to set local file path for icon images and project data
-        #  TODO change these to your file path
-        self.file_path = "C:\\Users\\alexd\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\icons\\"
-        self.project_path = "C:\\Users\\alexd\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\projects\\"
+        self.file_path = file_path
+        self.project_path = project_path
 
         # have to create small images for tkinter display... open file, save, etc.
         self.new_file_icon = tk.PhotoImage(file=self.file_path + 'new.png')
@@ -646,12 +644,14 @@ class SpotEnvironmentGui():
 
 if __name__ == "__main__":
     # setup gui
+    file_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\icons\\"
+    project_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\projects\\"
     root = tk.Tk()
     debug_test = True
     if debug_test:
         print("In Gui -> START")
     sec = Environment.spot_environment_controller.SpotEnvironmentController(debug_test)
-    gui = SpotEnvironmentGui(root, sec, "Trading Platform", debug_test)
+    gui = SpotEnvironmentGui(root, sec, file_path, project_path, "Trading Platform", debug_test)
     root.mainloop()
     if debug_test:
         print("In Gui -> END")
