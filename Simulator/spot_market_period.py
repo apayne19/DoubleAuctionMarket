@@ -190,10 +190,10 @@ class SpotMarketPeriod(object):
             plt.close()
 
 
-    def graph_alphas(self, output, session):
+    def graph_alphas(self, output, session, periods):
         with plt.style.context('seaborn'):
             alphas = self.sys.alphas
-            x = periods_list
+            x = periods
             y = alphas
             plt.plot(x, y, marker='o', markersize=4, color='mediumorchid')
             plt.grid(True)  # creates a grid in the graph
@@ -248,7 +248,6 @@ class SpotMarketPeriod(object):
             #plt.show()
             plt.close()
 
-    # TODO create normal distribution graph of trader efficiencies
     def graph_distribution(self, output, session):
         with plt.style.context('seaborn'):
             t_effs = sorted(self.sys.eff_list)  # list of trader efficiencies
@@ -307,6 +306,9 @@ class SpotMarketPeriod(object):
         print("Trader Efficiency Max:" + str(max2))
         print("Trader Efficiency Min:" + str(min2))
         print()
+
+    def trader_eff_gui(self):
+        return sorted(self.sys.eff_list)
 
 
 
@@ -472,5 +474,5 @@ if __name__ == "__main__":
     smp.get_endpoints()  # obtains endpoints of periods for graph
     smp.graph_contracts(output_path, session_name)  # graphs contract transactions and avg transaction per period
     # smp.graph_surplus()  # graphs actual and max surplus
-    smp.graph_alphas(output_path, session_name)  # graphs Smith's Alpha of convergence
+    smp.graph_alphas(output_path, session_name, periods_list)  # graphs Smith's Alpha of convergence
     smp.graph_distribution(output_path, session_name)  # graphs normal distribution of trader efficiencies
