@@ -50,6 +50,7 @@ class MarketGui():
         self.floor = 0
         self.ceiling = 0
         self.session = None
+        self.traders = []
 
         self.strategy_string = tk.StringVar()
         self.string_institution = tk.StringVar()
@@ -69,6 +70,8 @@ class MarketGui():
         self.string_pl = tk.StringVar()
         self.string_ph = tk.StringVar()
         self.string_ms = tk.StringVar()
+        self.buyer_ids = None
+        self.seller_ids = None
 
         self.current_row = 0  # setting current read row to 0... self.current_row+1 would read next row
         self.current_row_contents = []
@@ -136,74 +139,78 @@ class MarketGui():
 
     def show_infobar(self):
         # creates a frame in gui to set project paths
-        # creates a frame in gui to run the simulator by pressing a button
-        run_frame = tk.LabelFrame(self.root, height=15, text="RUN SIMULATION")
-        run_frame.grid(row=1, column=11, columnspan=2, sticky='E', padx=15, pady=5)
-        run_button = tk.Button(run_frame, text="RUN", width=4, command=self.run_sim)
-        run_button.grid(row=0, column=1, padx=30)
-
-        # creates a frame in gui to create a new supply/demand data file by pressing a button
-        create_frame = tk.LabelFrame(self.root, height=15, text="New Supply Demand")
-        create_frame.grid(row=1, column=9, columnspan=2, sticky='E', padx=15, pady=5)
-        create_button = tk.Button(create_frame, text="CREATE", width=6, command=self.on_create_clicked)
-        create_button.grid(row=0, column=1, padx=30)
 
         # creates a frame in gui to enter in new session data for simulator run
         info_bar = tk.LabelFrame(self.root, height=15, text=str(self.name))  # creates a label frame for initial inputs
         info_bar.grid(row=1, column=0, columnspan=4, sticky='W', padx=5, pady=5)  # set parameters
 
         # create project name label and entry
-        tk.Label(info_bar, text="Session Name:").grid(row=0, column=0)
-        tk.Entry(info_bar, width=15, justify=tk.LEFT, textvariable=self.string_session_name).grid(row=0, column=1)
+        tk.Label(info_bar, text="Session Name").grid(row=0, column=0, padx=10)
+        tk.Entry(info_bar, width=15, justify=tk.LEFT, textvariable=self.string_session_name).grid(row=1, column=0)
         self.string_session_name.set(str(self.session))
 
         # create number of buyers label and entry
-        tk.Label(info_bar, text="Period Shocks:").grid(row=0, column=2)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_period_shocks).grid(row=0, column=3)
+        tk.Label(info_bar, text="Period Shocks").grid(row=0, column=1, padx=10)
+        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_period_shocks).grid(row=1, column=1)
         self.string_period_shocks.set(str(self.num_p_shocks))  # sets initial display value at self.num_buyers = 0
 
         # create number of sellers label and entry
-        tk.Label(info_bar, text="Round Shocks:").grid(row=0, column=4)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_round_shocks).grid(row=0, column=5)
+        tk.Label(info_bar, text="Round Shocks").grid(row=0, column=2, padx=10)
+        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_round_shocks).grid(row=1, column=2)
         self.string_round_shocks.set(str(self.num_r_shocks))  # sets initial display value at self.num_sellers = 0
 
         # create number of units label and entry
-        tk.Label(info_bar, text="Periods:").grid(row=0, column=6)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_periods).grid(row=0, column=7)
+        tk.Label(info_bar, text="Periods").grid(row=0, column=3, padx=10)
+        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_periods).grid(row=1, column=3)
         self.string_periods.set(str(self.num_periods))  # sets initial display value at self.num_units = 0
 
         # create number of rounds label and entry
-        tk.Label(info_bar, text="Rounds:").grid(row=0, column=8)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_rounds).grid(row=0, column=9)
+        tk.Label(info_bar, text="Rounds").grid(row=0, column=4, padx=10)
+        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_rounds).grid(row=1, column=4)
         self.string_rounds.set(str(self.num_rounds))  # sets initial display value at self.num_units = 0
 
-        # create data file label and drop down menu to choose from
-        tk.Label(info_bar, text="Starting Data File:").grid(row=1, column=0)  # create/grid location
-        ttk.Combobox(info_bar, values=os.listdir(self.project_path), textvariable=self.string_data).grid(row=1, column=1)
-        self.string_data.set("Select")
-
-        # create drop down menu for choosing institution to use
-        tk.Label(info_bar, text="Market Institution:").grid(row=2, column=0)
-        ttk.Combobox(info_bar, values=["DoubleAuction", "SealedBid", "Vickrey"], textvariable=self.string_institution).grid(row=2, column=1)
-        self.string_institution.set("DoubleAuction")
-
-        # creates a button to show the chosen file's supply/demand graph
-        plot_button = tk.Button(info_bar, text="Show", width=4, command=self.on_show_clicked)
-        plot_button.grid(row=1, column=2)
-
         # create price floor label and entry
-        tk.Label(info_bar, text="Price Floor:").grid(row=1, column=3)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.price_floor).grid(row=1, column=4)
+        tk.Label(info_bar, text="Price Floor").grid(row=0, column=5, padx=10)
+        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.price_floor).grid(row=1, column=5)
         self.price_floor.set(str(self.floor))
 
         # create price ceiling label and entry
-        tk.Label(info_bar, text="Price Ceiling:").grid(row=1, column=5)
+        tk.Label(info_bar, text="Price Ceiling").grid(row=0, column=6, padx=10)
         tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.price_ceiling).grid(row=1, column=6)
         self.price_ceiling.set(str(self.ceiling))
 
-        # create a button with action input (command = click)
+
+        # create data file label and drop down menu to choose from
+        tk.Label(info_bar, text="Starting Data File: ").grid(row=2, column=0, pady=10)  # create/grid location
+        ttk.Combobox(info_bar, values=os.listdir(self.project_path), textvariable=self.string_data).grid(row=2, column=1)
+        self.string_data.set("Select")
+
+        # create drop down menu for choosing institution to use
+        tk.Label(info_bar, text="Market Institution: ").grid(row=2, column=4, pady=10)
+        ttk.Combobox(info_bar, values=["DoubleAuction", "SealedBid", "Vickrey"], textvariable=self.string_institution).grid(row=2, column=5)
+        self.string_institution.set("DoubleAuction")
+
+        # creates a button to show the chosen file's supply/demand graph
+
+        plot_button = tk.Button(info_bar, text="Show", width=4, command=self.on_show_clicked)
+        plot_button.grid(row=2, column=2)
+
         info_button = tk.Button(info_bar, text="Set", width=4, command=self.on_set_parms_clicked)
-        info_button.grid(row=1, column=7, padx=10, pady=5)  # creates grids in both built frames
+        info_button.grid(row=2, column=6)  # creates grids in both built frames
+
+        # creates a frame in gui to create a new supply/demand data file by pressing a button
+
+        file_frame = tk.LabelFrame(self.root, height=15, text="New Data File")
+        file_frame.grid(row=1, column=5, padx=5, pady=5)
+        # create a button with action input (command = click)
+        create_button = tk.Button(file_frame, text="Create", width=6, command=self.on_create_clicked)
+        create_button.grid(row=0, column=0, padx=30)
+
+        run_frame = tk.LabelFrame(self.root, text="Run Simulation")
+        run_frame.grid(row=1, column=6, padx=5, pady=5)
+        # creates a frame in gui to run the simulator by pressing a button
+        run_button = tk.Button(run_frame, text="Run", width=4, command=self.run_sim)
+        run_button.grid(row=0, column=0, padx=30)
 
 
 
@@ -215,8 +222,7 @@ class MarketGui():
         if create_debug_test:
             print("In Gui -> START")
         create_sec = Environment.spot_environment_controller.SpotEnvironmentController(create_debug_test)
-        file_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\icons\\"
-        GUI.spot_environment_gui.SpotEnvironmentGui(create_root, create_sec, file_path, self.project_path, "File Creation", create_debug_test)
+        GUI.spot_environment_gui.SpotEnvironmentGui(create_root, create_sec, self.project_path, "File Creation", create_debug_test)
         create_root.mainloop()
         if debug_test:
             print("In Gui -> END")
@@ -297,25 +303,33 @@ class MarketGui():
         trader_frame = tk.LabelFrame(self.root, text="Trader Strategies")
         trader_frame.grid(row=2, column=3, sticky=tk.W +
                                         tk.E + tk.N + tk.S, padx=15, pady=4)
-        buyer_ids = [k for k in range(self.num_buyers)]
-        tk.Label(trader_frame, text="ID").grid(row=0, column=0)
-        tk.Label(trader_frame, text="Strategy").grid(row=0, column=3)
-        tk.Label(trader_frame, text="Period").grid(row=0, column=1)
-        tk.Label(trader_frame, text="Round").grid(row=0, column=2)
+        self.buyer_ids = [k for k in range(self.num_buyers)]
+        self.seller_ids = [k for k in range(self.num_sellers)]
         strategies = []
+
+        tk.Label(trader_frame, text="ID").grid(row=0, column=0)
+        tk.Label(trader_frame, text="Strategy").grid(row=0, column=1)
+        tk.Label(trader_frame, text="ID").grid(row=0, column=2)
+        tk.Label(trader_frame, text="Strategy").grid(row=0, column=3)
         for name, obj in inspect.getmembers(tdr):  # obtains all trader strategies from Trader.trader
             if inspect.isclass(obj):
                 strategies.append(obj.__name__)  # appends to list
         for i in range(self.num_buyers):
             buyer_num = "Buyer" + str(i + 1)
             tk.Label(trader_frame, text=buyer_num).grid(row=i + 1, column=0)
+
         for i in range(self.num_buyers):
-            buyer_ids[i] = tk.StringVar()
-            tk.Entry(trader_frame, width=5, justify=tk.CENTER,
-                     textvariable=buyer_ids[i]).grid(row=i + 1, column=1)
-            buyer_ids[i].set("")
-        for i in range(self.num_buyers):
-            ttk.Combobox(trader_frame, values=strategies, textvariable=self.strategy_string).grid(row=i + 1, column=2)
+            self.buyer_ids[i] = tk.StringVar()
+            ttk.Combobox(trader_frame, values=strategies, textvariable=self.buyer_ids[i]).grid(row=i + 1, column=1)
+            # creates a drop down menu to choose strategies
+
+        for i in range(self.num_sellers):
+            seller_num = "Seller" + str(i + 1)
+            tk.Label(trader_frame, text=seller_num).grid(row=i + 1, column=2)
+
+        for i in range(self.num_sellers):
+            self.seller_ids[i] = tk.StringVar()
+            ttk.Combobox(trader_frame, values=strategies, textvariable=self.seller_ids[i]).grid(row=i + 1, column=3)
             # creates a drop down menu to choose strategies
 
     def show_pshock_frame(self):
@@ -415,8 +429,22 @@ class MarketGui():
         run_root = tk.Toplevel()
         run_root.geometry(str(GetSystemMetrics(0)) + "x" + str(GetSystemMetrics(1)))
 
-        # TODO keep working on this root window!
+        # This obtains the strategies that the user sets in market_gui
+        # returns a list of the trader's strategies
+        # will replace self.traders in run_sim()
+        # TODO need to simplify list to abbreviations?
+        # TODO use same process to obtain market shocks set in market_gui!
+        strat_list = []
+        for i in range(len(self.buyer_ids)):
+            trader = self.buyer_ids[i].get()
+            strat_list.append(trader)
+        for i in range(len(self.seller_ids)):
+            trader = self.seller_ids[i].get()
+            strat_list.append(trader)
 
+        # TODO keep working on this root window!
+        print("STRAT LIST: " + str(strat_list))
+        print("Length: " + str(len(strat_list)))
 
         all_prices = []
         theoretical_transactions = []

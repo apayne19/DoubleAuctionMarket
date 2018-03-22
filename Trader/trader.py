@@ -1,8 +1,8 @@
-# import random
-# import math
-# import Algorithms.AI_Testing as prd
-# from Simulator import spot_market_period as smp
-# alphas = []
+import random
+import math
+import Algorithms.AI_Testing as prd
+from Simulator import spot_market_period as smp
+alphas = []
 
 '''Changed init.traders in spot.system and spot.market.prd to include current_period'''
 
