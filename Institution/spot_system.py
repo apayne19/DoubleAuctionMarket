@@ -8,6 +8,7 @@ import numpy as np
 import math
 from Simulator import spot_market_period as smp
 # noinspection PyUnboundLocalVariable,PyUnboundLocalVariable
+import Trader.trader
 class SpotSystem(object):
     def __init__(self):
         self.name = ""  # place holder for session name
@@ -123,6 +124,41 @@ class SpotSystem(object):
                         print("#asks: " + str(self.number_asks))
                         # prints info for each trader
                         num_contracts = num_contracts + 1  # add 1 to contracts number
+
+                        '''Attempting to create instantaneous market shocks below'''
+                        # buyer/seller edits complete
+                        # TODO need to finish this up
+                        buyer_out = contracts[len(contracts) - 1][1]
+                        seller_out = contracts[len(contracts) - 1][2]
+                        print("Buyer_out= " + str(buyer_out))
+                        print("Seller_out= " + str(seller_out))
+                        b_index = buyer_out[1:]
+                        s_index = seller_out[1:]
+                        print("Buyer_out Value:" + str(self.d[buyer_out]['values']))
+                        print("Seller_out Value:" + str(self.d[seller_out]['costs']))
+                        print("before: " + str(self.d))
+                        try:
+                            b_switch_value = self.d['t' + str(int(b_index) + 1)]['values']
+                        except KeyError:
+                            b_switch_value = self.d['t10']['values']
+
+                        try:
+                            s_switch_value = self.d['t' + str(int(s_index) - 1)]['costs']
+                        except KeyError:
+                            s_switch_value = self.d['t21']['costs']
+                        self.d['t' + str(int(b_index) + 1)] = self.d[buyer_out]
+                        self.d['t' + str(int(s_index) + 1)] = self.d[seller_out]
+                        del self.d[buyer_out]
+                        del self.d[seller_out]
+                        dict_list = list(self.d.items())
+                        print(dict_list)
+                        dict_list.insert(int(b_index), (str(buyer_out), {'units': 0, 'earn': 0, 'strat': 'Trader_AA', 'type': 'B', 'values': b_switch_value}))
+                        dict_list.insert(int(s_index), (str(seller_out), {'units': 0, 'earn': 0, 'strat': 'Trader_AA', 'type': 'S', 'costs': s_switch_value}))
+                        list_dict = dict(dict_list)
+                        print("after")
+                        for i in list_dict:
+                            print(str(i) + ':' + str(list_dict[i]))
+                        self.d = list_dict
                 else:
                     self.deal_status = False
                     # print("NO DEAL")
@@ -132,7 +168,7 @@ class SpotSystem(object):
                     # print("ZIP After: " + str(self.ZIP_watch))
 
         if self.display:
-            print()
+            self.trader_info = self.d
 
     def trader_handler(self, trader):
         last_period_prices = []
@@ -234,7 +270,6 @@ class SpotSystem(object):
             # print("#asks: " + str(self.number_asks))
 
         for k in range(len(self.traders)):
-            # tODO look into how trader efficiency is calculated.. should it be earns/maxsurplus or totalearns/surplus
             t_id = "t" + str(k)  # trader id
             t_strat = self.trader_info[t_id]['strat']  # trading strategy
             earn = self.trader_info[t_id]['earn']  # trader earnings
@@ -320,25 +355,28 @@ class SpotSystem(object):
         self.traders = [t[t_id] for t_id in t.keys()]
         self.t = t
         self.d = d
-
+        print("traders:" + str(traders))
+        print("self.t:" + str(self.t))
+        print("self.d:" + str(self.d))
+        print("d:" + str(d))
         return d
 
 
 if __name__ == "__main__":
     # Put Trader Class Names Here - note traders strategy is named trader class name
-    #zi = "ZeroIntelligenceTrader"
-    zi = "UnconstrainedZITrader"
-    si = "SimpleTrader"
-    trader_names = [zi, si, zi, si, zi, si, zi, si]  # Order of trader strategies in generic trader array
-    # trader_names = [zi, zi, zi, zi, zi, zi, zi, zi, zi, zi]  # Order of trader strategies in generic trader array
+    aa = Trader.trader.Trader_AA
+    trader_names = [aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa]  # Order of trader strategies in generic trader array
     # input - output and display options
-    input_path = "C:\\Users\\alexd\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\projects\\"
+    input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\projects"
+    output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\period data\\"
+    session_name = "Spot System Test 1"
     input_file = "TEST"
     name = "Trial"
-    limits = (999, 0)
-    rounds = 100
+    limits = (400, 0)
+    rounds = 10
+    period = 0
     spot_system = SpotSystem()
-    spot_system.init_spot_system(name, limits, rounds, input_path, input_file)
-    spot_system.init_traders(trader_names)
+    spot_system.init_spot_system(name, limits, rounds, input_path, input_file, output_path, session_name)
+    spot_system.init_traders(trader_names, period)
     spot_system.run()
     results = spot_system.eval()

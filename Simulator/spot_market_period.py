@@ -20,10 +20,10 @@ import scipy.stats as stats
 ... session_name is the unique identifier for each session run
     --> ex. "filename-tradestrategy-#buyers-#sellers-$limit-version" '''
 
-input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\projects\\"  # TODO change to your file path
+input_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\projects\\"
 input_file = "TestVS"
-output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\period data\\"  # TODO change to your file path
-session_name = "Market Test 10"  # TODO implement time stamps so file error not generated
+output_path = "C:\\Users\\Summer17\\Desktop\\Repos\\DoubleAuctionMarket\\Data\\period data\\"
+session_name = "Market Test 17"
 input_file_market_shock = "MarketShockTest"
 '''Below are global dictionaries that will contain information needed to execute several functions'''
 all_prices = []
@@ -396,14 +396,7 @@ if __name__ == "__main__":
     zip = "Trader_ZIP"  # zero intelligence plus trader
     ai = "Trader_AI"
     '''The lists below establish the number and order of traders and trading strategy'''
-    # TODO create way to automate input of trader # and strategies
-    # trader_names = [zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip, zip]
-    # trader_names = [gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
-    # trader_names = [aa, aa, aa, aa, zip, zip, zip, zip, gd, gd, gd, gd, ps, ps, ps, ps, zic, zic, zic, zic, zip, ai]
-    # trader_names = [aa, zic, zic, zic, zic, zic, zic, zic, aa, aa, aa, aa, aa, zic, zic, aa, zic, aa, zic, zic, aa, aa]
     trader_names = [aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa]
-    # trader_names = [ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps, ps]
-    # trader_names = [kp, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd, gd]
     header = session_name
     smp.init_spot_system(name, limits, rounds, input_path, input_file, output_path, session_name)
     rnd_traders = trader_names    # because shuffle shuffles the list in place, returns none
@@ -417,7 +410,8 @@ if __name__ == "__main__":
             # smp.num_sellers = 12
             # print(rnd_traders)
             # TODO period shocks happen below
-            smp.init_shock(name, limits, rounds, input_path, input_file_market_shock, output_path, session_name)
+            #smp.init_shock(name, limits, rounds, input_path, input_file_market_shock, output_path, session_name)
+            pass
 
         else:
             pass

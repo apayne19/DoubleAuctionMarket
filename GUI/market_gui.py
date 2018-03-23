@@ -25,7 +25,7 @@ from timeit import default_timer as timer
 import scipy.stats as stats
 import GUI.spot_environment_gui
 import inspect
-
+instant_shock_status = 0
 class MarketGui():
     def __init__(self, root, sec, project_path, output_path, name, debug=False):
         assert name != "", "Gui must have a name"
@@ -72,6 +72,8 @@ class MarketGui():
         self.string_ms = tk.StringVar()
         self.buyer_ids = None
         self.seller_ids = None
+
+        self.instant_shocks = tk.IntVar()
 
         self.current_row = 0  # setting current read row to 0... self.current_row+1 would read next row
         self.current_row_contents = []
@@ -151,43 +153,43 @@ class MarketGui():
 
         # create number of buyers label and entry
         tk.Label(info_bar, text="Period Shocks").grid(row=0, column=1, padx=10)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_period_shocks).grid(row=1, column=1)
+        tk.Entry(info_bar, width=5, justify=tk.CENTER, textvariable=self.string_period_shocks).grid(row=1, column=1)
         self.string_period_shocks.set(str(self.num_p_shocks))  # sets initial display value at self.num_buyers = 0
 
         # create number of sellers label and entry
         tk.Label(info_bar, text="Round Shocks").grid(row=0, column=2, padx=10)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_round_shocks).grid(row=1, column=2)
+        tk.Entry(info_bar, width=5, justify=tk.CENTER, textvariable=self.string_round_shocks).grid(row=1, column=2)
         self.string_round_shocks.set(str(self.num_r_shocks))  # sets initial display value at self.num_sellers = 0
 
         # create number of units label and entry
         tk.Label(info_bar, text="Periods").grid(row=0, column=3, padx=10)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_periods).grid(row=1, column=3)
+        tk.Entry(info_bar, width=5, justify=tk.CENTER, textvariable=self.string_periods).grid(row=1, column=3)
         self.string_periods.set(str(self.num_periods))  # sets initial display value at self.num_units = 0
 
         # create number of rounds label and entry
         tk.Label(info_bar, text="Rounds").grid(row=0, column=4, padx=10)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.string_rounds).grid(row=1, column=4)
+        tk.Entry(info_bar, width=5, justify=tk.CENTER, textvariable=self.string_rounds).grid(row=1, column=4)
         self.string_rounds.set(str(self.num_rounds))  # sets initial display value at self.num_units = 0
 
         # create price floor label and entry
         tk.Label(info_bar, text="Price Floor").grid(row=0, column=5, padx=10)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.price_floor).grid(row=1, column=5)
+        tk.Entry(info_bar, width=5, justify=tk.CENTER, textvariable=self.price_floor).grid(row=1, column=5)
         self.price_floor.set(str(self.floor))
 
         # create price ceiling label and entry
         tk.Label(info_bar, text="Price Ceiling").grid(row=0, column=6, padx=10)
-        tk.Entry(info_bar, width=3, justify=tk.CENTER, textvariable=self.price_ceiling).grid(row=1, column=6)
+        tk.Entry(info_bar, width=5, justify=tk.CENTER, textvariable=self.price_ceiling).grid(row=1, column=6)
         self.price_ceiling.set(str(self.ceiling))
 
 
         # create data file label and drop down menu to choose from
         tk.Label(info_bar, text="Starting Data File: ").grid(row=2, column=0, pady=10)  # create/grid location
-        ttk.Combobox(info_bar, values=os.listdir(self.project_path), textvariable=self.string_data).grid(row=2, column=1)
+        ttk.Combobox(info_bar, values=os.listdir(self.project_path), textvariable=self.string_data, state='readonly').grid(row=2, column=1)
         self.string_data.set("Select")
 
         # create drop down menu for choosing institution to use
         tk.Label(info_bar, text="Market Institution: ").grid(row=2, column=4, pady=10)
-        ttk.Combobox(info_bar, values=["DoubleAuction", "SealedBid", "Vickrey"], textvariable=self.string_institution).grid(row=2, column=5)
+        ttk.Combobox(info_bar, values=["DoubleAuction", "SealedBid", "Vickrey"], textvariable=self.string_institution, state='readonly').grid(row=2, column=5)
         self.string_institution.set("DoubleAuction")
 
         # creates a button to show the chosen file's supply/demand graph
@@ -195,24 +197,45 @@ class MarketGui():
         plot_button = tk.Button(info_bar, text="Show", width=4, command=self.on_show_clicked)
         plot_button.grid(row=2, column=2)
 
-        info_button = tk.Button(info_bar, text="Set", width=4, command=self.on_set_parms_clicked)
-        info_button.grid(row=2, column=6)  # creates grids in both built frames
+        set_frame = tk.LabelFrame(info_bar, text="Set Parameters")
+        set_frame.grid(row=0, column=7)
+        set_button = tk.Button(set_frame, text="Set", width=4, command=self.on_set_parms_clicked)
+        set_button.grid(row=0, column=0, padx=30)  # creates grids in both built frames
 
         # creates a frame in gui to create a new supply/demand data file by pressing a button
 
-        file_frame = tk.LabelFrame(self.root, height=15, text="New Data File")
-        file_frame.grid(row=1, column=5, padx=5, pady=5)
+        file_frame = tk.LabelFrame(info_bar, height=15, text="New Data File")
+        file_frame.grid(row=1, column=7, padx=5, pady=5)
         # create a button with action input (command = click)
         create_button = tk.Button(file_frame, text="Create", width=6, command=self.on_create_clicked)
         create_button.grid(row=0, column=0, padx=30)
 
-        run_frame = tk.LabelFrame(self.root, text="Run Simulation")
-        run_frame.grid(row=1, column=6, padx=5, pady=5)
+        run_frame = tk.LabelFrame(info_bar, text="Run Simulation")
+        run_frame.grid(row=2, column=7, padx=5, pady=5)
         # creates a frame in gui to run the simulator by pressing a button
         run_button = tk.Button(run_frame, text="Run", width=4, command=self.run_sim)
         run_button.grid(row=0, column=0, padx=30)
 
+        # creates a check box for enabling instantaneous market shocks
+        shock_button = tk.Checkbutton(info_bar, text="Instantaneous Market Shocks", variable=self.instant_shocks)
+        shock_button.grid(row=3, column=4)
+        
+        # button that displays info about instantaneous market shocks
+        explain_button = tk.Button(info_bar, text="Explain", width=7, command=self.explain_clicked)
+        explain_button.grid(row=3, column=5)
 
+    '''The command below generates a tk messagebox to explain the use of instantaneous market shocks'''
+    def explain_clicked(self):
+        explain_message = "\nEnabling this feature will disable period and round shocks"\
+                          "\n \nAn instantaneous market shock will occur when a contract is made" \
+                          " between a seller and a buyer." \
+                          "\n \nThis will result in those buyer's and seller's private values" \
+                          " being recycled to the trader on their left or right." \
+                          "\n \nA new buyer and seller will then enter the market to replace" \
+                          " the exiting seller and buyer." \
+                          "\n \nThese new traders will take private values that keep the supply" \
+                          " and demand schedule constant throughout trading."
+        tk.messagebox.askokcancel("INSTANTANEOUS MARKET SHOCKS", explain_message)
 
 
     def on_create_clicked(self):
@@ -250,8 +273,9 @@ class MarketGui():
 
     def on_set_parms_clicked(self):
         """The below message boxes will appear to the user if the parameters are not set"""
+
         if self.string_session_name.get() == 'None':
-            messagebox.askokcancel("SESSION ERROR", "Session name has not bee set \n Please type a session name")
+            messagebox.askokcancel("SESSION ERROR", "Session name has not been set \n Please type a session name")
 
         # check that starting data file has been set
         elif self.string_data.get() == "Select":
@@ -303,6 +327,7 @@ class MarketGui():
         trader_frame = tk.LabelFrame(self.root, text="Trader Strategies")
         trader_frame.grid(row=2, column=3, sticky=tk.W +
                                         tk.E + tk.N + tk.S, padx=15, pady=4)
+
         self.buyer_ids = [k for k in range(self.num_buyers)]
         self.seller_ids = [k for k in range(self.num_sellers)]
         strategies = []
@@ -329,56 +354,61 @@ class MarketGui():
 
         for i in range(self.num_sellers):
             self.seller_ids[i] = tk.StringVar()
-            ttk.Combobox(trader_frame, values=strategies, textvariable=self.seller_ids[i]).grid(row=i + 1, column=3)
+            ttk.Combobox(trader_frame, values=strategies, textvariable=self.seller_ids[i], state='readonly').grid(row=i + 1, column=3)
             # creates a drop down menu to choose strategies
 
     def show_pshock_frame(self):
         pf = tk.LabelFrame(self.root, text="Period Shock Entries")
         pf.grid(row=2, column=1, sticky=tk.W +
                                         tk.E + tk.N + tk.S, padx=15, pady=4)
-        if self.num_p_shocks == 0: return   # Notihing to show
-        self.buttons = [[None for x in range(3)] for x in range(self.num_p_shocks + self.num_r_shocks)]
+        if self.instant_shocks.get() == 0:
+            if self.num_p_shocks == 0: return   # Notihing to show
+            self.buttons = [[None for x in range(3)] for x in range(self.num_p_shocks + self.num_r_shocks)]
 
-        pshock_ids = [k for k in range(self.num_p_shocks)]
-        tk.Label(pf, text="ID").grid(row=0, column=0)
-        tk.Label(pf, text="Shock Data File").grid(row=0, column=2)
-        tk.Label(pf, text="Period").grid(row=0, column=1)
-        for i in range(self.num_p_shocks):
-            pshock_num = "P Shock #" + str(i + 1)
-            tk.Label(pf, text=pshock_num).grid(row=i+1, column=0)
-        for i in range(self.num_p_shocks):
-            pshock_ids[i] = tk.StringVar()
-            tk.Entry(pf, width=5, justify=tk.CENTER,
-                     textvariable=pshock_ids[i]).grid(row=i + 1, column=1)
-            pshock_ids[i].set("")
-        for i in range(self.num_p_shocks):
-            ttk.Combobox(pf, values=os.listdir(self.project_path), textvariable=self.new_string_data).grid(row=i + 1, column=2)
-            plot_button = tk.Button(pf, text="Show", width=4, command=self.on_show_clicked)
-            plot_button.grid(row=i + 1, column=3)
+            pshock_ids = [k for k in range(self.num_p_shocks)]
+            tk.Label(pf, text="ID").grid(row=0, column=0)
+            tk.Label(pf, text="Shock Data File").grid(row=0, column=2)
+            tk.Label(pf, text="Period").grid(row=0, column=1)
+            for i in range(self.num_p_shocks):
+                pshock_num = "P Shock #" + str(i + 1)
+                tk.Label(pf, text=pshock_num).grid(row=i+1, column=0)
+            for i in range(self.num_p_shocks):
+                pshock_ids[i] = tk.StringVar()
+                tk.Entry(pf, width=5, justify=tk.CENTER,
+                         textvariable=pshock_ids[i]).grid(row=i + 1, column=1)
+                pshock_ids[i].set("")
+            for i in range(self.num_p_shocks):
+                ttk.Combobox(pf, values=os.listdir(self.project_path), textvariable=self.new_string_data, state='readonly').grid(row=i + 1, column=2)
+                plot_button = tk.Button(pf, text="Show", width=4, command=self.on_show_clicked)
+                plot_button.grid(row=i + 1, column=3)
+        else:
+            tk.Label(pf, text="Instant\nShocks\nEnabled").grid(row=0, column=0)
 
-    #
     def show_rshock_frame(self):
         rf = tk.LabelFrame(self.root, text="Round Shock Entries")
         rf.grid(row=2, column=2, sticky=tk.W +
                                         tk.E + tk.N + tk.S, padx=15, pady=4)
-        if self.num_r_shocks == 0: return  # Nothing to show
-        rshock_ids = [k for k in range(self.num_r_shocks)]
-        tk.Label(rf, text="ID").grid(row=0, column=0)
-        tk.Label(rf, text="Shock Data File").grid(row=0, column=2)
-        tk.Label(rf, text="Round").grid(row=0, column=1)
-        for i in range(self.num_r_shocks):
-            rshock_num = "R Shock #" + str(i + 1)
-            tk.Label(rf, text=rshock_num).grid(row=i + 1, column=0)
-        for i in range(self.num_r_shocks):
-            rshock_ids[i] = tk.StringVar()
-            tk.Entry(rf, width=5, justify=tk.CENTER,
-                     textvariable=rshock_ids[i]).grid(row=i + 1, column=1)
-            rshock_ids[i].set("")
-        for i in range(self.num_r_shocks):
-            ttk.Combobox(rf, values=os.listdir(self.project_path), textvariable=self.new_string_data).grid(row=i + 1, column=2)
-            plot_button = tk.Button(rf, text="Show", width=4, command=self.on_show_clicked)
-            plot_button.grid(row=i+1, column=3)
-    #
+        if self.instant_shocks.get() == 0:
+            if self.num_r_shocks == 0: return  # Nothing to show
+            rshock_ids = [k for k in range(self.num_r_shocks)]
+            tk.Label(rf, text="ID").grid(row=0, column=0)
+            tk.Label(rf, text="Shock Data File").grid(row=0, column=2)
+            tk.Label(rf, text="Round").grid(row=0, column=1)
+            for i in range(self.num_r_shocks):
+                rshock_num = "R Shock #" + str(i + 1)
+                tk.Label(rf, text=rshock_num).grid(row=i + 1, column=0)
+            for i in range(self.num_r_shocks):
+                rshock_ids[i] = tk.StringVar()
+                tk.Entry(rf, width=5, justify=tk.CENTER,
+                         textvariable=rshock_ids[i]).grid(row=i + 1, column=1)
+                rshock_ids[i].set("")
+            for i in range(self.num_r_shocks):
+                ttk.Combobox(rf, values=os.listdir(self.project_path), textvariable=self.new_string_data, state='readonly').grid(row=i + 1, column=2)
+                plot_button = tk.Button(rf, text="Show", width=4, command=self.on_show_clicked)
+                plot_button.grid(row=i+1, column=3)
+        else:
+            tk.Label(rf, text="Instant\nShocks\nEnabled").grid(row=0, column=0)
+
     def show_info_bar_parms(self):
         self.string_period_shocks.set(str(self.num_p_shocks))
         self.string_round_shocks.set(str(self.num_r_shocks))
@@ -432,7 +462,7 @@ class MarketGui():
         # This obtains the strategies that the user sets in market_gui
         # returns a list of the trader's strategies
         # will replace self.traders in run_sim()
-        # TODO need to simplify list to abbreviations?
+
         # TODO use same process to obtain market shocks set in market_gui!
         strat_list = []
         for i in range(len(self.buyer_ids)):
@@ -468,20 +498,20 @@ class MarketGui():
         smp = Simulator.spot_market_period.SpotMarketPeriod(session, num_periods, limits)
 
         #smp = spot_market_period.SpotMarketPeriod(self.string_session_name, self.num_periods)
-        '''Below trader classes are abbreviated'''
-        zic = "Trader_ZIC"  # zero intelligence constrained
-        ziu = "Trader_ZIU"  # zero intelligence unconstrained trader.. not used
-        kp = "Trader_Kaplan"  # sniping trader based on Santa Fe paper
-        si = "Trader_Shaver"  # simple trader.. not used
-        ps = "Trader_PS"  # PS trader based on Priest and Tol paper
-        aa = "Trader_AA"  # aggressiveness trader based on Cliff and Vytelingum paper
-        gd = "Trader_GD"  # GD trader based on Gjerstadt and Dickhaut paper
-        zip = "Trader_ZIP"  # zero intelligence plus trader
-        ai = "Trader_AI"
-        '''The lists below establish the number and order of traders and trading strategy'''
+        # '''Below trader classes are abbreviated'''
+        # zic = "Trader_ZIC"  # zero intelligence constrained
+        # ziu = "Trader_ZIU"  # zero intelligence unconstrained trader.. not used
+        # kp = "Trader_Kaplan"  # sniping trader based on Santa Fe paper
+        # si = "Trader_Shaver"  # simple trader.. not used
+        # ps = "Trader_PS"  # PS trader based on Priest and Tol paper
+        # aa = "Trader_AA"  # aggressiveness trader based on Cliff and Vytelingum paper
+        # gd = "Trader_GD"  # GD trader based on Gjerstadt and Dickhaut paper
+        # zip = "Trader_ZIP"  # zero intelligence plus trader
+        # ai = "Trader_AI"
+        # '''The lists below establish the number and order of traders and trading strategy'''
         # TODO create way to automate input of trader # and strategies
         # --> could put this in json data file
-        trader_names = [aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa, aa]
+        trader_names = strat_list
         #tk.Label(run_frame, text="Traders: " + str(trader_names)).grid(row=2, column=0)
         smp.init_spot_system_gui(name, limits, rounds, self.project_path, self.string_data.get(), self.output_path,
                                 session)
@@ -520,16 +550,16 @@ class MarketGui():
             times.append(time)
 
         # creates a frame for simulation results
-        run_frame = tk.LabelFrame(run_root, text="Simulation Results")
+        run_frame = tk.LabelFrame(run_root, text="Simulation Results", font='bold')
         run_frame.grid(row=1, column=0)  # set parameters
         tk.Label(run_frame, text="Session Name: " + str(self.string_session_name.get())).grid(row=0, column=0)
         tk.Label(run_frame, text="Data Used: " + str(self.string_data.get())).grid(row=1, column=0)
         tk.Label(run_frame, text="Execution Time: " + str(sum(times))).grid(row=2, column=0)
-        tk.Label(run_frame, text="------------------------------------").grid(row=3, column=0)
+        tk.Label(run_frame, text="------------------------------------", font='bold').grid(row=3, column=0)
         tk.Label(run_frame, text="Maximum Surpluses: " + str(maxi_surplus)).grid(row=4, column=0)
         tk.Label(run_frame, text="Actual Surpluses: " + str(act_surplus)).grid(row=5, column=0)
         tk.Label(run_frame, text="Avg. Market Surplus: " + str(sum(act_surplus)/len(act_surplus))).grid(row=6, column=0)
-        tk.Label(run_frame, text="------------------------------------").grid(row=7, column=0)
+        tk.Label(run_frame, text="------------------------------------", font='bold').grid(row=7, column=0)
         tk.Label(run_frame, text="Market Efficiencies: " + str(eff)).grid(row=8, column=0)
         tk.Label(run_frame, text="Avg. Efficiency: " + str(sum(eff) / num_periods)).grid(row=9, column=0)
 
@@ -545,7 +575,7 @@ class MarketGui():
 
         # TODO trader info below can be functionalized further
         # builds frame for trader total earnings
-        trader_frame1 = tk.LabelFrame(run_root, text="Strategy Total Earnings (per period)")
+        trader_frame1 = tk.LabelFrame(run_root, text="Strategy Total Earnings (per period)", font='bold')
         trader_frame1.grid(row=1, column=1)  # set parameters
         tk.Label(trader_frame1, text="Trader_AA: " + str(smp.total_earns('AA'))).grid(row=0, column=0)
         tk.Label(trader_frame1, text="Trader_GD: " + str(smp.total_earns('GD'))).grid(row=1, column=0)
@@ -553,6 +583,7 @@ class MarketGui():
         tk.Label(trader_frame1, text="Trader_ZIP: " + str(smp.total_earns('ZIP'))).grid(row=3, column=0)
         tk.Label(trader_frame1, text="Trader_Kaplan: " + str(smp.total_earns('KP'))).grid(row=4, column=0)
         tk.Label(trader_frame1, text="Trader_Shaver: " + str(smp.total_earns('SI'))).grid(row=5, column=0)
+        tk.Label(trader_frame1, text="Trader_ZIC: " + str(smp.total_earns('ZIC'))).grid(row=6, column=0)
         print("Strategy Total Earnings")
         print("Trader_AA: " + str(smp.total_earns('AA')))
         # print("Trader_AI: " + str(smp.total_earns('AI')))
@@ -566,26 +597,26 @@ class MarketGui():
         print()
 
         # builds frame for trader avg earnings
-        trader_frame2 = tk.LabelFrame(run_root, text="Strategy Total Avg. Earnings (per trader)")
+        trader_frame2 = tk.LabelFrame(run_root, text="Strategy Total Avg. Earnings (per trader)", font='bold')
         trader_frame2.grid(row=1, column=2)  # set parameters
-        tk.Label(trader_frame2, text="Trader_AA: " + str(smp.total_avg_earns('AA', trader_names.count(aa) * num_periods))).grid(row=0, column=0)
-        tk.Label(trader_frame2, text="Trader_GD: " + str(smp.total_avg_earns('GD', trader_names.count(gd) * num_periods))).grid(row=1, column=0)
+        tk.Label(trader_frame2, text="Trader_AA: " + str(smp.total_avg_earns('AA', trader_names.count('Trader_AA') * num_periods))).grid(row=0, column=0)
+        tk.Label(trader_frame2, text="Trader_GD: " + str(smp.total_avg_earns('GD', trader_names.count('Trader_GD') * num_periods))).grid(row=1, column=0)
         tk.Label(trader_frame2, text="Trader_PS: " + str(
-            smp.total_avg_earns('PS', trader_names.count(ps) * num_periods))).grid(row=2, column=0)
-        tk.Label(trader_frame2, text="Trader_ZIP: " + str(smp.total_avg_earns('ZIP', trader_names.count(zip) * num_periods))).grid(row=3, column=0)
-        tk.Label(trader_frame2, text="Trader_Kaplan: " + str(smp.total_avg_earns('KP', trader_names.count(kp) * num_periods))).grid(row=4, column=0)
-        tk.Label(trader_frame2, text="Trader_Shaver: " + str(smp.total_avg_earns('SI', trader_names.count(si) * num_periods))).grid(row=5, column=0)
-
+            smp.total_avg_earns('PS', trader_names.count('Trader_PS') * num_periods))).grid(row=2, column=0)
+        tk.Label(trader_frame2, text="Trader_ZIP: " + str(smp.total_avg_earns('ZIP', trader_names.count('Trader_ZIP') * num_periods))).grid(row=3, column=0)
+        tk.Label(trader_frame2, text="Trader_Kaplan: " + str(smp.total_avg_earns('KP', trader_names.count('Trader_Kaplan') * num_periods))).grid(row=4, column=0)
+        tk.Label(trader_frame2, text="Trader_Shaver: " + str(smp.total_avg_earns('SI', trader_names.count('Trader_Shaver') * num_periods))).grid(row=5, column=0)
+        tk.Label(trader_frame2, text="Trader_ZIC: " + str(smp.total_avg_earns('ZIC', trader_names.count('Trader_ZIC') * num_periods))).grid(row=6, column=0)
         print("Strategy Total Avg. Earnings (per trader)")
-        print("Trader_AA: " + str(smp.total_avg_earns('AA', trader_names.count(aa) * num_periods)))  #
-        print("Trader_GD: " + str(smp.total_avg_earns('GD', trader_names.count(gd) * num_periods)))  #
+        print("Trader_AA: " + str(smp.total_avg_earns('AA', trader_names.count('Trader_AA') * num_periods)))  #
+        print("Trader_GD: " + str(smp.total_avg_earns('GD', trader_names.count('Trader_GD') * num_periods)))  #
         print("Trader_PS: " + str(
-            smp.total_avg_earns('PS', trader_names.count(ps) * num_periods)))  # ADDED: section to list total avg earns
+            smp.total_avg_earns('PS', trader_names.count('Trader_PS') * num_periods)))  # ADDED: section to list total avg earns
         # print("Trader_AI: " + str(smp.total_avg_earns('AI')))   #
-        print("Trader_ZIP: " + str(smp.total_avg_earns('ZIP', trader_names.count(zip) * num_periods)))  #
-        print("Trader_ZIC: " + str(smp.total_avg_earns('ZIC', trader_names.count(zic) * num_periods)))  #
-        print("Trader_Kaplan: " + str(smp.total_avg_earns('KP', trader_names.count(kp) * num_periods)))
-        print("Trader_Shaver: " + str(smp.total_avg_earns('SI', trader_names.count(si) * num_periods)))
+        print("Trader_ZIP: " + str(smp.total_avg_earns('ZIP', trader_names.count('Trader_ZIP') * num_periods)))  #
+        print("Trader_ZIC: " + str(smp.total_avg_earns('ZIC', trader_names.count('Trader_ZIC') * num_periods)))  #
+        print("Trader_Kaplan: " + str(smp.total_avg_earns('KP', trader_names.count('Trader_Kaplan') * num_periods)))
+        print("Trader_Shaver: " + str(smp.total_avg_earns('SI', trader_names.count('Trader_Shaver') * num_periods)))
 
         """The below function calls create graphs from the simulation results and save in project path"""
         smp.get_avg_trade_ratio()  # prints avg trade ratio for all periods
@@ -603,7 +634,7 @@ class MarketGui():
         os.makedirs(temp_folder)
 
         # below builds a frame to display the smaller transactions graph
-        graph_frame1 = tk.LabelFrame(run_root, text="Transactions")  # frame created in run root
+        graph_frame1 = tk.LabelFrame(run_root, text="Transactions", font='bold')  # frame created in run root
         graph_frame1.grid(row=2, column=1)
         edit = Image.open(self.output_path + session + '\\' + "Transactions.png")  # accesses original image
         edit.thumbnail(new_size, Image.ANTIALIAS)  # turns the image into a thumbnail size
@@ -613,7 +644,7 @@ class MarketGui():
         label.pack()
 
         # below builds a frame to display the smaller SD graph
-        sd_frame = tk.LabelFrame(run_root, text="Supply and Demand")  # new frame in run root
+        sd_frame = tk.LabelFrame(run_root, text="Supply and Demand", font='bold')  # new frame in run root
         sd_frame.grid(row=2, column=0)
         edit2 = Image.open(self.output_path + session + '\\' + "SD Before.png") # old image accessed
         edit2.thumbnail(new_size, Image.ANTIALIAS)  # old image turned into thumbnail
@@ -623,7 +654,7 @@ class MarketGui():
         label2.pack()
 
         # below builds a frame to display the distribution of trader efficiencies
-        stat_frame = tk.LabelFrame(run_root, text="Trader Efficiency Distribution")  # new frame in run root
+        stat_frame = tk.LabelFrame(run_root, text="Trader Efficiency Distribution", font='bold')  # new frame in run root
         stat_frame.grid(row=2, column=2)
         edit3 = Image.open(self.output_path + session + '\\' + "Efficiency Distribution.png")  # old image accessed
         edit3.thumbnail(new_size, Image.ANTIALIAS)  # old image turned into thumbnail
@@ -632,7 +663,7 @@ class MarketGui():
         label3 = tk.Label(stat_frame, image=photo3)  # turned into label and packed into frame
         label3.pack()
 
-        t_eff_frame = tk.LabelFrame(run_root, text="Efficiency by Trader")
+        t_eff_frame = tk.LabelFrame(run_root, text="Efficiency by Trader", font='bold')
         t_eff_frame.grid(row=3, column=2)
         edit4 = Image.open(self.output_path + session + "\\" + "Trader Efficiencies.png")
         edit4.thumbnail(new_size, Image.ANTIALIAS)
@@ -641,7 +672,7 @@ class MarketGui():
         label4 = tk.Label(t_eff_frame, image=photo4)
         label4.pack()
 
-        p_eff_frame = tk.LabelFrame(run_root, text="Efficiency by Period")
+        p_eff_frame = tk.LabelFrame(run_root, text="Efficiency by Period", font='bold')
         p_eff_frame.grid(row=3, column=1)
         edit5 = Image.open(self.output_path + session + "\\" + "Period Efficiencies.png")
         edit5.thumbnail(new_size, Image.ANTIALIAS)
@@ -650,7 +681,7 @@ class MarketGui():
         label5 = tk.Label(p_eff_frame, image=photo5)
         label5.pack()
 
-        alpha_frame = tk.LabelFrame(run_root, text="Convergence Alphas")
+        alpha_frame = tk.LabelFrame(run_root, text="Convergence Alphas", font='bold')
         alpha_frame.grid(row=3, column=0)
         edit6 = Image.open(self.output_path + session + "\\" + "Convergence Alphas.png")
         edit6.thumbnail(new_size, Image.ANTIALIAS)
@@ -678,11 +709,11 @@ class MarketGui():
         max2 = np.max(t_effs)  # numpy function to get maximum value
         min2 = np.min(t_effs)  # numpy function to get minimum value
 
-        tk.Label(stat_frame, text="All Traders").grid(row=0, column=0)
+        tk.Label(stat_frame, text="All Traders", font='bold').grid(row=0, column=0)
         tk.Label(stat_frame, text="Mean: {}   Std Dev: {}".format(mean, std_dev)).grid(row=1, column=0)
         tk.Label(stat_frame, text="Median: {}   Max: {}   Min: {}".format(median, max, min)).grid(row=2, column=0)
         tk.Label(stat_frame, text="").grid(row=3, column=0)
-        tk.Label(stat_frame, text="Out of Market Traders Removed").grid(row=4, column=0)
+        tk.Label(stat_frame, text="Out of Market Traders Removed", font='bold').grid(row=4, column=0)
         tk.Label(stat_frame, text="Mean: {}   Std Dev: {}".format(mean2, std_dev2)).grid(row=5, column=0)
         tk.Label(stat_frame, text="Median: {}   Max: {}   Min: {}".format(median2, max2, min2)).grid(row=6, column=0)
 
