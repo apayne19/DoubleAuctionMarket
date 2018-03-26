@@ -71,8 +71,10 @@ class SpotMarketPeriod(object):
         self.sys.init_traders(traders, period_k)
         # initializes trader building in spot system, passes strategies and period number
 
-    def run(self):
-        self.sys.run()  # runs spot system run_period() --> starts double auction
+    def run(self, instant_shock_trigger, buyer_shift, buyer_replace_strategy, seller_shift,
+                   seller_replace_strategy, num_buyers, num_sellers):
+        self.sys.run(instant_shock_trigger, buyer_shift, buyer_replace_strategy, seller_shift,
+                   seller_replace_strategy, num_buyers, num_sellers)  # runs spot system run_period() --> starts double auction
 
     def eval(self):
         return self.sys.eval()  # runs eval method from spot_system returns results
@@ -312,9 +314,11 @@ class SpotMarketPeriod(object):
 
 
 
-    def run_period(self, period, header):
+    def run_period(self, period, header, instant_shock_trigger, buyer_shift, buyer_replace_strategy, seller_shift,
+                   seller_replace_strategy, num_buyers, num_sellers):
         self.period = period
-        self.run()
+        self.run(instant_shock_trigger, buyer_shift, buyer_replace_strategy, seller_shift,
+                   seller_replace_strategy, num_buyers, num_sellers)
 
     def save_period(self, results):
         pass
@@ -373,7 +377,7 @@ if __name__ == "__main__":
     num_periods = 6  # periods or trading days
     limits = (400, 0)  # price ceiling, price floor
     rounds = 25  # rounds in each period (can substitute time clock)
-
+    instant_shock_trigger = 1  # 1 = instant shocks enabled  0 = disabled
     name = "trial"
     period = 1  # ...??
     '''The code below creates a file for your session name for market run info to be dumped into...
@@ -421,7 +425,7 @@ if __name__ == "__main__":
         # print(rnd_traders)  # prints list of trader strategy
         smp.init_traders(rnd_traders, k)
         print("**** Running Period {}".format(k))  # provides visual effect in editor
-        smp.run_period(period, header)
+        smp.run_period(period, header, instant_shock_trigger)  # passes instant shocks to spot_system
         timer_stop = timer()
         results = smp.eval()
         '''the below data is appended into global dictionaries'''

@@ -40,6 +40,7 @@ class SpotSystem(object):
         self.deal_status = None
         self.t = None
         self.d = None
+        self.instant_shock_trigger = None
 
     def init_spot_system(self, name, limits, rounds, input_path, input_file, output_path, session_name):
         self.name = name  # session name
@@ -78,10 +79,14 @@ class SpotSystem(object):
     def load_market_gui(self, input_path, input_file, output_path, session_name, fig_name):
         self.mkt.prepare_market_gui(input_path, input_file, output_path, session_name, fig_name)  # set and show market
 
-    def run(self):
-        self.run_system()  # starts market by calling method below
+    def run(self, instant_shock_trigger, buyer_shift, buyer_replace_strategy, seller_shift,
+                   seller_replace_strategy, num_buyers, num_sellers):
+        self.run_system(instant_shock_trigger, buyer_shift, buyer_replace_strategy, seller_shift,
+                   seller_replace_strategy, num_buyers, num_sellers)  # starts market by calling method below
 
-    def run_system(self):
+    def run_system(self, instant_shock_trigger, buyer_shift, buyer_replace_strategy, seller_shift,
+                   seller_replace_strategy, num_buyers, num_sellers):
+        self.instant_shock_trigger = instant_shock_trigger
         self.da.open_board("tournament official")
         num_contracts = 1  # shouldnt this be 0??
         if self.display:  # if display = true (if tournament still running)
@@ -124,41 +129,54 @@ class SpotSystem(object):
                         print("#asks: " + str(self.number_asks))
                         # prints info for each trader
                         num_contracts = num_contracts + 1  # add 1 to contracts number
+                        if self.instant_shock_trigger == 1:
+                            '''Attempting to create instantaneous market shocks below'''
+                            # buyer/seller edits complete
+                            # TODO work needed on this section!
+                            buyer_out = contracts[len(contracts) - 1][1]  # obtains transacting buyer
+                            seller_out = contracts[len(contracts) - 1][2]  # obtains transacating seller
+                            print("Buyer_out= " + str(buyer_out))
+                            print("Seller_out= " + str(seller_out))
+                            b_index = buyer_out[1:]  # gets index position of transacting buyer
+                            s_index = seller_out[1:]  # gets index position of transacting seller
+                            print("Buyer_out Value:" + str(self.d[buyer_out]['values']))
+                            print("Seller_out Value:" + str(self.d[seller_out]['costs']))
+                            print("before: " + str(self.d))  # print before shock
+                            # TODO need to generalize code to num sellers and num buyers
+                            try:
+                                b_switch_value = self.d['t' + str(int(b_index) + 1)]['values']
+                            except KeyError:
+                                b_switch_value = self.d['t10']['values']  # TODO change this
 
-                        '''Attempting to create instantaneous market shocks below'''
-                        # buyer/seller edits complete
-                        # TODO need to finish this up
-                        buyer_out = contracts[len(contracts) - 1][1]
-                        seller_out = contracts[len(contracts) - 1][2]
-                        print("Buyer_out= " + str(buyer_out))
-                        print("Seller_out= " + str(seller_out))
-                        b_index = buyer_out[1:]
-                        s_index = seller_out[1:]
-                        print("Buyer_out Value:" + str(self.d[buyer_out]['values']))
-                        print("Seller_out Value:" + str(self.d[seller_out]['costs']))
-                        print("before: " + str(self.d))
-                        try:
-                            b_switch_value = self.d['t' + str(int(b_index) + 1)]['values']
-                        except KeyError:
-                            b_switch_value = self.d['t10']['values']
+                            try:
+                                s_switch_value = self.d['t' + str(int(s_index) - 1)]['costs']
+                            except KeyError:
+                                s_switch_value = self.d['t21']['costs']  # TODO change this
 
-                        try:
-                            s_switch_value = self.d['t' + str(int(s_index) - 1)]['costs']
-                        except KeyError:
-                            s_switch_value = self.d['t21']['costs']
-                        self.d['t' + str(int(b_index) + 1)] = self.d[buyer_out]
-                        self.d['t' + str(int(s_index) + 1)] = self.d[seller_out]
-                        del self.d[buyer_out]
-                        del self.d[seller_out]
-                        dict_list = list(self.d.items())
-                        print(dict_list)
-                        dict_list.insert(int(b_index), (str(buyer_out), {'units': 0, 'earn': 0, 'strat': 'Trader_AA', 'type': 'B', 'values': b_switch_value}))
-                        dict_list.insert(int(s_index), (str(seller_out), {'units': 0, 'earn': 0, 'strat': 'Trader_AA', 'type': 'S', 'costs': s_switch_value}))
-                        list_dict = dict(dict_list)
-                        print("after")
-                        for i in list_dict:
-                            print(str(i) + ':' + str(list_dict[i]))
-                        self.d = list_dict
+                            if buyer_shift == "Right":
+                                self.d['t' + str(int(b_index) + 1)] = self.d[buyer_out]  # recycles value to right
+                            else:
+                                self.d['t' + str(int(b_index) - 1)] = self.d[buyer_out]  # recycles value to left
+                            if seller_shift == "Right":
+                                self.d['t' + str(int(s_index) + 1)] = self.d[seller_out]  # recycles value to right
+                            else:
+                                self.d['t' + str(int(s_index) - 1)] = self.d[seller_out]  # recycles value to left
+
+                            del self.d[buyer_out]  # removes successful buyer from market
+                            del self.d[seller_out]  # removes successful seller from market
+
+                            dict_list = list(self.d.items())  # changes static dictionary to list for edits
+                            print(dict_list)  # print during shock
+                            # insert new trader info into list
+                            dict_list.insert(int(b_index), (str(buyer_out), {'units': 0, 'earn': 0, 'strat': 'Trader_AA', 'type': 'B', 'values': b_switch_value}))
+                            dict_list.insert(int(s_index), (str(seller_out), {'units': 0, 'earn': 0, 'strat': 'Trader_AA', 'type': 'S', 'costs': s_switch_value}))
+                            list_dict = dict(dict_list)  # turns edited list back into dictionary
+                            print("after")  # print after shock
+                            for i in list_dict:
+                                print(str(i) + ':' + str(list_dict[i]))
+                            self.d = list_dict  # sets global variable
+                        else:
+                            pass
                 else:
                     self.deal_status = False
                     # print("NO DEAL")
