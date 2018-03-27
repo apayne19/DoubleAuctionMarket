@@ -112,6 +112,7 @@ class MarketGui():
         self.r_shock_trigger = False
         self.p_shock_trigger = False
         self.i_shock_trigger = False
+        self.display_sd_info = False
 
     def build_array(self, num_1, num_2):  # builds an array for buyers:values and sellers:costs
         x = []
@@ -323,7 +324,7 @@ class MarketGui():
         #tk.Label(data_frame, text="Buyer Values: " + str(self.sec.get_buyer_values())).grid(row=1, column=0)
         #tk.Label(data_frame, text="Seller Costs: " + str(self.sec.get_seller_costs())).grid(row=2, column=0)
         self.sec.plot_gui(self.string_data.get())
-
+        self.display_sd_info = True
     '''The function below checks to make sure that each variable is an integer'''
     def check_integer(self, check_var):
         try:
@@ -335,7 +336,20 @@ class MarketGui():
             pass  # else pass to next variable check
 
     def on_set_parms_clicked(self):
-        # TODO need error checks to make sure integers
+        if self.display_sd_info == False:  # if show was not clicked will still display supply/demand information
+            self.sec.load_file(self.project_path + "/" + str(self.string_data.get()))
+            data_frame = tk.LabelFrame(self.root, text="Data File Information")
+            data_frame.grid(row=2, column=0)
+            tk.Label(data_frame, text="Buyers: " + str(self.sec.get_num_buyers())).grid(row=0, column=0)
+            tk.Label(data_frame, text="Sellers: " + str(self.sec.get_num_sellers())).grid(row=0, column=1)
+            tk.Label(data_frame, text="Units: " + str(self.sec.get_num_units())).grid(row=0, column=2)
+            tk.Label(data_frame, text=str(self.sec.get_supply_demand_list())).grid(row=1, column=0, columnspan=4)
+            self.num_buyers = self.sec.get_num_buyers()
+            self.num_sellers = self.sec.get_num_sellers()
+            self.num_units = self.sec.get_num_units()
+        else:
+            pass
+
         """The below message boxes will appear to the user if the parameters are not set"""
         self.parameters_trigger = False  # sets alarm to catch parameter errors
         # check that session name is not blank
