@@ -74,6 +74,10 @@ class MarketGui():
 
         self.buyer_ids = None
         self.seller_ids = None
+        self.p_shock_ids = None
+        self.p_shock_files = None
+        self.r_shock_ids = None
+        self.r_shock_files = None
         self.buyer_shift = tk.StringVar()
         self.seller_shift = tk.StringVar()
         self.buyer_replace_strategy = tk.StringVar()
@@ -102,9 +106,12 @@ class MarketGui():
         self.show_infobar()  # executes sub-frame for user entering number buyers, number sellers, units
         #self.process_new_project()
 
-        self.trigger = False  # safety feature when rerunning in gui: if same parameters used = True
-        self.file_change = False
-        self.old_session = None
+        self.parameters_trigger = False
+        self.save_file_trigger = False
+        self.strategy_trigger = False  # safety feature when rerunning in gui: if same parameters used = True
+        self.r_shock_trigger = False
+        self.p_shock_trigger = False
+        self.i_shock_trigger = False
 
     def build_array(self, num_1, num_2):  # builds an array for buyers:values and sellers:costs
         x = []
@@ -157,27 +164,27 @@ class MarketGui():
         # create project name label and entry
         tk.Label(info_bar, text="Session Name").grid(row=0, column=0, padx=10)
         tk.Entry(info_bar, width=15, justify=tk.LEFT, textvariable=self.string_session_name).grid(row=1, column=0)
-        self.string_session_name.set(str(self.session))
+
 
         # create number of buyers label and entry
         tk.Label(info_bar, text="Period Shocks").grid(row=0, column=1, padx=10)
         tk.Entry(info_bar, width=5, justify=tk.CENTER, textvariable=self.string_period_shocks).grid(row=1, column=1)
-        self.string_period_shocks.set(str(self.num_p_shocks))  # sets initial display value at self.num_buyers = 0
+        self.string_period_shocks.set(str(self.num_p_shocks))
 
         # create number of sellers label and entry
         tk.Label(info_bar, text="Round Shocks").grid(row=0, column=2, padx=10)
         tk.Entry(info_bar, width=5, justify=tk.CENTER, textvariable=self.string_round_shocks).grid(row=1, column=2)
-        self.string_round_shocks.set(str(self.num_r_shocks))  # sets initial display value at self.num_sellers = 0
+        self.string_round_shocks.set(str(self.num_r_shocks))
 
         # create number of units label and entry
         tk.Label(info_bar, text="Periods").grid(row=0, column=3, padx=10)
         tk.Entry(info_bar, width=5, justify=tk.CENTER, textvariable=self.string_periods).grid(row=1, column=3)
-        self.string_periods.set(str(self.num_periods))  # sets initial display value at self.num_units = 0
+        self.string_periods.set(str(self.num_periods))
 
         # create number of rounds label and entry
         tk.Label(info_bar, text="Rounds").grid(row=0, column=4, padx=10)
         tk.Entry(info_bar, width=5, justify=tk.CENTER, textvariable=self.string_rounds).grid(row=1, column=4)
-        self.string_rounds.set(str(self.num_rounds))  # sets initial display value at self.num_units = 0
+        self.string_rounds.set(str(self.num_rounds))
 
         # create price floor label and entry
         tk.Label(info_bar, text="Price Floor").grid(row=0, column=5, padx=10)
@@ -189,32 +196,30 @@ class MarketGui():
         tk.Entry(info_bar, width=5, justify=tk.CENTER, textvariable=self.price_ceiling).grid(row=1, column=6)
         self.price_ceiling.set(str(self.ceiling))
 
-
         # create data file label and drop down menu to choose from
         tk.Label(info_bar, text="Starting Data File: ").grid(row=2, column=0, pady=10)  # create/grid location
         ttk.Combobox(info_bar, values=os.listdir(self.project_path), textvariable=self.string_data, state='readonly').grid(row=2, column=1)
-        self.string_data.set("Select")
 
         # create drop down menu for choosing institution to use
         tk.Label(info_bar, text="Market Institution: ").grid(row=3, column=0, pady=10)
         ttk.Combobox(info_bar, values=["DoubleAuction", "SealedBid", "Vickrey"], textvariable=self.string_institution, state='readonly').grid(row=3, column=1)
         self.string_institution.set("DoubleAuction")
 
+        # creates button to explain institution settings
         explain1_button = tk.Button(info_bar, text="Explain", width=7, command=self.explain1_clicked)
         explain1_button.grid(row=3, column=2)
 
         # creates a button to show the chosen file's supply/demand graph
-
         plot_button = tk.Button(info_bar, text="Show", width=4, command=self.on_show_clicked)
         plot_button.grid(row=2, column=2)
 
+        # creates frame for set parameters button
         set_frame = tk.LabelFrame(info_bar, text="Set Parameters")
         set_frame.grid(row=0, column=7, padx=5, pady=5)
         set_button = tk.Button(set_frame, text="Set", width=4, command=self.on_set_parms_clicked)
         set_button.grid(row=0, column=0, padx=30)  # creates grids in both built frames
 
         # creates a frame in gui to create a new supply/demand data file by pressing a button
-
         file_frame = tk.LabelFrame(info_bar, height=15, text="New Data File")
         file_frame.grid(row=1, column=7, padx=5, pady=5)
         # create a button with action input (command = click)
@@ -233,21 +238,23 @@ class MarketGui():
         explain2_button = tk.Button(instant_shock_frame, text="Explain", width=7, command=self.explain2_clicked)
         explain2_button.grid(row=0, column=1)
 
+        # creates button to explain the different trading strategies that the user can use
+        strat_info_button = tk.Button(instant_shock_frame, text="Strategy Descriptions", width=16,
+                                      command=self.strategy_message)
+        strat_info_button.grid(row=0, column=2)
+
         tk.Label(instant_shock_frame, text="Direction").grid(row=1, column=1, pady=5)
         tk.Label(instant_shock_frame, text="Strategy").grid(row=1, column=2, pady=5)
 
         tk.Label(instant_shock_frame, text="Buyer Shift: ").grid(row=2, column=0)
         ttk.Combobox(instant_shock_frame, values=["Right", "Left"], textvariable=self.buyer_shift, state='readonly').grid(row=2, column=1)
         ttk.Combobox(instant_shock_frame, values=self.strategies, textvariable=self.buyer_replace_strategy, state='readonly').grid(row=2, column=2)
-        self.buyer_shift.set("Select")
-        self.buyer_replace_strategy.set("Select")
 
         tk.Label(instant_shock_frame, text="Seller Shift: ").grid(row=3, column=0)
         ttk.Combobox(instant_shock_frame, values=["Right", "Left"], textvariable=self.seller_shift, state='readonly').grid(row=3, column=1)
         ttk.Combobox(instant_shock_frame, values=self.strategies, textvariable=self.seller_replace_strategy, state='readonly').grid(row=3, column=2)
-        self.seller_shift.set("Select")
-        self.seller_replace_strategy.set("Select")
 
+    '''The comand below generates a tk messagebox to explain the different institutions that can be used'''
     def explain1_clicked(self):
         explain1_message = "\nChanging this variable will change the institution that is used," \
                            " which will set the rules of trading in the market simulation." \
@@ -263,7 +270,6 @@ class MarketGui():
                            "\n \nMore institutions can be added"
         tk.messagebox.askokcancel("MARKET INSTITUTIONS", explain1_message)
 
-
     '''The command below generates a tk messagebox to explain the use of instantaneous market shocks'''
     def explain2_clicked(self):
         explain2_message = "\nEnabling this feature will disable period and round shocks" \
@@ -276,6 +282,13 @@ class MarketGui():
                           "\n \nThese new traders will take private values that keep the supply" \
                           " and demand schedule constant throughout trading."
         tk.messagebox.askokcancel("INSTANTANEOUS MARKET SHOCKS", explain2_message)
+
+    '''The command below generates a tk messagebox to explain the use of strategies that the user can use'''
+    def strategy_message(self):
+        # TODO fill in with descriptions of each strategy.. maybe include link or ref to paper?
+        strat_explain = "\nTrader_AA: ..... \n \n Trader_AI: .... \n \n Trader_GD: .... \n \n Trader_Kaplan: ..." \
+                        "\n \n Trader_PS: ... \n \n Trader ZIP: ... \n \n Trader_ZIC: ..."
+        tk.messagebox.askokcancel("STRATEGY DESCRIPTIONS", strat_explain)
 
 
     def on_create_clicked(self):
@@ -311,49 +324,99 @@ class MarketGui():
         #tk.Label(data_frame, text="Seller Costs: " + str(self.sec.get_seller_costs())).grid(row=2, column=0)
         self.sec.plot_gui(self.string_data.get())
 
-    def on_set_parms_clicked(self):
-        """The below message boxes will appear to the user if the parameters are not set"""
+    '''The function below checks to make sure that each variable is an integer'''
+    def check_integer(self, check_var):
+        try:
+            int(check_var)  # check if integer
+        except ValueError:  # value error raised if not
+            self.parameters_trigger = True  # triggers parameter alarm
+            messagebox.askokcancel("INTEGER ERRORS", "An entry for periods or rounds or price ceiling or price floor is not a number \n --> Please check")
+        else:
+            pass  # else pass to next variable check
 
-        if self.string_session_name.get() == 'None':
+    def on_set_parms_clicked(self):
+        # TODO need error checks to make sure integers
+        """The below message boxes will appear to the user if the parameters are not set"""
+        self.parameters_trigger = False  # sets alarm to catch parameter errors
+        # check that session name is not blank
+        if self.string_session_name.get() == "":  # if blank
+            self.parameters_trigger = True  # trigger alarm
             messagebox.askokcancel("SESSION ERROR", "Session name has not been set \n --> Please type a session name")
 
         # check that starting data file has been set
-        elif self.string_data.get() == "Select":
+        elif self.string_data.get() == "":  # if blank
+            self.parameters_trigger = True  # trigger alarm
             messagebox.askokcancel("DATA ERROR", "A starting data file was not selected \n --> Please choose one or create one")
 
         # check that number of periods has been set
-        elif self.string_periods.get() == '0':
+        elif self.string_periods.get() == "" or self.string_periods.get() == '0':  # if blank or 0
+            self.parameters_trigger = True  # trigger alarm
             messagebox.askokcancel("PERIOD ERROR", "Periods have not been set \n --> Please set the number of trading periods to run")
 
         # check that number of rounds are set
-        elif self.string_rounds.get() == '0':
+        elif self.string_rounds.get() == "" or self.string_rounds.get() == '0':
+            self.parameters_trigger = True
             messagebox.askokcancel("ROUND ERROR", "Rounds have not been set \n --> Please set the number of rounds to run in each period")
 
+        # check that minimum price floor has been set
+        elif self.price_floor.get() == "":  # ok if price floor = 0 but if blank
+            self.parameters_trigger = True  # trigger alarm
+            messagebox.askokcancel("MIN PRICE ERROR", "Price floor does not have an entry \n --> Please set a minimum price for the market")
+
         # check that maximum price ceiling has been set
-        elif self.price_ceiling.get() == '0':
+        elif self.price_ceiling.get() == "" or self.price_ceiling.get() == '0':
+            self.parameters_trigger = True
             messagebox.askokcancel("MAX PRICE ERROR", "Price ceiling has not been set \n --> Please set a maximum price for the market")
 
-        elif self.instant_shocks.get() == 1:
-            if self.buyer_shift.get() == "Select":
+        elif self.instant_shocks.get() == 1:  # if instant shocks enabled
+            if self.buyer_shift.get() == "":  # if blank
+                self.parameters_trigger = True  # trigger alarm
                 tk.messagebox.askokcancel("BUYER SHIFT ERROR", "Instant Shocks Enabled \n --> Please set buyer shift direction")
-            elif self.buyer_replace_strategy.get() == "Select":
+            elif self.buyer_replace_strategy.get() == "":
+                self.parameters_trigger = True
                 tk.messagebox.askokcancel("BUYER SHIFT ERROR", "Instant Shocks Enabled \n --> Please set buyer shift strategy")
-            elif self.seller_shift.get() == "Select":
+            elif self.seller_shift.get() == "":
+                self.parameters_trigger = True
                 tk.messagebox.askokcancel("SELLER SHIFT ERROR", "Instant Shocks Enabled \n --> Please set seller shift direction")
-            elif self.seller_replace_strategy.get() == "Select":
+            elif self.seller_replace_strategy.get() == "":
+                self.parameters_trigger = True
                 tk.messagebox.askokcancel("SELLER SHIFT ERROR", "Instant Shocks Enabled \n --> Please set seller shift strategy")
+
+        else:  # check each parameter = integer
+            parameters = [self.string_periods.get(), self.string_rounds.get(), self.price_floor.get(), self.price_ceiling.get()]
+            for i in parameters:
+                self.check_integer(i)
+
+        if self.parameters_trigger == False:  # last error check is if price ceiling is greater than price floor
+            if int(self.price_floor.get()) >= int(self.price_ceiling.get()):
+                self.parameters_trigger = True
+                messagebox.askokcancel("MAX/MIN ERROR", "Minimum price floor exceeds or equals maximum price ceiling \n --> Please correct this")
+
+        # lastly ask user to make sure all parameters have been set correctly
+        if self.parameters_trigger == False:  # if all error checks clean
+            # if instant shocks enabled ask user to do parameter check
+            if self.instant_shocks.get() == 1:
+                box = messagebox.askyesno("PROCEED?",
+                                          "Check that parameters are set correctly \n Do you wish to continue?")
+            # if round shocks and period shocks not set and instant shocks disabled...
+            # ... let user know that no market shocks specified
+            elif self.string_round_shocks.get() == "" or self.string_period_shocks.get() == "":
+                box = messagebox.askyesno("PROCEED?", "No market shocks have been set \n Do you wish to continue?")
+            # if instant shocks disabled but p shocks and r shocks set ask user to check params
             else:
+                box = messagebox.askyesno("PROCEED?",
+                                          "Check that parameters are set correctly \n Do you wish to continue?")
+            if box == True:  # if user clicked "OK" on proceed message
                 try:
                     os.makedirs(
                         self.output_path + "/" + self.string_session_name.get())  # creates folder for session data
 
                 except FileExistsError:
+                    self.save_file_trigger = True
                     messagebox.askokcancel("FILE ERROR",
-                                           "Session file name already exists... \n Please rename session \n OR \n Please delete previous file in project_path")
+                                           "File with session name already exists... \n Please rename session \n OR \n Please delete previous file in project_path")
                     raise  # raises error if folder already exists
-                box = messagebox.askyesno("PROCEED?",
-                                          "Please make sure all parameters are set correctly \n Do you wish to continue?")
-                if box == True:
+                if self.save_file_trigger == False:
                     self.num_periods = int(self.string_periods.get())
                     self.num_r_shocks = int(self.string_round_shocks.get())
                     self.num_p_shocks = int(self.string_period_shocks.get())
@@ -365,89 +428,69 @@ class MarketGui():
                         self.rshock_values = self.build_array(self.num_r_shocks, self.num_r_shocks)
 
                     self.show_shock_frames()  # calls show_player_frames --> builds frame
-                    self.sec.set_market_parms(
-                        [self.string_session_name.get(), self.num_buyers, self.num_sellers, self.num_units])
+                    self.sec.set_market_parms([self.string_session_name.get(), self.num_buyers, self.num_sellers, self.num_units])
                     run_frame = tk.LabelFrame(self.root, text="Run Simulation")
                     run_frame.grid(row=1, column=3)
                     run_button = tk.Button(run_frame, text="Run", width=4, command=self.run_sim)
                     run_button.grid(row=0, column=0, padx=30)
                 else:
-                    print("Continuing")
-
-        # lastly ask user to make sure all parameters have been set correctly
-        else:
-            try:
-                os.makedirs(self.output_path + "/" + self.string_session_name.get())  # creates folder for session data
-
-            except FileExistsError:
-                messagebox.askokcancel("FILE ERROR", "Session file name already exists... \n Please rename session \n OR \n Please delete previous file in project_path")
-                raise  # raises error if folder already exists
-            box = messagebox.askyesno("PROCEED?", "Please make sure all parameters are set correctly \n Do you wish to continue?")
-            if box == True:
-                self.num_periods = int(self.string_periods.get())
-                self.num_r_shocks = int(self.string_round_shocks.get())
-                self.num_p_shocks = int(self.string_period_shocks.get())
-                self.root.title(self.string_session_name.get())
-
-                if self.num_p_shocks > 0:  # Build array if useful
-                    self.pshock_values = self.build_array(self.num_p_shocks, self.num_p_shocks)
-                if self.num_r_shocks > 0:  # Build array if useful
-                    self.rshock_values = self.build_array(self.num_r_shocks, self.num_r_shocks)
-
-                self.show_shock_frames()  # calls show_player_frames --> builds frame
-                self.sec.set_market_parms([self.string_session_name.get(), self.num_buyers, self.num_sellers, self.num_units])
-                run_frame = tk.LabelFrame(self.root, text="Run Simulation")
-                run_frame.grid(row=1, column=3)
-                run_button = tk.Button(run_frame, text="Run", width=4, command=self.run_sim)
-                run_button.grid(row=0, column=0, padx=30)
-            else:
+                    pass
+            else:  # if user clicked "Cancel" on proceed message
                 print("Continuing")
+        else:
+            pass  # hold for user to fix parameter errors
 
     def show_shock_frames(self):
-        self.show_pshock_frame()
-        self.show_rshock_frame()
-        self.show_trader_strategies()
+        self.show_pshock_frame()  # show round shocks frame for entries
+        self.show_rshock_frame()  # show period shocks frame for entries
+        self.show_trader_strategies()  # show trader strategy frame for entries
 
     def show_trader_strategies(self):
         trader_frame = tk.LabelFrame(self.root, text="Trader Strategies")
         trader_frame.grid(row=2, column=3, sticky=tk.W +
                                         tk.E + tk.N + tk.S, padx=15, pady=4)
+        # creates a button to explain strategies to user
+        strat_info_button = tk.Button(trader_frame, text="Strategy Descriptions", width=16, command=self.strategy_message)
+        strat_info_button.grid(row=0, column=0)
 
-        self.buyer_ids = [k for k in range(self.num_buyers)]
-        self.seller_ids = [k for k in range(self.num_sellers)]
+        self.buyer_ids = [k for k in range(self.num_buyers)]  # will become list of tk.stringvar()
+        self.seller_ids = [k for k in range(self.num_sellers)]  # will become list of tk.stringvar()
 
-        tk.Label(trader_frame, text="ID").grid(row=0, column=0)
-        tk.Label(trader_frame, text="Strategy").grid(row=0, column=1)
-        tk.Label(trader_frame, text="ID").grid(row=0, column=2)
-        tk.Label(trader_frame, text="Strategy").grid(row=0, column=3)
+        tk.Label(trader_frame, text="ID").grid(row=1, column=0)
+        tk.Label(trader_frame, text="Strategy").grid(row=1, column=1)
+        tk.Label(trader_frame, text="ID").grid(row=1, column=2)
+        tk.Label(trader_frame, text="Strategy").grid(row=1, column=3)
 
+        # these create cascading entries for the user to pick trader strategies
         for i in range(self.num_buyers):
-            buyer_num = "Buyer" + str(i + 1)
-            tk.Label(trader_frame, text=buyer_num).grid(row=i + 1, column=0)
+            buyer_num = "Buyer" + str(i + 2)
+            tk.Label(trader_frame, text=buyer_num).grid(row=i + 2, column=0)
 
         for i in range(self.num_buyers):
             self.buyer_ids[i] = tk.StringVar()
-            ttk.Combobox(trader_frame, values=self.strategies, textvariable=self.buyer_ids[i], state='readonly').grid(row=i + 1, column=1)
+            ttk.Combobox(trader_frame, values=self.strategies, textvariable=self.buyer_ids[i], state='readonly').grid(row=i + 2, column=1)
             # creates a drop down menu to choose strategies
 
         for i in range(self.num_sellers):
-            seller_num = "Seller" + str(i + 1)
-            tk.Label(trader_frame, text=seller_num).grid(row=i + 1, column=2)
+            seller_num = "Seller" + str(i + 2)
+            tk.Label(trader_frame, text=seller_num).grid(row=i + 2, column=2)
 
         for i in range(self.num_sellers):
             self.seller_ids[i] = tk.StringVar()
-            ttk.Combobox(trader_frame, values=self.strategies, textvariable=self.seller_ids[i], state='readonly').grid(row=i + 1, column=3)
+            ttk.Combobox(trader_frame, values=self.strategies, textvariable=self.seller_ids[i], state='readonly').grid(row=i + 2, column=3)
             # creates a drop down menu to choose strategies
 
     def show_pshock_frame(self):
         pf = tk.LabelFrame(self.root, text="Period Shock Entries")
         pf.grid(row=2, column=1, sticky=tk.W +
                                         tk.E + tk.N + tk.S, padx=15, pady=4)
-        if self.instant_shocks.get() == 0:
-            if self.num_p_shocks == 0: return   # Notihing to show
-            self.buttons = [[None for x in range(3)] for x in range(self.num_p_shocks + self.num_r_shocks)]
 
-            pshock_ids = [k for k in range(self.num_p_shocks)]
+        if self.instant_shocks.get() == 0:  # if instant shocks disabled
+            if self.num_p_shocks == 0: return   # Nothing to show
+
+            self.p_shock_ids = [k for k in range(self.num_p_shocks)]  # will become list of tk.stringvar()
+            self.p_shock_files = [k for k in range(self.num_p_shocks)]  # will become list of tk.stringvar()
+
             tk.Label(pf, text="ID").grid(row=0, column=0)
             tk.Label(pf, text="Shock Data File").grid(row=0, column=2)
             tk.Label(pf, text="Period").grid(row=0, column=1)
@@ -455,12 +498,14 @@ class MarketGui():
                 pshock_num = "P Shock #" + str(i + 1)
                 tk.Label(pf, text=pshock_num).grid(row=i+1, column=0)
             for i in range(self.num_p_shocks):
-                pshock_ids[i] = tk.StringVar()
+                self.p_shock_ids[i] = tk.StringVar()
                 tk.Entry(pf, width=5, justify=tk.CENTER,
-                         textvariable=pshock_ids[i]).grid(row=i + 1, column=1)
-                pshock_ids[i].set("")
+                         textvariable=self.p_shock_ids[i]).grid(row=i + 1, column=1)
+
             for i in range(self.num_p_shocks):
-                ttk.Combobox(pf, values=os.listdir(self.project_path), textvariable=self.new_string_data, state='readonly').grid(row=i + 1, column=2)
+                self.p_shock_files[i] = tk.StringVar()
+                # TODO needs to be a way to refresh combobox values if user creates new file in market_gui
+                ttk.Combobox(pf, values=os.listdir(self.project_path), textvariable=self.p_shock_files[i], state='readonly').grid(row=i + 1, column=2)
                 plot_button = tk.Button(pf, text="Show", width=4, command=self.on_show_clicked)
                 plot_button.grid(row=i + 1, column=3)
         else:
@@ -472,7 +517,10 @@ class MarketGui():
                                         tk.E + tk.N + tk.S, padx=15, pady=4)
         if self.instant_shocks.get() == 0:
             if self.num_r_shocks == 0: return  # Nothing to show
-            rshock_ids = [k for k in range(self.num_r_shocks)]
+
+            self.r_shock_ids = [k for k in range(self.num_r_shocks)]
+            self.r_shock_files = [k for k in range(self.num_r_shocks)]
+
             tk.Label(rf, text="ID").grid(row=0, column=0)
             tk.Label(rf, text="Shock Data File").grid(row=0, column=2)
             tk.Label(rf, text="Round").grid(row=0, column=1)
@@ -480,12 +528,13 @@ class MarketGui():
                 rshock_num = "R Shock #" + str(i + 1)
                 tk.Label(rf, text=rshock_num).grid(row=i + 1, column=0)
             for i in range(self.num_r_shocks):
-                rshock_ids[i] = tk.StringVar()
+                self.r_shock_ids[i] = tk.StringVar()
                 tk.Entry(rf, width=5, justify=tk.CENTER,
-                         textvariable=rshock_ids[i]).grid(row=i + 1, column=1)
-                rshock_ids[i].set("")
+                         textvariable=self.r_shock_ids[i]).grid(row=i + 1, column=1)
+
             for i in range(self.num_r_shocks):
-                ttk.Combobox(rf, values=os.listdir(self.project_path), textvariable=self.new_string_data, state='readonly').grid(row=i + 1, column=2)
+                self.r_shock_files[i] = tk.StringVar()
+                ttk.Combobox(rf, values=os.listdir(self.project_path), textvariable=self.r_shock_files[i], state='readonly').grid(row=i + 1, column=2)
                 plot_button = tk.Button(rf, text="Show", width=4, command=self.on_show_clicked)
                 plot_button.grid(row=i+1, column=3)
         else:
@@ -533,285 +582,354 @@ class MarketGui():
         help_msg += "          b). Period and round shock entries displayed \n"
         tkinter.messagebox.showinfo("Help", help_msg)
 
-    def run_sim(self):
-        '''Adding in a new window to run simulations in market_gui'''
+    def check_sim(self):
         # code below checks that the user has set all trading strategies
-        self.trigger = False  # alarm off
+        self.strategy_trigger = False  # alarm off
         for i in range(self.num_buyers):
             if self.buyer_ids[i].get() == "":
-                self.trigger = True  # alarm triggered
+                self.strategy_trigger = True  # alarm triggered
+                tk.messagebox.askokcancel("TRADER STRATEGY ERROR",
+                                          "1 or more trader strategy has not been set \n --> Please check")
             else:
                 pass
 
         for i in range(self.num_sellers):
             if self.seller_ids[i].get() == "":
-                self.trigger = True  # alarm triggered
+                self.strategy_trigger = True  # alarm triggered
+                tk.messagebox.askokcancel("TRADER STRATEGY ERROR",
+                                          "1 or more trader strategy has not been set \n --> Please check")
             else:
                 pass
+        # the error checks below will look to see if instant shocks are enabled...
+        # ... if they are: will check to make sure shift direction and strategy are set
+        # ... if not: will check to make sure period and round shocks ids and files are set
+        # ... if not and period shocks and round shocks not set: will interpret as user bypassing market shocks
+        if self.instant_shocks.get() == 0:  # if instant shocks disabled
+            self.r_shock_trigger = False  # sets alarms for p shocks and r shocks
+            self.p_shock_trigger = False
 
-        if self.trigger == False:  # if alarm not triggered --> execute simulation
-            run_root = tk.Toplevel()  # creates top level root on main root
-            # finds the dimension of user's computer screen and sizes root to fit
-            run_root.geometry(str(GetSystemMetrics(0)) + "x" + str(GetSystemMetrics(1)))
+            for i in range(self.num_r_shocks):
+                if self.r_shock_ids[i].get() == "":  # if any entries blank
+                    self.r_shock_trigger = True  # trigger alarm
+                    tk.messagebox.askokcancel("ROUND SHOCK ERROR",
+                                              "Round to shock has not been specified \n --> Please check")
+                elif self.r_shock_files[i].get() == "":
+                    self.r_shock_trigger = True
+                    tk.messagebox.askokcancel("ROUND SHOCK ERROR",
+                                              "Round shock data file has not been set \n --> Please check")
+                else:
+                    pass  # keep checking
 
-            # TODO use same process to obtain market shocks set in market_gui!
-            # This obtains the strategies that the user sets in market_gui
-            # returns a list of the trader's strategies
-            strat_list = []
-            for i in range(len(self.buyer_ids)):
-                trader = self.buyer_ids[i].get()
-                strat_list.append(trader)
-            for i in range(len(self.seller_ids)):
-                trader = self.seller_ids[i].get()
-                strat_list.append(trader)
-
-            print("STRAT LIST: " + str(strat_list))
-            print("Length: " + str(len(strat_list)))
-
-            eff = []
-            periods_list = []
-            act_surplus = []
-            maxi_surplus = []
-            session = self.string_session_name.get()
-
-            num_periods = int(self.string_periods.get())  # periods or trading days
-            limits = (int(self.price_ceiling.get()), int(self.price_floor.get()))  # price ceiling, price floor
-            rounds = int(self.string_rounds.get())  # rounds in each period (can substitute time clock)
-            name = "trial"
-            period = 0  # ...??
-            '''The code below creates a file for your session name for market run info to be dumped into...
-            ... will raise file error if session name not changed --> prevents overwriting previous runs'''
-
-            smp = Simulator.spot_market_period.SpotMarketPeriod(session, num_periods, limits)
-
-            # --> could put this in json data file
-            trader_names = strat_list
-
-            smp.init_spot_system_gui(name, limits, rounds, self.project_path, self.string_data.get(), self.output_path,
-                                    session)
-            rnd_traders = trader_names  # because shuffle shuffles the list in place, returns none
-            times = []
-            for k in range(int(self.string_periods.get())):  # iterates through number of periods or "trading days"
-                timer_start = timer()
-                periods_list.append(k)
-                # random.shuffle(rnd_traders)  # shuffles trader order per period  # TODO random shuffle or no?
-                smp.init_traders(rnd_traders, k)
-                print("**** Running Period {}".format(k))  # provides visual effect in editor
-                smp.run_period(period, session, self.instant_shocks.get(), self.buyer_shift.get(),
-                               self.buyer_replace_strategy.get(), self.seller_shift.get(), self.seller_replace_strategy.get(),
-                               self.num_buyers, self.num_sellers)  # runs period
-                timer_stop = timer()  # ends period timer
-                results = smp.eval()  # evaluation function called --> returns data
-                '''the below data is appended into global dictionaries'''
-                eff.append(results[8])  # appends the efficiencies per period
-                act_surplus.append(results[7])  # appends actual surplus per period
-                maxi_surplus.append(results[6])  # appends maximum surplus per period
-                smp.get_contracts()  # gets transaction prices and period endpoints
-                session_folder = self.output_path + session + "\\"  # establishes file path for session data folder
-                smp.record_session_data(session_folder)  # records session data in excel csv
-                time = timer_stop - timer_start  # period execution time
-                times.append(time)  # list of execution times --> sum=total execution time
-
-            # TODO add the tk.label information below to a json file so information can be saved to period data
-
-            # creates frame to display parameters that were set before running the simulation
-            info_frame = tk.LabelFrame(run_root, text="Parameters", font='bold')
-            info_frame.grid(row=1, column=0)
-            tk.Label(info_frame, text="Session Name: " + str(self.string_session_name.get())).grid(row=0, column=0)
-            tk.Label(info_frame, text="Data Used: " + str(self.string_data.get())).grid(row=1, column=0)
-            tk.Label(info_frame, text="Execution Time: " + str(sum(times))).grid(row=2, column=0)
-            tk.Label(info_frame, text="Buyers: " + str(self.num_buyers) + "   " + "Sellers: " + str(self.num_sellers)).grid(row=3, column=0)
-            tk.Label(info_frame, text="Periods: " + str(self.num_periods) + "   " + "Rounds: " + str(self.num_rounds)).grid(row=4, column=0)
-            tk.Label(info_frame, text="Units: " + str(self.num_units)).grid(row=5, column=0)
-
-
-            # creates a frame to display instant shocks if enabled
-            if self.instant_shocks.get() == 1:
-                move_column = 2  # will change column position of next tk.labelframe
-                shock_frame = tk.LabelFrame(run_root, text="Instantaneous Shocks", font='bold')
-                shock_frame.grid(row=1, column=1)
-                tk.Label(shock_frame, text="Buyer Shift Direction: " + str(self.buyer_shift.get())).grid(row=0, column=0)
-                tk.Label(shock_frame, text="Buyer Strategy Replaced: " + str(self.buyer_replace_strategy.get())).grid(row=1, column=0)
-                tk.Label(shock_frame, text="Seller Shift Direction: " + str(self.seller_shift.get())).grid(row=2, column=0)
-                tk.Label(shock_frame, text="Seller Strategy Replaced: " + str(self.seller_replace_strategy.get())).grid(row=3, column=0)
+            for i in range(self.num_p_shocks):
+                if self.p_shock_ids[i].get() == "":
+                    self.p_shock_trigger = True
+                    tk.messagebox.askokcancel("PERIOD SHOCK ERROR",
+                                              "Period to shock has not been specified \n --> Please check")
+                elif self.p_shock_files[i].get() == "":
+                    self.p_shock_trigger = True
+                    tk.messagebox.askokcancel("PERIOD SHOCK ERROR",
+                                              "Period shock data file has not been set \n --> Please check")
+                else:
+                    pass  # else no errors found
+        else:  # if instant shocks enabled
+            self.i_shock_trigger = False  # set alarm
+            if self.buyer_shift.get() == "":  # if instant shock entries blank
+                self.i_shock_trigger = True  # trigger alarm
+                tk.messagebox.askokcancel("INSTANT SHOCK ERROR",
+                                          "Buyer Shift Direction has not been set \n --> Please check")
+            elif self.buyer_replace_strategy.get() == "":
+                self.i_shock_trigger = True
+                tk.messagebox.askokcancel("INSTANT SHOCK ERROR",
+                                          "Buyer Shift Strategy has not been set \n --> Please check")
+            elif self.seller_shift.get() == "":
+                self.i_shock_trigger = True
+                tk.messagebox.askokcancel("INSTANT SHOCK ERROR",
+                                          "Seller Shift Direction has not been set \n --> Please check")
+            elif self.seller_replace_strategy.get() == "":
+                self.i_shock_trigger = True
+                tk.messagebox.askokcancel("INSTANT SHOCK ERROR",
+                                          "Seller Shift Strategy has not been set \n --> Please check")
             else:
-                move_column = 1  # if no instant shocks then next tk.labelframe column =1
-                pass
+                pass  # else no errors found
 
-            # creates a frame for simulation results
-            run_frame = tk.LabelFrame(run_root, text="Simulation Results", font='bold')
-            run_frame.grid(row=1, column=move_column)  # set parameters
-            tk.Label(run_frame, text="Maximum Surpluses: " + str(maxi_surplus)).grid(row=0, column=0)
-            tk.Label(run_frame, text="Actual Surpluses: " + str(act_surplus)).grid(row=1, column=0)
-            tk.Label(run_frame, text="Avg. Market Surplus: " + str(sum(act_surplus)/len(act_surplus))).grid(row=2, column=0)
-            tk.Label(run_frame, text="\nMarket Efficiencies: " + str(eff)).grid(row=3, column=0)
-            tk.Label(run_frame, text="Avg. Efficiency: " + str(sum(eff) / num_periods)).grid(row=4, column=0)
-
-            # prints to editor
-            print("Period Times: " + str(times))
-            print("Market Efficiencies:" + str(eff))  # print market efficiencies
-            print("Avg. Efficiency:" + str(sum(eff) / num_periods))  # print avg efficiency
-            # print("Total Avg. Transaction Price:" + str(sum(avg_prices[1:])/(num_periods - 1)))
-            print("Actual Surpluses:" + str(act_surplus))  # print actual surpluses
-            print("Maximum Surpluses:" + str(maxi_surplus))  # print max surpluses
-            print()
-
-            # TODO trader info below can be functionalized further
-            # builds frame for trader total earnings
-            trader_frame1 = tk.LabelFrame(run_root, text="Strategy Total Earnings (per period)", font='bold')
-            trader_frame1.grid(row=1, column=2)  # set parameters
-            tk.Label(trader_frame1, text="Trader_AA: " + str(smp.total_earns('AA'))).grid(row=0, column=0)
-            tk.Label(trader_frame1, text="Trader_GD: " + str(smp.total_earns('GD'))).grid(row=1, column=0)
-            tk.Label(trader_frame1, text="Trader_PS: " + str(smp.total_earns('PS'))).grid(row=2, column=0)
-            tk.Label(trader_frame1, text="Trader_ZIP: " + str(smp.total_earns('ZIP'))).grid(row=3, column=0)
-            tk.Label(trader_frame1, text="Trader_Kaplan: " + str(smp.total_earns('KP'))).grid(row=4, column=0)
-            tk.Label(trader_frame1, text="Trader_Shaver: " + str(smp.total_earns('SI'))).grid(row=5, column=0)
-            tk.Label(trader_frame1, text="Trader_ZIC: " + str(smp.total_earns('ZIC'))).grid(row=6, column=0)
-
-            # print to editor
-            print("Strategy Total Earnings")
-            print("Trader_AA: " + str(smp.total_earns('AA')))
-            # print("Trader_AI: " + str(smp.total_earns('AI')))
-            print("Trader_GD: " + str(smp.total_earns('GD')))  #
-            print("Trader_PS: " + str(smp.total_earns('PS')))  # ADDED: section to list total avg earns
-            # print("Trader_AI: " + str(smp.total_avg_earns('AI')))   #
-            print("Trader_ZIP: " + str(smp.total_earns('ZIP')))  #
-            print("Trader_ZIC: " + str(smp.total_earns('ZIC')))  #
-            print("Trader_Kaplan: " + str(smp.total_earns('KP')))
-            print("Trader_Shaver: " + str(smp.total_earns('SI')))
-            print()
-
-            # builds frame for trader avg earnings
-            trader_frame2 = tk.LabelFrame(run_root, text="Strategy Total Avg. Earnings (per trader)", font='bold')
-            trader_frame2.grid(row=1, column=3)  # set parameters
-            tk.Label(trader_frame2, text="Trader_AA: " + str(smp.total_avg_earns('AA', trader_names.count('Trader_AA') * num_periods))).grid(row=0, column=0)
-            tk.Label(trader_frame2, text="Trader_GD: " + str(smp.total_avg_earns('GD', trader_names.count('Trader_GD') * num_periods))).grid(row=1, column=0)
-            tk.Label(trader_frame2, text="Trader_PS: " + str(
-                smp.total_avg_earns('PS', trader_names.count('Trader_PS') * num_periods))).grid(row=2, column=0)
-            tk.Label(trader_frame2, text="Trader_ZIP: " + str(smp.total_avg_earns('ZIP', trader_names.count('Trader_ZIP') * num_periods))).grid(row=3, column=0)
-            tk.Label(trader_frame2, text="Trader_Kaplan: " + str(smp.total_avg_earns('KP', trader_names.count('Trader_Kaplan') * num_periods))).grid(row=4, column=0)
-            tk.Label(trader_frame2, text="Trader_Shaver: " + str(smp.total_avg_earns('SI', trader_names.count('Trader_Shaver') * num_periods))).grid(row=5, column=0)
-            tk.Label(trader_frame2, text="Trader_ZIC: " + str(smp.total_avg_earns('ZIC', trader_names.count('Trader_ZIC') * num_periods))).grid(row=6, column=0)
-
-            # prints to editor
-            print("Strategy Total Avg. Earnings (per trader)")
-            print("Trader_AA: " + str(smp.total_avg_earns('AA', trader_names.count('Trader_AA') * num_periods)))  #
-            print("Trader_GD: " + str(smp.total_avg_earns('GD', trader_names.count('Trader_GD') * num_periods)))  #
-            print("Trader_PS: " + str(
-                smp.total_avg_earns('PS', trader_names.count('Trader_PS') * num_periods)))  # ADDED: section to list total avg earns
-            # print("Trader_AI: " + str(smp.total_avg_earns('AI')))   #
-            print("Trader_ZIP: " + str(smp.total_avg_earns('ZIP', trader_names.count('Trader_ZIP') * num_periods)))  #
-            print("Trader_ZIC: " + str(smp.total_avg_earns('ZIC', trader_names.count('Trader_ZIC') * num_periods)))  #
-            print("Trader_Kaplan: " + str(smp.total_avg_earns('KP', trader_names.count('Trader_Kaplan') * num_periods)))
-            print("Trader_Shaver: " + str(smp.total_avg_earns('SI', trader_names.count('Trader_Shaver') * num_periods)))
-
-            """The below function calls create graphs from the simulation results and save in project path"""
-            smp.get_avg_trade_ratio()  # prints avg trade ratio for all periods
-            smp.graph_trader_eff(self.output_path, session)  # plots individual efficiency
-            smp.graph_efficiency_gui(self.output_path, session, eff, periods_list)  # plots period efficiency
-            smp.get_endpoints()  # obtains endpoints of periods for graph
-            smp.graph_contracts(self.output_path, session)  # graphs contract transactions and avg transaction per period
-            # smp.graph_surplus()  # graphs actual and max surplus
-            smp.graph_alphas(self.output_path, session, periods_list)  # graphs Smith's Alpha of convergence
-            smp.graph_distribution(self.output_path, session)  # graphs normal distribution of trader efficiencies
-
-            from PIL import Image  # import python image library
-            new_size = 400, 225  # makes original image smaller
-            temp_folder = self.output_path + session + "\\" + "Mini Images"
-            os.makedirs(temp_folder)  # makes a temp folder to store mini images
-
-            # below builds a frame to display the smaller transactions graph
-            graph_frame1 = tk.LabelFrame(run_root, text="Transactions", font='bold')  # frame created in run root
-            graph_frame1.grid(row=2, column=1)
-            edit = Image.open(self.output_path + session + '\\' + "Transactions.png")  # accesses original image
-            edit.thumbnail(new_size, Image.ANTIALIAS)  # turns the image into a thumbnail size
-            edit.save(temp_folder + '\\' + "Transactions Mini.png")  # saves new file
-            photo = tk.PhotoImage(file=temp_folder + '\\' + "Transactions Mini.png")  # accesses new image
-            label = tk.Label(graph_frame1, image=photo)  # turns into tk label and packs into frame
-            label.pack()
-
-            # below builds a frame to display the smaller SD graph
-            sd_frame = tk.LabelFrame(run_root, text="Supply and Demand", font='bold')  # new frame in run root
-            sd_frame.grid(row=2, column=0)
-            edit2 = Image.open(self.output_path + session + '\\' + "SD Before.png") # old image accessed
-            edit2.thumbnail(new_size, Image.ANTIALIAS)  # old image turned into thumbnail
-            edit2.save(temp_folder + '\\' + "SD Mini.png")  # new image saved
-            photo2 = tk.PhotoImage(file=temp_folder + '\\' + "SD Mini.png")  # new image accessed
-            label2 = tk.Label(sd_frame, image=photo2)  # turned into label and packed into frame
-            label2.pack()
-
-            # below builds a frame to display the distribution of trader efficiencies
-            stat_frame = tk.LabelFrame(run_root, text="Trader Efficiency Distribution", font='bold')  # new frame in run root
-            stat_frame.grid(row=2, column=2)
-            edit3 = Image.open(self.output_path + session + '\\' + "Efficiency Distribution.png")  # old image accessed
-            edit3.thumbnail(new_size, Image.ANTIALIAS)  # old image turned into thumbnail
-            edit3.save(temp_folder + '\\' + "Eff Dist Mini.png")  # new image saved
-            photo3 = tk.PhotoImage(file=temp_folder + '\\' + "Eff Dist Mini.png")  # new image accessed
-            label3 = tk.Label(stat_frame, image=photo3)  # turned into label and packed into frame
-            label3.pack()
-
-            t_eff_frame = tk.LabelFrame(run_root, text="Efficiency by Trader", font='bold')
-            t_eff_frame.grid(row=3, column=2)
-            edit4 = Image.open(self.output_path + session + "\\" + "Trader Efficiencies.png")
-            edit4.thumbnail(new_size, Image.ANTIALIAS)
-            edit4.save(temp_folder + "\\" + "T Eff Mini.png")
-            photo4 = tk.PhotoImage(file=temp_folder + "\\" + "T Eff Mini.png")
-            label4 = tk.Label(t_eff_frame, image=photo4)
-            label4.pack()
-
-            p_eff_frame = tk.LabelFrame(run_root, text="Efficiency by Period", font='bold')
-            p_eff_frame.grid(row=3, column=1)
-            edit5 = Image.open(self.output_path + session + "\\" + "Period Efficiencies.png")
-            edit5.thumbnail(new_size, Image.ANTIALIAS)
-            edit5.save(temp_folder + "\\" + "P Eff Mini.png")
-            photo5 = tk.PhotoImage(file=temp_folder + "\\" + "P Eff Mini.png")
-            label5 = tk.Label(p_eff_frame, image=photo5)
-            label5.pack()
-
-            alpha_frame = tk.LabelFrame(run_root, text="Convergence Alphas", font='bold')
-            alpha_frame.grid(row=3, column=0)
-            edit6 = Image.open(self.output_path + session + "\\" + "Convergence Alphas.png")
-            edit6.thumbnail(new_size, Image.ANTIALIAS)
-            edit6.save(temp_folder + "\\" + "Alphas Mini.png")
-            photo6 = tk.PhotoImage(file=temp_folder + "\\" + "Alphas Mini.png")
-            label6 = tk.Label(alpha_frame, image=photo6)
-            label6.pack()
-
-            # TODO delete temp folder of mini images or no?
-
-            # below creates a statistics frame to display next to trader efficiency distribution graph
-            stat_frame = tk.LabelFrame(run_root, text="Trader Efficiency Statistics")
-            stat_frame.grid(row=2, column=3)
-
-            t_effs = smp.trader_eff_gui()  # list of trader efficiencies
-            mean = np.mean(t_effs)  # numpy function to get average
-            std_dev = np.std(t_effs)  # numpy function to get standard deviation
-            median = np.median(t_effs)  # numpy function to get median
-            max = np.max(t_effs)  # numpy function to get maximum value
-            min = np.min(t_effs)  # numpy function to get minimum value
-
-            for i in range(t_effs.count(0)):  # removes traders with 0 efficiency
-                t_effs.remove(0)
-            mean2 = np.mean(t_effs)  # numpy function to get average
-            std_dev2 = np.std(t_effs)  # numpy function to get standard deviation
-            median2 = np.median(t_effs)  # numpy function to get median
-            max2 = np.max(t_effs)  # numpy function to get maximum value
-            min2 = np.min(t_effs)  # numpy function to get minimum value
-
-            tk.Label(stat_frame, text="All Traders", font='bold').grid(row=0, column=0)
-            tk.Label(stat_frame, text="Mean: {}   Std Dev: {}".format(mean, std_dev)).grid(row=1, column=0)
-            tk.Label(stat_frame, text="Median: {}   Max: {}   Min: {}".format(median, max, min)).grid(row=2, column=0)
-            tk.Label(stat_frame, text="").grid(row=3, column=0)
-            tk.Label(stat_frame, text="Out of Market Traders Removed", font='bold').grid(row=4, column=0)
-            tk.Label(stat_frame, text="Mean: {}   Std Dev: {}".format(mean2, std_dev2)).grid(row=5, column=0)
-            tk.Label(stat_frame, text="Median: {}   Max: {}   Min: {}".format(median2, max2, min2)).grid(row=6, column=0)
-
-            run_root.mainloop()  # continues running run root
-            # TODO getting "ttk:ThemeChanged" error after sim run --> don't know why
-            # TODO fix graphing error when rerunning inside the gui .. plots trader eff dist into SD graph..
+        if self.strategy_trigger == False:  # if no blanks in trader strategies
+            if self.instant_shocks.get() == 0:  # if instant shocks disabled
+                if self.r_shock_trigger == False and self.p_shock_trigger == False:  # if error checks clean
+                    self.run_sim()  # run simulation
+                else:
+                    pass  # else hold for r shock/p shock fixes from user
+            else:
+                if self.i_shock_trigger == False:  # if instant shock entries filled
+                    self.run_sim()  # run simulation
+                else:
+                    pass  # else hold for instant shock fixes from user
         else:
-            tk.messagebox.askokcancel("TRADER STRATEGY ERROR", "1 or more trader strategy has not been set \n --> Please check")
+            pass  # else hold for strategy fixes from user
+
+
+    def run_sim(self):
+        '''Adding in a new window to run simulations in market_gui'''
+
+        run_root = tk.Toplevel()  # creates top level root on main root
+        # finds the dimension of user's computer screen and sizes root to fit
+        run_root.geometry(str(GetSystemMetrics(0)) + "x" + str(GetSystemMetrics(1)))
+
+        # TODO use same process to obtain market shocks set in market_gui!
+        # This obtains the strategies that the user sets in market_gui
+        # returns a list of the trader's strategies
+        strat_list = []
+        for i in range(len(self.buyer_ids)):
+            trader = self.buyer_ids[i].get()
+            strat_list.append(trader)
+        for i in range(len(self.seller_ids)):
+            trader = self.seller_ids[i].get()
+            strat_list.append(trader)
+
+        print("STRAT LIST: " + str(strat_list))
+        print("Length: " + str(len(strat_list)))
+
+        eff = []
+        periods_list = []
+        act_surplus = []
+        maxi_surplus = []
+        session = self.string_session_name.get()
+
+        num_periods = int(self.string_periods.get())  # periods or trading days
+        limits = (int(self.price_ceiling.get()), int(self.price_floor.get()))  # price ceiling, price floor
+        rounds = int(self.string_rounds.get())  # rounds in each period (can substitute time clock)
+        name = "trial"
+        period = 0  # ...??
+        '''The code below creates a file for your session name for market run info to be dumped into...
+        ... will raise file error if session name not changed --> prevents overwriting previous runs'''
+
+        smp = Simulator.spot_market_period.SpotMarketPeriod(session, num_periods, limits)
+
+        # --> could put this in json data file
+        trader_names = strat_list
+
+        smp.init_spot_system_gui(name, limits, rounds, self.project_path, self.string_data.get(), self.output_path,
+                                session)
+        rnd_traders = trader_names  # because shuffle shuffles the list in place, returns none
+        times = []
+        for k in range(int(self.string_periods.get())):  # iterates through number of periods or "trading days"
+            timer_start = timer()
+            periods_list.append(k)
+            # random.shuffle(rnd_traders)  # shuffles trader order per period  # TODO random shuffle or no?
+            smp.init_traders(rnd_traders, k)
+            print("**** Running Period {}".format(k))  # provides visual effect in editor
+            smp.run_period(period, session, self.instant_shocks.get(), self.buyer_shift.get(),
+                           self.buyer_replace_strategy.get(), self.seller_shift.get(), self.seller_replace_strategy.get(),
+                           self.num_buyers, self.num_sellers)  # runs period
+            timer_stop = timer()  # ends period timer
+            results = smp.eval()  # evaluation function called --> returns data
+            '''the below data is appended into global dictionaries'''
+            eff.append(results[8])  # appends the efficiencies per period
+            act_surplus.append(results[7])  # appends actual surplus per period
+            maxi_surplus.append(results[6])  # appends maximum surplus per period
+            smp.get_contracts()  # gets transaction prices and period endpoints
+            session_folder = self.output_path + session + "\\"  # establishes file path for session data folder
+            smp.record_session_data(session_folder)  # records session data in excel csv
+            time = timer_stop - timer_start  # period execution time
+            times.append(time)  # list of execution times --> sum=total execution time
+
+        # TODO add the tk.label information below to a json file so information can be saved to period data
+
+        # creates frame to display parameters that were set before running the simulation
+        info_frame = tk.LabelFrame(run_root, text="Parameters", font='bold')
+        info_frame.grid(row=1, column=0)
+        tk.Label(info_frame, text="Session Name: " + str(self.string_session_name.get())).grid(row=0, column=0)
+        tk.Label(info_frame, text="Data Used: " + str(self.string_data.get())).grid(row=1, column=0)
+        tk.Label(info_frame, text="Execution Time: " + str(sum(times))).grid(row=2, column=0)
+        tk.Label(info_frame, text="Buyers: " + str(self.num_buyers) + "   " + "Sellers: " + str(self.num_sellers)).grid(row=3, column=0)
+        tk.Label(info_frame, text="Periods: " + str(self.num_periods) + "   " + "Rounds: " + str(self.num_rounds)).grid(row=4, column=0)
+        tk.Label(info_frame, text="Units: " + str(self.num_units)).grid(row=5, column=0)
+
+
+        # creates a frame to display instant shocks if enabled
+        if self.instant_shocks.get() == 1:
+            move_column = 2  # will change column position of next tk.labelframe
+            shock_frame = tk.LabelFrame(run_root, text="Instantaneous Shocks", font='bold')
+            shock_frame.grid(row=1, column=1)
+            tk.Label(shock_frame, text="Buyer Shift Direction: " + str(self.buyer_shift.get())).grid(row=0, column=0)
+            tk.Label(shock_frame, text="Buyer Strategy Replaced: " + str(self.buyer_replace_strategy.get())).grid(row=1, column=0)
+            tk.Label(shock_frame, text="Seller Shift Direction: " + str(self.seller_shift.get())).grid(row=2, column=0)
+            tk.Label(shock_frame, text="Seller Strategy Replaced: " + str(self.seller_replace_strategy.get())).grid(row=3, column=0)
+        else:
+            move_column = 1  # if no instant shocks then next tk.labelframe column =1
             pass
+
+        # creates a frame for simulation results
+        run_frame = tk.LabelFrame(run_root, text="Simulation Results", font='bold')
+        run_frame.grid(row=1, column=move_column)  # set parameters
+        tk.Label(run_frame, text="Maximum Surpluses: " + str(maxi_surplus)).grid(row=0, column=0)
+        tk.Label(run_frame, text="Actual Surpluses: " + str(act_surplus)).grid(row=1, column=0)
+        tk.Label(run_frame, text="Avg. Market Surplus: " + str(sum(act_surplus)/len(act_surplus))).grid(row=2, column=0)
+        tk.Label(run_frame, text="\nMarket Efficiencies: " + str(eff)).grid(row=3, column=0)
+        tk.Label(run_frame, text="Avg. Efficiency: " + str(sum(eff) / num_periods)).grid(row=4, column=0)
+
+        # prints to editor
+        print("Period Times: " + str(times))
+        print("Market Efficiencies:" + str(eff))  # print market efficiencies
+        print("Avg. Efficiency:" + str(sum(eff) / num_periods))  # print avg efficiency
+        # print("Total Avg. Transaction Price:" + str(sum(avg_prices[1:])/(num_periods - 1)))
+        print("Actual Surpluses:" + str(act_surplus))  # print actual surpluses
+        print("Maximum Surpluses:" + str(maxi_surplus))  # print max surpluses
+        print()
+
+        # TODO trader info below can be functionalized further
+        # builds frame for trader total earnings
+        trader_frame1 = tk.LabelFrame(run_root, text="Strategy Total Earnings (per period)", font='bold')
+        trader_frame1.grid(row=1, column=2)  # set parameters
+        tk.Label(trader_frame1, text="Trader_AA: " + str(smp.total_earns('AA'))).grid(row=0, column=0)
+        tk.Label(trader_frame1, text="Trader_GD: " + str(smp.total_earns('GD'))).grid(row=1, column=0)
+        tk.Label(trader_frame1, text="Trader_PS: " + str(smp.total_earns('PS'))).grid(row=2, column=0)
+        tk.Label(trader_frame1, text="Trader_ZIP: " + str(smp.total_earns('ZIP'))).grid(row=3, column=0)
+        tk.Label(trader_frame1, text="Trader_Kaplan: " + str(smp.total_earns('KP'))).grid(row=4, column=0)
+        tk.Label(trader_frame1, text="Trader_Shaver: " + str(smp.total_earns('SI'))).grid(row=5, column=0)
+        tk.Label(trader_frame1, text="Trader_ZIC: " + str(smp.total_earns('ZIC'))).grid(row=6, column=0)
+
+        # print to editor
+        print("Strategy Total Earnings")
+        print("Trader_AA: " + str(smp.total_earns('AA')))
+        # print("Trader_AI: " + str(smp.total_earns('AI')))
+        print("Trader_GD: " + str(smp.total_earns('GD')))  #
+        print("Trader_PS: " + str(smp.total_earns('PS')))  # ADDED: section to list total avg earns
+        # print("Trader_AI: " + str(smp.total_avg_earns('AI')))   #
+        print("Trader_ZIP: " + str(smp.total_earns('ZIP')))  #
+        print("Trader_ZIC: " + str(smp.total_earns('ZIC')))  #
+        print("Trader_Kaplan: " + str(smp.total_earns('KP')))
+        print("Trader_Shaver: " + str(smp.total_earns('SI')))
+        print()
+
+        # builds frame for trader avg earnings
+        trader_frame2 = tk.LabelFrame(run_root, text="Strategy Total Avg. Earnings (per trader)", font='bold')
+        trader_frame2.grid(row=1, column=3)  # set parameters
+        tk.Label(trader_frame2, text="Trader_AA: " + str(smp.total_avg_earns('AA', trader_names.count('Trader_AA') * num_periods))).grid(row=0, column=0)
+        tk.Label(trader_frame2, text="Trader_GD: " + str(smp.total_avg_earns('GD', trader_names.count('Trader_GD') * num_periods))).grid(row=1, column=0)
+        tk.Label(trader_frame2, text="Trader_PS: " + str(
+            smp.total_avg_earns('PS', trader_names.count('Trader_PS') * num_periods))).grid(row=2, column=0)
+        tk.Label(trader_frame2, text="Trader_ZIP: " + str(smp.total_avg_earns('ZIP', trader_names.count('Trader_ZIP') * num_periods))).grid(row=3, column=0)
+        tk.Label(trader_frame2, text="Trader_Kaplan: " + str(smp.total_avg_earns('KP', trader_names.count('Trader_Kaplan') * num_periods))).grid(row=4, column=0)
+        tk.Label(trader_frame2, text="Trader_Shaver: " + str(smp.total_avg_earns('SI', trader_names.count('Trader_Shaver') * num_periods))).grid(row=5, column=0)
+        tk.Label(trader_frame2, text="Trader_ZIC: " + str(smp.total_avg_earns('ZIC', trader_names.count('Trader_ZIC') * num_periods))).grid(row=6, column=0)
+
+        # prints to editor
+        print("Strategy Total Avg. Earnings (per trader)")
+        print("Trader_AA: " + str(smp.total_avg_earns('AA', trader_names.count('Trader_AA') * num_periods)))  #
+        print("Trader_GD: " + str(smp.total_avg_earns('GD', trader_names.count('Trader_GD') * num_periods)))  #
+        print("Trader_PS: " + str(
+            smp.total_avg_earns('PS', trader_names.count('Trader_PS') * num_periods)))  # ADDED: section to list total avg earns
+        # print("Trader_AI: " + str(smp.total_avg_earns('AI')))   #
+        print("Trader_ZIP: " + str(smp.total_avg_earns('ZIP', trader_names.count('Trader_ZIP') * num_periods)))  #
+        print("Trader_ZIC: " + str(smp.total_avg_earns('ZIC', trader_names.count('Trader_ZIC') * num_periods)))  #
+        print("Trader_Kaplan: " + str(smp.total_avg_earns('KP', trader_names.count('Trader_Kaplan') * num_periods)))
+        print("Trader_Shaver: " + str(smp.total_avg_earns('SI', trader_names.count('Trader_Shaver') * num_periods)))
+
+        """The below function calls create graphs from the simulation results and save in project path"""
+        smp.get_avg_trade_ratio()  # prints avg trade ratio for all periods
+        smp.graph_trader_eff(self.output_path, session)  # plots individual efficiency
+        smp.graph_efficiency_gui(self.output_path, session, eff, periods_list)  # plots period efficiency
+        smp.get_endpoints()  # obtains endpoints of periods for graph
+        smp.graph_contracts(self.output_path, session)  # graphs contract transactions and avg transaction per period
+        # smp.graph_surplus()  # graphs actual and max surplus
+        smp.graph_alphas(self.output_path, session, periods_list)  # graphs Smith's Alpha of convergence
+        smp.graph_distribution(self.output_path, session)  # graphs normal distribution of trader efficiencies
+
+        from PIL import Image  # import python image library
+        new_size = 400, 225  # makes original image smaller
+        temp_folder = self.output_path + session + "\\" + "Mini Images"
+        os.makedirs(temp_folder)  # makes a temp folder to store mini images
+
+        # below builds a frame to display the smaller transactions graph
+        graph_frame1 = tk.LabelFrame(run_root, text="Transactions", font='bold')  # frame created in run root
+        graph_frame1.grid(row=2, column=1)
+        edit = Image.open(self.output_path + session + '\\' + "Transactions.png")  # accesses original image
+        edit.thumbnail(new_size, Image.ANTIALIAS)  # turns the image into a thumbnail size
+        edit.save(temp_folder + '\\' + "Transactions Mini.png")  # saves new file
+        photo = tk.PhotoImage(file=temp_folder + '\\' + "Transactions Mini.png")  # accesses new image
+        label = tk.Label(graph_frame1, image=photo)  # turns into tk label and packs into frame
+        label.pack()
+
+        # below builds a frame to display the smaller SD graph
+        sd_frame = tk.LabelFrame(run_root, text="Supply and Demand", font='bold')  # new frame in run root
+        sd_frame.grid(row=2, column=0)
+        edit2 = Image.open(self.output_path + session + '\\' + "SD Before.png") # old image accessed
+        edit2.thumbnail(new_size, Image.ANTIALIAS)  # old image turned into thumbnail
+        edit2.save(temp_folder + '\\' + "SD Mini.png")  # new image saved
+        photo2 = tk.PhotoImage(file=temp_folder + '\\' + "SD Mini.png")  # new image accessed
+        label2 = tk.Label(sd_frame, image=photo2)  # turned into label and packed into frame
+        label2.pack()
+
+        # below builds a frame to display the distribution of trader efficiencies
+        stat_frame = tk.LabelFrame(run_root, text="Trader Efficiency Distribution", font='bold')  # new frame in run root
+        stat_frame.grid(row=2, column=2)
+        edit3 = Image.open(self.output_path + session + '\\' + "Efficiency Distribution.png")  # old image accessed
+        edit3.thumbnail(new_size, Image.ANTIALIAS)  # old image turned into thumbnail
+        edit3.save(temp_folder + '\\' + "Eff Dist Mini.png")  # new image saved
+        photo3 = tk.PhotoImage(file=temp_folder + '\\' + "Eff Dist Mini.png")  # new image accessed
+        label3 = tk.Label(stat_frame, image=photo3)  # turned into label and packed into frame
+        label3.pack()
+
+        t_eff_frame = tk.LabelFrame(run_root, text="Efficiency by Trader", font='bold')
+        t_eff_frame.grid(row=3, column=2)
+        edit4 = Image.open(self.output_path + session + "\\" + "Trader Efficiencies.png")
+        edit4.thumbnail(new_size, Image.ANTIALIAS)
+        edit4.save(temp_folder + "\\" + "T Eff Mini.png")
+        photo4 = tk.PhotoImage(file=temp_folder + "\\" + "T Eff Mini.png")
+        label4 = tk.Label(t_eff_frame, image=photo4)
+        label4.pack()
+
+        p_eff_frame = tk.LabelFrame(run_root, text="Efficiency by Period", font='bold')
+        p_eff_frame.grid(row=3, column=1)
+        edit5 = Image.open(self.output_path + session + "\\" + "Period Efficiencies.png")
+        edit5.thumbnail(new_size, Image.ANTIALIAS)
+        edit5.save(temp_folder + "\\" + "P Eff Mini.png")
+        photo5 = tk.PhotoImage(file=temp_folder + "\\" + "P Eff Mini.png")
+        label5 = tk.Label(p_eff_frame, image=photo5)
+        label5.pack()
+
+        alpha_frame = tk.LabelFrame(run_root, text="Convergence Alphas", font='bold')
+        alpha_frame.grid(row=3, column=0)
+        edit6 = Image.open(self.output_path + session + "\\" + "Convergence Alphas.png")
+        edit6.thumbnail(new_size, Image.ANTIALIAS)
+        edit6.save(temp_folder + "\\" + "Alphas Mini.png")
+        photo6 = tk.PhotoImage(file=temp_folder + "\\" + "Alphas Mini.png")
+        label6 = tk.Label(alpha_frame, image=photo6)
+        label6.pack()
+
+        # TODO delete temp folder of mini images or no?
+
+        # below creates a statistics frame to display next to trader efficiency distribution graph
+        stat_frame = tk.LabelFrame(run_root, text="Trader Efficiency Statistics")
+        stat_frame.grid(row=2, column=3)
+
+        t_effs = smp.trader_eff_gui()  # list of trader efficiencies
+        mean = np.mean(t_effs)  # numpy function to get average
+        std_dev = np.std(t_effs)  # numpy function to get standard deviation
+        median = np.median(t_effs)  # numpy function to get median
+        max = np.max(t_effs)  # numpy function to get maximum value
+        min = np.min(t_effs)  # numpy function to get minimum value
+
+        for i in range(t_effs.count(0)):  # removes traders with 0 efficiency
+            t_effs.remove(0)
+        mean2 = np.mean(t_effs)  # numpy function to get average
+        std_dev2 = np.std(t_effs)  # numpy function to get standard deviation
+        median2 = np.median(t_effs)  # numpy function to get median
+        max2 = np.max(t_effs)  # numpy function to get maximum value
+        min2 = np.min(t_effs)  # numpy function to get minimum value
+
+        tk.Label(stat_frame, text="All Traders", font='bold').grid(row=0, column=0)
+        tk.Label(stat_frame, text="Mean: {}   Std Dev: {}".format(mean, std_dev)).grid(row=1, column=0)
+        tk.Label(stat_frame, text="Median: {}   Max: {}   Min: {}".format(median, max, min)).grid(row=2, column=0)
+        tk.Label(stat_frame, text="").grid(row=3, column=0)
+        tk.Label(stat_frame, text="Out of Market Traders Removed", font='bold').grid(row=4, column=0)
+        tk.Label(stat_frame, text="Mean: {}   Std Dev: {}".format(mean2, std_dev2)).grid(row=5, column=0)
+        tk.Label(stat_frame, text="Median: {}   Max: {}   Min: {}".format(median2, max2, min2)).grid(row=6, column=0)
+
+        run_root.mainloop()  # continues running run root
+        # TODO getting "ttk:ThemeChanged" error after sim run --> don't know why
+        # TODO fix graphing error when rerunning inside the gui .. plots trader eff dist into SD graph..
+
 
 if __name__ == "__main__":
     # setup gui
