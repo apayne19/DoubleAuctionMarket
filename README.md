@@ -13,7 +13,14 @@
    * Alexander Payne
       * Graduated from George Mason University with a BS in Economics
       * Lead Python Developer at The Center for the Study of Neuroeconomics
+      * Technical Analyst at Accenture starting April 2018
       * LinkedIn link: https://www.linkedin.com/in/alex-david-payne/
+      
+### Work Cited
+   * Dr. Dave Cliff
+      * Trader_AA and Trader_ZIP strategies are based on code from his repository
+   * Repository link: https://github.com/davecliff/BristolStockExchange
+   * Website link: http://people.cs.bris.ac.uk/~dc/
 ### ------------------------------------------------------------------------------------------------------------
 
 #### This project will allow the user to experiment with several tools to simulate markets and analyze trading strategies
