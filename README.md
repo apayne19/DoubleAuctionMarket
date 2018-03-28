@@ -1,5 +1,4 @@
 # DoubleAuctionMarket
-
 ## Experimental Market Simulations
 
 ### ------------------------------------------------------------------------------------------------------------
@@ -28,7 +27,7 @@
 
 #### Setting Market Parameters
    * After clicking submit on the file path window, a new window will appear for the user to enter market parameters
-   #### ![](https://github.com/apayne19/DoubleAuctionMarket/blob/master/Data/icons/Data Entry.JPG)
+   #### ![](https://github.com/apayne19/DoubleAuctionMarket/blob/master/Data/icons/data_entry.JPG)
    * Step a). the user will need to name the session
       * a unique name is recommended
       * this name must change with every use of the gui, or will result in file errors
@@ -41,7 +40,7 @@
          - this process will be explained below      
       * after selecting a file, the user can click the Show button to the right of the parameter
       * clicking this button will show the supply/demand graph and the buyer/seller info in that file
-         ##### ![](https://github.com/apayne19/DoubleAuctionMarket/blob/master/Data/icons/sd_info.JPG)
+         ##### ![](https://github.com/apayne19/DoubleAuctionMarket/blob/master/Data/icons/sd_info.JPG) ![](https://github.com/apayne19/DoubleAuctionMarket/blob/master/Data/icons/sd_show.JPG)
             
    * Step c). number of period shocks and number of round shocks can be set
       * these parameters are optional and can be left at 0 if no shocks desired
