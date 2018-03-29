@@ -421,34 +421,23 @@ class MarketGui():
                 box = messagebox.askyesno("PROCEED?",
                                           "Check that parameters are set correctly \n Do you wish to continue?")
             if box == True:  # if user clicked "OK" on proceed message
-                try:
-                    os.makedirs(
-                        self.output_path + "/" + self.string_session_name.get())  # creates folder for session data
+                self.num_periods = int(self.string_periods.get())
+                self.num_r_shocks = int(self.string_round_shocks.get())
+                self.num_p_shocks = int(self.string_period_shocks.get())
+                self.root.title(self.string_session_name.get())
 
-                except FileExistsError:
-                    self.save_file_trigger = True
-                    messagebox.askokcancel("FILE ERROR",
-                                           "File with session name already exists... \n Please rename session \n OR \n Please delete previous file in project_path")
-                    raise  # raises error if folder already exists
-                if self.save_file_trigger == False:
-                    self.num_periods = int(self.string_periods.get())
-                    self.num_r_shocks = int(self.string_round_shocks.get())
-                    self.num_p_shocks = int(self.string_period_shocks.get())
-                    self.root.title(self.string_session_name.get())
+                if self.num_p_shocks > 0:  # Build array if useful
+                    self.pshock_values = self.build_array(self.num_p_shocks, self.num_p_shocks)
+                if self.num_r_shocks > 0:  # Build array if useful
+                    self.rshock_values = self.build_array(self.num_r_shocks, self.num_r_shocks)
 
-                    if self.num_p_shocks > 0:  # Build array if useful
-                        self.pshock_values = self.build_array(self.num_p_shocks, self.num_p_shocks)
-                    if self.num_r_shocks > 0:  # Build array if useful
-                        self.rshock_values = self.build_array(self.num_r_shocks, self.num_r_shocks)
+                self.show_shock_frames()  # calls show_player_frames --> builds frame
+                self.sec.set_market_parms([self.string_session_name.get(), self.num_buyers, self.num_sellers, self.num_units])
+                run_frame = tk.LabelFrame(self.root, text="Run Simulation")
+                run_frame.grid(row=1, column=3)
+                run_button = tk.Button(run_frame, text="Run", width=4, command=self.check_sim)
+                run_button.grid(row=0, column=0, padx=30)
 
-                    self.show_shock_frames()  # calls show_player_frames --> builds frame
-                    self.sec.set_market_parms([self.string_session_name.get(), self.num_buyers, self.num_sellers, self.num_units])
-                    run_frame = tk.LabelFrame(self.root, text="Run Simulation")
-                    run_frame.grid(row=1, column=3)
-                    run_button = tk.Button(run_frame, text="Run", width=4, command=self.run_sim)
-                    run_button.grid(row=0, column=0, padx=30)
-                else:
-                    pass
             else:  # if user clicked "Cancel" on proceed message
                 print("Continuing")
         else:
@@ -495,6 +484,9 @@ class MarketGui():
             # creates a drop down menu to choose strategies
 
     def show_pshock_frame(self):
+        # TODO add error check for p shock > num periods
+        # TODO add error check for r shock is int
+        # TODO add these shocks to rum_sim()
         pf = tk.LabelFrame(self.root, text="Period Shock Entries")
         pf.grid(row=2, column=1, sticky=tk.W +
                                         tk.E + tk.N + tk.S, padx=15, pady=4)
@@ -526,6 +518,9 @@ class MarketGui():
             tk.Label(pf, text="Instant\nShocks\nEnabled").grid(row=0, column=0)
 
     def show_rshock_frame(self):
+        # TODO add error check for r shock > num shocks
+        # TODO add error check for r shock is int
+        # TODO add these shocks to run_sim()
         rf = tk.LabelFrame(self.root, text="Round Shock Entries")
         rf.grid(row=2, column=2, sticky=tk.W +
                                         tk.E + tk.N + tk.S, padx=15, pady=4)
@@ -614,71 +609,99 @@ class MarketGui():
                                           "1 or more trader strategy has not been set \n --> Please check")
             else:
                 pass
-        # the error checks below will look to see if instant shocks are enabled...
-        # ... if they are: will check to make sure shift direction and strategy are set
-        # ... if not: will check to make sure period and round shocks ids and files are set
-        # ... if not and period shocks and round shocks not set: will interpret as user bypassing market shocks
-        if self.instant_shocks.get() == 0:  # if instant shocks disabled
-            self.r_shock_trigger = False  # sets alarms for p shocks and r shocks
-            self.p_shock_trigger = False
+        if self.strategy_trigger == False:
+            # the error checks below will look to see if instant shocks are enabled...
+            # ... if they are: will check to make sure shift direction and strategy are set
+            # ... if not: will check to make sure period and round shocks ids and files are set
+            # ... if not and period shocks and round shocks not set: will interpret as user bypassing market shocks
+            if self.instant_shocks.get() == 0:  # if instant shocks disabled
+                self.r_shock_trigger = False  # sets alarms for p shocks and r shocks
+                self.p_shock_trigger = False
 
-            for i in range(self.num_r_shocks):
-                if self.r_shock_ids[i].get() == "":  # if any entries blank
-                    self.r_shock_trigger = True  # trigger alarm
-                    tk.messagebox.askokcancel("ROUND SHOCK ERROR",
-                                              "Round to shock has not been specified \n --> Please check")
-                elif self.r_shock_files[i].get() == "":
-                    self.r_shock_trigger = True
-                    tk.messagebox.askokcancel("ROUND SHOCK ERROR",
-                                              "Round shock data file has not been set \n --> Please check")
-                else:
-                    pass  # keep checking
+                for i in range(self.num_r_shocks):
+                    if self.r_shock_ids[i].get() == "":  # if any entries blank
+                        self.r_shock_trigger = True  # trigger alarm
+                        tk.messagebox.askokcancel("ROUND SHOCK ERROR",
+                                                  "Round to shock has not been specified \n --> Please check")
+                    elif self.r_shock_files[i].get() == "":
+                        self.r_shock_trigger = True
+                        tk.messagebox.askokcancel("ROUND SHOCK ERROR",
+                                                  "Round shock data file has not been set \n --> Please check")
+                    else:
+                        pass  # keep checking
 
-            for i in range(self.num_p_shocks):
-                if self.p_shock_ids[i].get() == "":
-                    self.p_shock_trigger = True
-                    tk.messagebox.askokcancel("PERIOD SHOCK ERROR",
-                                              "Period to shock has not been specified \n --> Please check")
-                elif self.p_shock_files[i].get() == "":
-                    self.p_shock_trigger = True
-                    tk.messagebox.askokcancel("PERIOD SHOCK ERROR",
-                                              "Period shock data file has not been set \n --> Please check")
+                for i in range(self.num_p_shocks):
+                    if self.p_shock_ids[i].get() == "":
+                        self.p_shock_trigger = True
+                        tk.messagebox.askokcancel("PERIOD SHOCK ERROR",
+                                                  "Period to shock has not been specified \n --> Please check")
+                    elif self.p_shock_files[i].get() == "":
+                        self.p_shock_trigger = True
+                        tk.messagebox.askokcancel("PERIOD SHOCK ERROR",
+                                                  "Period shock data file has not been set \n --> Please check")
+                    else:
+                        pass  # else no errors found
+            else:  # if instant shocks enabled
+                self.i_shock_trigger = False  # set alarm
+                if self.buyer_shift.get() == "":  # if instant shock entries blank
+                    self.i_shock_trigger = True  # trigger alarm
+                    tk.messagebox.askokcancel("INSTANT SHOCK ERROR",
+                                              "Buyer Shift Direction has not been set \n --> Please check")
+                elif self.buyer_replace_strategy.get() == "":
+                    self.i_shock_trigger = True
+                    tk.messagebox.askokcancel("INSTANT SHOCK ERROR",
+                                              "Buyer Shift Strategy has not been set \n --> Please check")
+                elif self.seller_shift.get() == "":
+                    self.i_shock_trigger = True
+                    tk.messagebox.askokcancel("INSTANT SHOCK ERROR",
+                                              "Seller Shift Direction has not been set \n --> Please check")
+                elif self.seller_replace_strategy.get() == "":
+                    self.i_shock_trigger = True
+                    tk.messagebox.askokcancel("INSTANT SHOCK ERROR",
+                                              "Seller Shift Strategy has not been set \n --> Please check")
                 else:
                     pass  # else no errors found
-        else:  # if instant shocks enabled
-            self.i_shock_trigger = False  # set alarm
-            if self.buyer_shift.get() == "":  # if instant shock entries blank
-                self.i_shock_trigger = True  # trigger alarm
-                tk.messagebox.askokcancel("INSTANT SHOCK ERROR",
-                                          "Buyer Shift Direction has not been set \n --> Please check")
-            elif self.buyer_replace_strategy.get() == "":
-                self.i_shock_trigger = True
-                tk.messagebox.askokcancel("INSTANT SHOCK ERROR",
-                                          "Buyer Shift Strategy has not been set \n --> Please check")
-            elif self.seller_shift.get() == "":
-                self.i_shock_trigger = True
-                tk.messagebox.askokcancel("INSTANT SHOCK ERROR",
-                                          "Seller Shift Direction has not been set \n --> Please check")
-            elif self.seller_replace_strategy.get() == "":
-                self.i_shock_trigger = True
-                tk.messagebox.askokcancel("INSTANT SHOCK ERROR",
-                                          "Seller Shift Strategy has not been set \n --> Please check")
-            else:
-                pass  # else no errors found
 
-        if self.strategy_trigger == False:  # if no blanks in trader strategies
-            if self.instant_shocks.get() == 0:  # if instant shocks disabled
-                if self.r_shock_trigger == False and self.p_shock_trigger == False:  # if error checks clean
-                    self.run_sim()  # run simulation
+                    self.save_file_trigger = False
+                    try:
+                        os.makedirs(
+                            self.output_path + "/" + self.string_session_name.get())  # creates folder for session data
+
+                    except FileExistsError:
+                        self.save_file_trigger = True
+                        messagebox.askokcancel("FILE ERROR",
+                                               "File with session name already exists... \n Please rename session \n OR \n Please delete previous file in project_path")
+                        raise  # raises error if folder already exists
+
+            if self.strategy_trigger == False:  # if no blanks in trader strategies
+                self.save_file_trigger = False
+                try:
+                    os.makedirs(
+                        self.output_path + "/" + self.string_session_name.get())  # creates folder for session data
+
+                except FileExistsError:
+                    self.save_file_trigger = True
+                    messagebox.askokcancel("FILE ERROR",
+                                           "File with session name already exists... \n Please rename session \n OR \n Please delete previous file in project_path")
+                    raise  # raises error if folder already exists
+
+                if self.save_file_trigger == False:
+                    if self.instant_shocks.get() == 0:  # if instant shocks disabled
+                        if self.r_shock_trigger == False and self.p_shock_trigger == False:  # if error checks clean
+                            self.run_sim()  # run simulation
+                        else:
+                            pass  # else hold for r shock/p shock fixes from user
+                    else:
+                        if self.i_shock_trigger == False:  # if instant shock entries filled
+                            self.run_sim()  # run simulation
+                        else:
+                            pass  # else hold for instant shock fixes from user
                 else:
-                    pass  # else hold for r shock/p shock fixes from user
+                    pass
             else:
-                if self.i_shock_trigger == False:  # if instant shock entries filled
-                    self.run_sim()  # run simulation
-                else:
-                    pass  # else hold for instant shock fixes from user
+                pass  # else hold for strategy fixes from user
         else:
-            pass  # else hold for strategy fixes from user
+            pass  # else hold for session name change
 
 
     def run_sim(self):
