@@ -40,7 +40,7 @@ class SpotSystem(object):
         self.deal_status = None
         self.t = None
         self.d = None
-        self.instant_shock_trigger = None
+        self.trader_replace_trigger = None
 
     def init_spot_system(self, name, limits, rounds, input_path, input_file, output_path, session_name):
         self.name = name  # session name
@@ -79,14 +79,14 @@ class SpotSystem(object):
     def load_market_gui(self, input_path, input_file, output_path, session_name, fig_name):
         self.mkt.prepare_market_gui(input_path, input_file, output_path, session_name, fig_name)  # set and show market
 
-    def run(self, instant_shock_trigger, buyer_shift, buyer_replace_strategy, seller_shift,
-                   seller_replace_strategy, num_buyers, num_sellers):
-        self.run_system(instant_shock_trigger, buyer_shift, buyer_replace_strategy, seller_shift,
-                   seller_replace_strategy, num_buyers, num_sellers)  # starts market by calling method below
+    def run(self, replace_trader_trigger, buyer_replace_strategy, seller_replace_strategy,
+            num_buyers, num_sellers):
+        self.run_system(replace_trader_trigger, buyer_replace_strategy, seller_replace_strategy,
+                        num_buyers, num_sellers)  # starts market by calling method below
 
-    def run_system(self, instant_shock_trigger, buyer_shift, buyer_replace_strategy, seller_shift,
-                   seller_replace_strategy, num_buyers, num_sellers):
-        self.instant_shock_trigger = instant_shock_trigger
+    def run_system(self, trader_replace_trigger, buyer_replace_strategy, seller_replace_strategy,
+                   num_buyers, num_sellers):
+        self.trader_replace_trigger = trader_replace_trigger
         self.da.open_board("tournament official")
         num_contracts = 1  # shouldnt this be 0??
         if self.display:  # if display = true (if tournament still running)
@@ -129,47 +129,32 @@ class SpotSystem(object):
                         print("#asks: " + str(self.number_asks))
                         # prints info for each trader
                         num_contracts = num_contracts + 1  # add 1 to contracts number
-                        if self.instant_shock_trigger == 1:
-                            '''Attempting to create instantaneous market shocks below'''
+                        if self.trader_replace_trigger == 1:
+                            '''Trader replacement process happening below'''
                             # buyer/seller edits complete
                             # TODO work needed on this section!
                             buyer_out = contracts[len(contracts) - 1][1]  # obtains transacting buyer
                             seller_out = contracts[len(contracts) - 1][2]  # obtains transacating seller
                             print("Buyer_out= " + str(buyer_out))
                             print("Seller_out= " + str(seller_out))
-                            b_index = buyer_out[1:]  # gets index position of transacting buyer
-                            s_index = seller_out[1:]  # gets index position of transacting seller
-                            print("Buyer_out Value:" + str(self.d[buyer_out]['values']))
-                            print("Seller_out Value:" + str(self.d[seller_out]['costs']))
+                            buyer_out_index = buyer_out[1:]  # gets index position of transacting buyer
+                            seller_out_index = seller_out[1:]  # gets index position of transacting seller
+                            buyer_out_value = self.d[buyer_out]['values']
+                            seller_out_cost = self.d[seller_out]['costs']
+                            print("Buyer_out Value:" + str(buyer_out_value))
+                            print("Seller_out Value:" + str(seller_out_cost))
                             print("before: " + str(self.d))  # print before shock
                             # TODO need to generalize code to num sellers and num buyers
-                            try:
-                                b_switch_value = self.d['t' + str(int(b_index) + 1)]['values']
-                            except KeyError:
-                                b_switch_value = self.d['t10']['values']  # TODO change this
-
-                            try:
-                                s_switch_value = self.d['t' + str(int(s_index) - 1)]['costs']
-                            except KeyError:
-                                s_switch_value = self.d['t21']['costs']  # TODO change this
-
-                            if buyer_shift == "Right":
-                                self.d['t' + str(int(b_index) + 1)] = self.d[buyer_out]  # recycles value to right
-                            else:
-                                self.d['t' + str(int(b_index) - 1)] = self.d[buyer_out]  # recycles value to left
-                            if seller_shift == "Right":
-                                self.d['t' + str(int(s_index) + 1)] = self.d[seller_out]  # recycles value to right
-                            else:
-                                self.d['t' + str(int(s_index) - 1)] = self.d[seller_out]  # recycles value to left
-
-                            del self.d[buyer_out]  # removes successful buyer from market
-                            del self.d[seller_out]  # removes successful seller from market
+                            exiting_traders = []
+                            # TODO append these into exiting_traders
+                            del self.d[buyer_out]  # removes successful buyer info from market
+                            del self.d[seller_out]  # removes successful seller info from market
 
                             dict_list = list(self.d.items())  # changes static dictionary to list for edits
                             print(dict_list)  # print during shock
                             # insert new trader info into list
-                            dict_list.insert(int(b_index), (str(buyer_out), {'units': 0, 'earn': 0, 'strat': 'Trader_AA', 'type': 'B', 'values': b_switch_value}))
-                            dict_list.insert(int(s_index), (str(seller_out), {'units': 0, 'earn': 0, 'strat': 'Trader_AA', 'type': 'S', 'costs': s_switch_value}))
+                            dict_list.insert(int(buyer_out_index), (str(buyer_out), {'units': 0, 'earn': 0, 'strat': str(buyer_replace_strategy), 'type': 'B', 'values': buyer_out_value}))
+                            dict_list.insert(int(seller_out_index), (str(seller_out), {'units': 0, 'earn': 0, 'strat': str(seller_replace_strategy), 'type': 'S', 'costs': seller_out_cost}))
                             list_dict = dict(dict_list)  # turns edited list back into dictionary
                             print("after")  # print after shock
                             for i in list_dict:

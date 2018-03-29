@@ -83,7 +83,7 @@ class MarketGui():
         self.buyer_replace_strategy = tk.StringVar()
         self.seller_replace_strategy = tk.StringVar()
 
-        self.instant_shocks = tk.IntVar()
+        self.trader_replace = tk.IntVar()
 
         self.current_row = 0  # setting current read row to 0... self.current_row+1 would read next row
         self.current_row_contents = []
@@ -111,7 +111,7 @@ class MarketGui():
         self.strategy_trigger = False  # safety feature when rerunning in gui: if same parameters used = True
         self.r_shock_trigger = False
         self.p_shock_trigger = False
-        self.i_shock_trigger = False
+        self.replace_trader_trigger = False
         self.display_sd_info = False
 
     def build_array(self, num_1, num_2):  # builds an array for buyers:values and sellers:costs
@@ -165,7 +165,6 @@ class MarketGui():
         # create project name label and entry
         tk.Label(info_bar, text="Session Name").grid(row=0, column=0, padx=10)
         tk.Entry(info_bar, width=15, justify=tk.LEFT, textvariable=self.string_session_name).grid(row=1, column=0)
-
 
         # create number of buyers label and entry
         tk.Label(info_bar, text="Period Shocks").grid(row=0, column=1, padx=10)
@@ -228,32 +227,28 @@ class MarketGui():
         create_button.grid(row=0, column=0, padx=30)
 
         # creates a frame within the infobar to set instant shocks
-        instant_shock_frame = tk.LabelFrame(info_bar, text="Instantaneous Market Shocks")
-        instant_shock_frame.grid(row=3, column=3, columnspan=5)
+        '''If this feature is enabled will execute code in spot_system.py ---> run_system() --> line 133'''
+        trader_replace_frame = tk.LabelFrame(info_bar, text="Trader Replacement")
+        trader_replace_frame.grid(row=3, column=3, columnspan=5)
 
         # creates a check box for enabling instantaneous market shocks
-        shock_button = tk.Checkbutton(instant_shock_frame, text="Enabled", variable=self.instant_shocks)
-        shock_button.grid(row=0, column=0)
+        enable_button = tk.Checkbutton(trader_replace_frame, text="Enabled", variable=self.trader_replace)
+        enable_button.grid(row=0, column=0)
 
         # button that displays info about instantaneous market shocks
-        explain2_button = tk.Button(instant_shock_frame, text="Explain", width=7, command=self.explain2_clicked)
+        explain2_button = tk.Button(trader_replace_frame, text="Explain", width=7, command=self.explain2_clicked)
         explain2_button.grid(row=0, column=1)
 
         # creates button to explain the different trading strategies that the user can use
-        strat_info_button = tk.Button(instant_shock_frame, text="Strategy Descriptions", width=16,
+        strat_info_button = tk.Button(trader_replace_frame, text="Strategy Descriptions", width=16,
                                       command=self.strategy_message)
         strat_info_button.grid(row=0, column=2)
 
-        tk.Label(instant_shock_frame, text="Direction").grid(row=1, column=1, pady=5)
-        tk.Label(instant_shock_frame, text="Strategy").grid(row=1, column=2, pady=5)
-
-        tk.Label(instant_shock_frame, text="Buyer Shift: ").grid(row=2, column=0)
-        ttk.Combobox(instant_shock_frame, values=["Right", "Left"], textvariable=self.buyer_shift, state='readonly').grid(row=2, column=1)
-        ttk.Combobox(instant_shock_frame, values=self.strategies, textvariable=self.buyer_replace_strategy, state='readonly').grid(row=2, column=2)
-
-        tk.Label(instant_shock_frame, text="Seller Shift: ").grid(row=3, column=0)
-        ttk.Combobox(instant_shock_frame, values=["Right", "Left"], textvariable=self.seller_shift, state='readonly').grid(row=3, column=1)
-        ttk.Combobox(instant_shock_frame, values=self.strategies, textvariable=self.seller_replace_strategy, state='readonly').grid(row=3, column=2)
+        tk.Label(trader_replace_frame, text="Strategy").grid(row=1, column=1, pady=5)
+        tk.Label(trader_replace_frame, text="New Buyer: ").grid(row=2, column=0)
+        ttk.Combobox(trader_replace_frame, values=self.strategies, textvariable=self.buyer_replace_strategy, state='readonly').grid(row=2, column=1)
+        tk.Label(trader_replace_frame, text="New Seller: ").grid(row=3, column=0)
+        ttk.Combobox(trader_replace_frame, values=self.strategies, textvariable=self.seller_replace_strategy, state='readonly').grid(row=3, column=1)
 
     '''The comand below generates a tk messagebox to explain the different institutions that can be used'''
     def explain1_clicked(self):
@@ -274,15 +269,12 @@ class MarketGui():
     '''The command below generates a tk messagebox to explain the use of instantaneous market shocks'''
     def explain2_clicked(self):
         explain2_message = "\nEnabling this feature will disable period and round shocks" \
-                          "\n \nAn instantaneous market shock will occur when a contract is made" \
+                          "\n \nTrader replacement will occur when a contract is made" \
                           " between a seller and a buyer." \
                           "\n \nThis will result in those buyer's and seller's private values" \
-                          " being recycled to the trader on their left or right." \
-                          "\n \nA new buyer and seller will then enter the market to replace" \
-                          " the exiting seller and buyer." \
-                          "\n \nThese new traders will take private values that keep the supply" \
-                          " and demand schedule constant throughout trading."
-        tk.messagebox.askokcancel("INSTANTANEOUS MARKET SHOCKS", explain2_message)
+                          " being recycled to the new buyer and new seller entering the market." \
+                          "\n \nThis will result in keeping the supply and demand constant."
+        tk.messagebox.askokcancel("TRADER REPLACEMENT", explain2_message)
 
     '''The command below generates a tk messagebox to explain the use of strategies that the user can use'''
     def strategy_message(self):
@@ -382,7 +374,7 @@ class MarketGui():
             self.parameters_trigger = True
             messagebox.askokcancel("MAX PRICE ERROR", "Price ceiling has not been set \n --> Please set a maximum price for the market")
 
-        elif self.instant_shocks.get() == 1:  # if instant shocks enabled
+        elif self.trader_replace.get() == 1:  # if instant shocks enabled
             if self.buyer_shift.get() == "":  # if blank
                 self.parameters_trigger = True  # trigger alarm
                 tk.messagebox.askokcancel("BUYER SHIFT ERROR", "Instant Shocks Enabled \n --> Please set buyer shift direction")
@@ -409,7 +401,7 @@ class MarketGui():
         # lastly ask user to make sure all parameters have been set correctly
         if self.parameters_trigger == False:  # if all error checks clean
             # if instant shocks enabled ask user to do parameter check
-            if self.instant_shocks.get() == 1:
+            if self.trader_replace.get() == 1:
                 box = messagebox.askyesno("PROCEED?",
                                           "Check that parameters are set correctly \n Do you wish to continue?")
             # if round shocks and period shocks not set and instant shocks disabled...
@@ -491,7 +483,7 @@ class MarketGui():
         pf.grid(row=2, column=1, sticky=tk.W +
                                         tk.E + tk.N + tk.S, padx=15, pady=4)
 
-        if self.instant_shocks.get() == 0:  # if instant shocks disabled
+        if self.trader_replace.get() == 0:  # if instant shocks disabled
             if self.num_p_shocks == 0: return   # Nothing to show
 
             self.p_shock_ids = [k for k in range(self.num_p_shocks)]  # will become list of tk.stringvar()
@@ -524,7 +516,7 @@ class MarketGui():
         rf = tk.LabelFrame(self.root, text="Round Shock Entries")
         rf.grid(row=2, column=2, sticky=tk.W +
                                         tk.E + tk.N + tk.S, padx=15, pady=4)
-        if self.instant_shocks.get() == 0:
+        if self.trader_replace.get() == 0:
             if self.num_r_shocks == 0: return  # Nothing to show
 
             self.r_shock_ids = [k for k in range(self.num_r_shocks)]
@@ -610,11 +602,11 @@ class MarketGui():
             else:
                 pass
         if self.strategy_trigger == False:
-            # the error checks below will look to see if instant shocks are enabled...
-            # ... if they are: will check to make sure shift direction and strategy are set
+            # the error checks below will look to see if trader replace is enabled...
+            # ... if they are: will check to make sure shift strategy is set
             # ... if not: will check to make sure period and round shocks ids and files are set
-            # ... if not and period shocks and round shocks not set: will interpret as user bypassing market shocks
-            if self.instant_shocks.get() == 0:  # if instant shocks disabled
+
+            if self.trader_replace.get() == 0:  # if trader replace disabled
                 self.r_shock_trigger = False  # sets alarms for p shocks and r shocks
                 self.p_shock_trigger = False
 
@@ -642,21 +634,13 @@ class MarketGui():
                     else:
                         pass  # else no errors found
             else:  # if instant shocks enabled
-                self.i_shock_trigger = False  # set alarm
-                if self.buyer_shift.get() == "":  # if instant shock entries blank
-                    self.i_shock_trigger = True  # trigger alarm
-                    tk.messagebox.askokcancel("INSTANT SHOCK ERROR",
-                                              "Buyer Shift Direction has not been set \n --> Please check")
-                elif self.buyer_replace_strategy.get() == "":
-                    self.i_shock_trigger = True
+                self.replace_trader_trigger = False  # set alarm
+                if self.buyer_replace_strategy.get() == "":
+                    self.replace_trader_trigger = True
                     tk.messagebox.askokcancel("INSTANT SHOCK ERROR",
                                               "Buyer Shift Strategy has not been set \n --> Please check")
-                elif self.seller_shift.get() == "":
-                    self.i_shock_trigger = True
-                    tk.messagebox.askokcancel("INSTANT SHOCK ERROR",
-                                              "Seller Shift Direction has not been set \n --> Please check")
                 elif self.seller_replace_strategy.get() == "":
-                    self.i_shock_trigger = True
+                    self.replace_trader_trigger = True
                     tk.messagebox.askokcancel("INSTANT SHOCK ERROR",
                                               "Seller Shift Strategy has not been set \n --> Please check")
                 else:
@@ -686,13 +670,13 @@ class MarketGui():
                     raise  # raises error if folder already exists
 
                 if self.save_file_trigger == False:
-                    if self.instant_shocks.get() == 0:  # if instant shocks disabled
+                    if self.trader_replace.get() == 0:  # if instant shocks disabled
                         if self.r_shock_trigger == False and self.p_shock_trigger == False:  # if error checks clean
                             self.run_sim()  # run simulation
                         else:
                             pass  # else hold for r shock/p shock fixes from user
                     else:
-                        if self.i_shock_trigger == False:  # if instant shock entries filled
+                        if self.replace_trader_trigger == False:  # if instant shock entries filled
                             self.run_sim()  # run simulation
                         else:
                             pass  # else hold for instant shock fixes from user
@@ -711,7 +695,6 @@ class MarketGui():
         # finds the dimension of user's computer screen and sizes root to fit
         run_root.geometry(str(GetSystemMetrics(0)) + "x" + str(GetSystemMetrics(1)))
 
-        # TODO use same process to obtain market shocks set in market_gui!
         # This obtains the strategies that the user sets in market_gui
         # returns a list of the trader's strategies
         strat_list = []
@@ -754,8 +737,8 @@ class MarketGui():
             # random.shuffle(rnd_traders)  # shuffles trader order per period  # TODO random shuffle or no?
             smp.init_traders(rnd_traders, k)
             print("**** Running Period {}".format(k))  # provides visual effect in editor
-            smp.run_period(period, session, self.instant_shocks.get(), self.buyer_shift.get(),
-                           self.buyer_replace_strategy.get(), self.seller_shift.get(), self.seller_replace_strategy.get(),
+            smp.run_period(period, session, self.trader_replace.get(),
+                           self.buyer_replace_strategy.get(), self.seller_replace_strategy.get(),
                            self.num_buyers, self.num_sellers)  # runs period
             timer_stop = timer()  # ends period timer
             results = smp.eval()  # evaluation function called --> returns data
@@ -783,14 +766,12 @@ class MarketGui():
 
 
         # creates a frame to display instant shocks if enabled
-        if self.instant_shocks.get() == 1:
+        if self.trader_replace.get() == 1:
             move_column = 2  # will change column position of next tk.labelframe
             shock_frame = tk.LabelFrame(run_root, text="Instantaneous Shocks", font='bold')
             shock_frame.grid(row=1, column=1)
-            tk.Label(shock_frame, text="Buyer Shift Direction: " + str(self.buyer_shift.get())).grid(row=0, column=0)
-            tk.Label(shock_frame, text="Buyer Strategy Replaced: " + str(self.buyer_replace_strategy.get())).grid(row=1, column=0)
-            tk.Label(shock_frame, text="Seller Shift Direction: " + str(self.seller_shift.get())).grid(row=2, column=0)
-            tk.Label(shock_frame, text="Seller Strategy Replaced: " + str(self.seller_replace_strategy.get())).grid(row=3, column=0)
+            tk.Label(shock_frame, text="New Buyer Strategy: " + str(self.buyer_replace_strategy.get())).grid(row=1, column=0)
+            tk.Label(shock_frame, text="New Seller Strategy: " + str(self.seller_replace_strategy.get())).grid(row=3, column=0)
         else:
             move_column = 1  # if no instant shocks then next tk.labelframe column =1
             pass
@@ -935,7 +916,8 @@ class MarketGui():
         label6.pack()
 
         # TODO delete temp folder of mini images or no?
-
+        import shutil
+        shutil.rmtree(temp_folder)
         # below creates a statistics frame to display next to trader efficiency distribution graph
         stat_frame = tk.LabelFrame(run_root, text="Trader Efficiency Statistics")
         stat_frame.grid(row=2, column=3)
