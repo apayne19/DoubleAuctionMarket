@@ -276,7 +276,7 @@ class Trader_ZIC(object):
     """Trader using Zero Intelligence Constrained strategy from Gode/Sunder(1993)
     ## submits random bids/asks between standing bid/standing ask and individual limit valuations
     --> supposedly represents human trading behavior
-    --> Plott et al.(2002) show that ZIC does not display human behavior"""
+    --> Academic Paper: Plott et al.(2002)"""
     def __init__(self):
         self.name = ""
         self.type = ""
@@ -284,48 +284,42 @@ class Trader_ZIC(object):
         self.costs = []
 
     def offer(self, contracts, standing_bid, standing_ask, period, number_bids, number_asks, pmax, pmin, round_num, total_rounds, zip_margin):
+        # this trader only has contract list, standing bid, and standing ask information available to it
         num_contracts = 0  # intialize number of contracts
-
-        if self.type == "buyer":
+        if self.type == "buyer":  # if trader designated as a buyer in market
             # find out how many contracts you have
-            for contract in contracts:
-                if contract[1] == self.name:  # second position is buyer_id
-                    num_contracts = num_contracts + 1
-            if num_contracts >= len(self.values):
+            for contract in contracts:  # search contracts list
+                if contract[1] == self.name:  # second position in contracts list is buyer_id
+                    num_contracts = num_contracts + 1  # count of contracts with that buyer
+            if num_contracts >= len(self.values):  # if buyer's number of contracts = max units trader can buy
                 return []  # You can't bid anymore
-            cur_value = self.values[num_contracts]  # this is the current value working on
-
-            # TODO Put in bidding or buying strategy
-            if standing_bid:
-                if cur_value > standing_bid:
+            cur_value = self.values[num_contracts]  # this is the max value a buyer is willing to spend
+            if standing_bid:  # if there is a current bid in the market
+                if cur_value > standing_bid:  # if buyer's max value is greater than current bid
                         bid = random.randint(standing_bid, cur_value)  # random number between
-                        return ["B", self.name, bid]
-                else:
-                    return []
-
-            else:
-                bid = 1
-                return["B", self.name, bid]
-        else:
+                        return ["B", self.name, bid]  # place bid
+                else:  # current bid exceed buyer's max value
+                    return []  # no bid
+            else:  # else no current bid in market
+                bid = 1  # bid the lowest
+                return["B", self.name, bid]  # return bid
+        else:  # else trader is a seller in the market
             # find out how many contracts you have
-            for contract in contracts:
-                if contract[2] == self.name:  # third position is seller id
-                    num_contracts = num_contracts + 1
-            if num_contracts >= len(self.costs):
+            for contract in contracts:  # search contracts list
+                if contract[2] == self.name:  # third position in contracts list is seller id
+                    num_contracts = num_contracts + 1  # count of contracts with that seller
+            if num_contracts >= len(self.costs):  # if trader's number of contracts = max units trader can sell
                 return []  # You can't ask anymore
-            cur_cost = self.costs[num_contracts]  # this is the current value working on
-
-            # TODO Put in asking or selling strategy
-            if standing_ask:
-                if cur_cost < standing_ask:
+            cur_cost = self.costs[num_contracts]  # this is the lowest a seller can sell the unit
+            if standing_ask:  # if current sell offer in market
+                if cur_cost < standing_ask:  # if seller's cost less than current sell offer
                         ask = random.randint(cur_cost, standing_ask)  # random number between
-                        return ["S", self.name, ask]
-                else:
-                    return []
-
-            else:
-                ask = 399
-                return["S", self.name, ask]
+                        return ["S", self.name, ask]  # place sell offer
+                else:  # else current sell offer exceeds seller's cost
+                    return []  # no sell offer
+            else:  # else no current sell offer in market
+                ask = 399  # ask the highest
+                return["S", self.name, ask]  # place sell offer
 
 class Trader_ZIU(object):
     """ A class always increases bid by 3, decreases ask by 3, does not take cur_value or cur_cost into account

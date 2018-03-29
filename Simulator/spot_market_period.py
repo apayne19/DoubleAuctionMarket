@@ -71,10 +71,10 @@ class SpotMarketPeriod(object):
         self.sys.init_traders(traders, period_k)
         # initializes trader building in spot system, passes strategies and period number
 
-    def run(self, instant_shock_trigger, buyer_shift, buyer_replace_strategy, seller_shift,
-                   seller_replace_strategy, num_buyers, num_sellers):
-        self.sys.run(instant_shock_trigger, buyer_shift, buyer_replace_strategy, seller_shift,
-                   seller_replace_strategy, num_buyers, num_sellers)  # runs spot system run_period() --> starts double auction
+    def run(self, replace_trader_trigger, buyer_replace_strategy, seller_replace_strategy,
+            num_buyers, num_sellers):
+        self.sys.run(replace_trader_trigger, buyer_replace_strategy, seller_replace_strategy,
+                     num_buyers, num_sellers)  # runs spot system run_period() --> starts double auction
 
     def eval(self):
         return self.sys.eval()  # runs eval method from spot_system returns results
@@ -312,13 +312,11 @@ class SpotMarketPeriod(object):
     def trader_eff_gui(self):
         return sorted(self.sys.eff_list)
 
-
-
-    def run_period(self, period, header, instant_shock_trigger, buyer_shift, buyer_replace_strategy, seller_shift,
+    def run_period(self, period, header, replace_trader_trigger, buyer_replace_strategy,
                    seller_replace_strategy, num_buyers, num_sellers):
         self.period = period
-        self.run(instant_shock_trigger, buyer_shift, buyer_replace_strategy, seller_shift,
-                   seller_replace_strategy, num_buyers, num_sellers)
+        self.run(replace_trader_trigger, buyer_replace_strategy, seller_replace_strategy,
+                 num_buyers, num_sellers)
 
     def save_period(self, results):
         pass
