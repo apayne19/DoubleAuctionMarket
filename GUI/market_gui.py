@@ -26,6 +26,24 @@ import scipy.stats as stats
 import GUI.spot_environment_gui
 import inspect
 instant_shock_status = 0
+
+# TODO IMPORTANT: need to clear contract list in spot system or double auction institution...
+# --> causing problems with transactions graph when re-running the simulator in market_gui
+# --> maybe clearing lists in run_sim() or spot_market_period?
+
+# TODO IMPORTANT: need to fix Supply and Demand graph error in run_sim()...
+# --> when re-running simulator in market_gui plots trader efficiency distribution in supply demand graph
+
+# TODO IMPORTANT: add round and period shocks into run_sim()...
+# --> pass r_shock_list (line 740 below) to spot_system's run_system() for round shocks
+# --> p_shock_list (line 739 below) can be used within for loop (line 775 below)
+
+# TODO IMPORTANT: fix tkinter error after sim run...
+# --> getting "ttk:ThemeChanged... event destroyed" error after sim run --> don't know why
+
+# TODO OPTIONAL: add ability for all info to be stored in json files...
+# --> could then let user choose between using excel csv or json files
+
 class MarketGui():
     def __init__(self, root, sec, project_path, output_path, name, debug=False):
         assert name != "", "Gui must have a name"
@@ -99,6 +117,7 @@ class MarketGui():
         self.project_path = project_path
         self.output_path = output_path + '/'
 
+        self.autofill_strat = tk.StringVar()
 
         # have to build menu and start the project
         self.show_menu()  # executes menu build with toolbar and help/action messages
@@ -313,20 +332,20 @@ class MarketGui():
         self.num_buyers = self.sec.get_num_buyers()
         self.num_sellers = self.sec.get_num_sellers()
         self.num_units = self.sec.get_num_units()
-        #tk.Label(data_frame, text="Buyer Values: " + str(self.sec.get_buyer_values())).grid(row=1, column=0)
-        #tk.Label(data_frame, text="Seller Costs: " + str(self.sec.get_seller_costs())).grid(row=2, column=0)
         self.sec.plot_gui(self.string_data.get())
         self.display_sd_info = True
+
     '''The function below checks to make sure that each variable is an integer'''
     def check_integer(self, check_var):
         try:
             int(check_var)  # check if integer
         except ValueError:  # value error raised if not
             self.parameters_trigger = True  # triggers parameter alarm
-            messagebox.askokcancel("INTEGER ERRORS", "An entry for periods or rounds or price ceiling or price floor is not a number \n --> Please check")
+            messagebox.askokcancel("INTEGER ERRORS", "A parameter requiring a number is not a number \n --> Please check")
         else:
             pass  # else pass to next variable check
 
+    '''The function below checks all parameters are set correctly, if not will throw error message boxes to user'''
     def on_set_parms_clicked(self):
         if self.display_sd_info == False:  # if show was not clicked will still display supply/demand information
             self.sec.load_file(self.project_path + "/" + str(self.string_data.get()))
@@ -354,6 +373,16 @@ class MarketGui():
             self.parameters_trigger = True  # trigger alarm
             messagebox.askokcancel("DATA ERROR", "A starting data file was not selected \n --> Please choose one or create one")
 
+        # check that period shocks are not blank
+        elif self.string_period_shocks.get() == "":  # if blank
+            self.parameters_trigger = True  # trigger alarm
+            messagebox.askokcancel("PERIOD SHOCK ERROR", "This entry is blank \n Please set to 0 if no shocks desired or enter the number of shocks")
+
+        # check that round shocks are not blank
+        elif self.string_round_shocks.get() == "":  # if blank
+            self.parameters_trigger = True  # trigger alarm
+            messagebox.askokcancel("ROUND SHOCK ERROR", "This entry is blank \n Please set to 0 if no shocks desired or enter the number of shocks")
+
         # check that number of periods has been set
         elif self.string_periods.get() == "" or self.string_periods.get() == '0':  # if blank or 0
             self.parameters_trigger = True  # trigger alarm
@@ -375,21 +404,19 @@ class MarketGui():
             messagebox.askokcancel("MAX PRICE ERROR", "Price ceiling has not been set \n --> Please set a maximum price for the market")
 
         elif self.trader_replace.get() == 1:  # if instant shocks enabled
-            if self.buyer_shift.get() == "":  # if blank
-                self.parameters_trigger = True  # trigger alarm
-                tk.messagebox.askokcancel("BUYER SHIFT ERROR", "Instant Shocks Enabled \n --> Please set buyer shift direction")
-            elif self.buyer_replace_strategy.get() == "":
+            if self.buyer_replace_strategy.get() == "":
                 self.parameters_trigger = True
-                tk.messagebox.askokcancel("BUYER SHIFT ERROR", "Instant Shocks Enabled \n --> Please set buyer shift strategy")
-            elif self.seller_shift.get() == "":
-                self.parameters_trigger = True
-                tk.messagebox.askokcancel("SELLER SHIFT ERROR", "Instant Shocks Enabled \n --> Please set seller shift direction")
+                tk.messagebox.askokcancel("TRADER REPLACEMENT ERROR", "New Buyer Strategy is not set \n --> Please set buyer shift strategy")
             elif self.seller_replace_strategy.get() == "":
                 self.parameters_trigger = True
-                tk.messagebox.askokcancel("SELLER SHIFT ERROR", "Instant Shocks Enabled \n --> Please set seller shift strategy")
-
+                tk.messagebox.askokcancel("TRADER REPLACEMENT ERROR", "New Seller Strategy is not set \n --> Please set seller shift strategy")
+            else:
+                parameters = [self.string_period_shocks.get(), self.string_round_shocks.get(), self.string_periods.get(),
+                              self.string_rounds.get(), self.price_floor.get(), self.price_ceiling.get()]
+                for i in parameters:
+                    self.check_integer(i)
         else:  # check each parameter = integer
-            parameters = [self.string_periods.get(), self.string_rounds.get(), self.price_floor.get(), self.price_ceiling.get()]
+            parameters = [self.string_period_shocks.get(), self.string_round_shocks.get(), self.string_periods.get(), self.string_rounds.get(), self.price_floor.get(), self.price_ceiling.get()]
             for i in parameters:
                 self.check_integer(i)
 
@@ -440,6 +467,15 @@ class MarketGui():
         self.show_rshock_frame()  # show period shocks frame for entries
         self.show_trader_strategies()  # show trader strategy frame for entries
 
+    '''The function below creates ability for user to auto fill strategies in gui'''
+    def auto_fill_strategies(self):
+        for i in range(len(self.buyer_ids)):
+            self.buyer_ids[i].set(self.autofill_strat.get())
+
+        for i in range(len(self.seller_ids)):
+            self.seller_ids[i].set(self.autofill_strat.get())
+
+    '''The function below builds a frame within the gui so that the user can set strategies for the traders'''
     def show_trader_strategies(self):
         trader_frame = tk.LabelFrame(self.root, text="Trader Strategies")
         trader_frame.grid(row=2, column=3, sticky=tk.W +
@@ -451,95 +487,96 @@ class MarketGui():
         self.buyer_ids = [k for k in range(self.num_buyers)]  # will become list of tk.stringvar()
         self.seller_ids = [k for k in range(self.num_sellers)]  # will become list of tk.stringvar()
 
+        # create labels to identify entries
         tk.Label(trader_frame, text="ID").grid(row=1, column=0)
         tk.Label(trader_frame, text="Strategy").grid(row=1, column=1)
         tk.Label(trader_frame, text="ID").grid(row=1, column=2)
         tk.Label(trader_frame, text="Strategy").grid(row=1, column=3)
 
+        autofill_button = tk.Button(trader_frame, text="Auto-fill Strategies", width=16, command=self.auto_fill_strategies)
+        autofill_button.grid(row=0, column=2)
+        autofill_strategy = ttk.Combobox(trader_frame, values=self.strategies, textvariable=self.autofill_strat, state='readonly')
+        autofill_strategy.grid(row=0, column=3)
+        self.autofill_strat.set(self.strategies[0])
         # these create cascading entries for the user to pick trader strategies
         for i in range(self.num_buyers):
-            buyer_num = "Buyer" + str(i + 2)
+            buyer_num = "Buyer" + str(i)
             tk.Label(trader_frame, text=buyer_num).grid(row=i + 2, column=0)
 
         for i in range(self.num_buyers):
             self.buyer_ids[i] = tk.StringVar()
             ttk.Combobox(trader_frame, values=self.strategies, textvariable=self.buyer_ids[i], state='readonly').grid(row=i + 2, column=1)
+
             # creates a drop down menu to choose strategies
 
         for i in range(self.num_sellers):
-            seller_num = "Seller" + str(i + 2)
+            seller_num = "Seller" + str(i)
             tk.Label(trader_frame, text=seller_num).grid(row=i + 2, column=2)
 
         for i in range(self.num_sellers):
             self.seller_ids[i] = tk.StringVar()
             ttk.Combobox(trader_frame, values=self.strategies, textvariable=self.seller_ids[i], state='readonly').grid(row=i + 2, column=3)
+
             # creates a drop down menu to choose strategies
 
+    '''The function below creates a frame within the gui so that the user can set period shocks'''
     def show_pshock_frame(self):
-        # TODO add error check for p shock > num periods
-        # TODO add error check for r shock is int
         # TODO add these shocks to rum_sim()
         pf = tk.LabelFrame(self.root, text="Period Shock Entries")
         pf.grid(row=2, column=1, sticky=tk.W +
                                         tk.E + tk.N + tk.S, padx=15, pady=4)
 
-        if self.trader_replace.get() == 0:  # if instant shocks disabled
-            if self.num_p_shocks == 0: return   # Nothing to show
+        if self.num_p_shocks == 0: return   # Nothing to show
 
-            self.p_shock_ids = [k for k in range(self.num_p_shocks)]  # will become list of tk.stringvar()
-            self.p_shock_files = [k for k in range(self.num_p_shocks)]  # will become list of tk.stringvar()
+        self.p_shock_ids = [k for k in range(self.num_p_shocks)]  # will become list of tk.stringvar()
+        self.p_shock_files = [k for k in range(self.num_p_shocks)]  # will become list of tk.stringvar()
 
-            tk.Label(pf, text="ID").grid(row=0, column=0)
-            tk.Label(pf, text="Shock Data File").grid(row=0, column=2)
-            tk.Label(pf, text="Period").grid(row=0, column=1)
-            for i in range(self.num_p_shocks):
-                pshock_num = "P Shock #" + str(i + 1)
-                tk.Label(pf, text=pshock_num).grid(row=i+1, column=0)
-            for i in range(self.num_p_shocks):
-                self.p_shock_ids[i] = tk.StringVar()
-                tk.Entry(pf, width=5, justify=tk.CENTER,
-                         textvariable=self.p_shock_ids[i]).grid(row=i + 1, column=1)
+        tk.Label(pf, text="ID").grid(row=0, column=0)
+        tk.Label(pf, text="Shock Data File").grid(row=0, column=2)
+        tk.Label(pf, text="Period").grid(row=0, column=1)
+        for i in range(self.num_p_shocks):
+            pshock_num = "P Shock #" + str(i + 1)
+            tk.Label(pf, text=pshock_num).grid(row=i+1, column=0)
+        for i in range(self.num_p_shocks):
+            self.p_shock_ids[i] = tk.StringVar()
+            tk.Entry(pf, width=5, justify=tk.CENTER,
+                     textvariable=self.p_shock_ids[i]).grid(row=i + 1, column=1)
 
-            for i in range(self.num_p_shocks):
-                self.p_shock_files[i] = tk.StringVar()
-                # TODO needs to be a way to refresh combobox values if user creates new file in market_gui
-                ttk.Combobox(pf, values=os.listdir(self.project_path), textvariable=self.p_shock_files[i], state='readonly').grid(row=i + 1, column=2)
-                plot_button = tk.Button(pf, text="Show", width=4, command=self.on_show_clicked)
-                plot_button.grid(row=i + 1, column=3)
-        else:
-            tk.Label(pf, text="Instant\nShocks\nEnabled").grid(row=0, column=0)
+        for i in range(self.num_p_shocks):
+            self.p_shock_files[i] = tk.StringVar()
+            # TODO needs to be a way to refresh combobox values if user creates new file in market_gui
+            ttk.Combobox(pf, values=os.listdir(self.project_path), textvariable=self.p_shock_files[i], state='readonly').grid(row=i + 1, column=2)
+            plot_button = tk.Button(pf, text="Show", width=4, command=self.on_show_clicked)
+            plot_button.grid(row=i + 1, column=3)
 
+    '''The function below creates a frame within the gui so that the user can set round shocks'''
     def show_rshock_frame(self):
-        # TODO add error check for r shock > num shocks
-        # TODO add error check for r shock is int
         # TODO add these shocks to run_sim()
         rf = tk.LabelFrame(self.root, text="Round Shock Entries")
         rf.grid(row=2, column=2, sticky=tk.W +
                                         tk.E + tk.N + tk.S, padx=15, pady=4)
-        if self.trader_replace.get() == 0:
-            if self.num_r_shocks == 0: return  # Nothing to show
+        if self.num_r_shocks == 0: return  # Nothing to show
 
-            self.r_shock_ids = [k for k in range(self.num_r_shocks)]
-            self.r_shock_files = [k for k in range(self.num_r_shocks)]
+        self.r_shock_ids = [k for k in range(self.num_r_shocks)]
+        self.r_shock_files = [k for k in range(self.num_r_shocks)]
 
-            tk.Label(rf, text="ID").grid(row=0, column=0)
-            tk.Label(rf, text="Shock Data File").grid(row=0, column=2)
-            tk.Label(rf, text="Round").grid(row=0, column=1)
-            for i in range(self.num_r_shocks):
-                rshock_num = "R Shock #" + str(i + 1)
-                tk.Label(rf, text=rshock_num).grid(row=i + 1, column=0)
-            for i in range(self.num_r_shocks):
-                self.r_shock_ids[i] = tk.StringVar()
-                tk.Entry(rf, width=5, justify=tk.CENTER,
-                         textvariable=self.r_shock_ids[i]).grid(row=i + 1, column=1)
+        tk.Label(rf, text="ID").grid(row=0, column=0)
+        tk.Label(rf, text="Shock Data File").grid(row=0, column=2)
+        tk.Label(rf, text="Round").grid(row=0, column=1)
+        for i in range(self.num_r_shocks):
+            rshock_num = "R Shock #" + str(i + 1)
+            tk.Label(rf, text=rshock_num).grid(row=i + 1, column=0)
+        for i in range(self.num_r_shocks):
+            self.r_shock_ids[i] = tk.StringVar()
+            tk.Entry(rf, width=5, justify=tk.CENTER,
+                     textvariable=self.r_shock_ids[i]).grid(row=i + 1, column=1)
 
-            for i in range(self.num_r_shocks):
-                self.r_shock_files[i] = tk.StringVar()
-                ttk.Combobox(rf, values=os.listdir(self.project_path), textvariable=self.r_shock_files[i], state='readonly').grid(row=i + 1, column=2)
-                plot_button = tk.Button(rf, text="Show", width=4, command=self.on_show_clicked)
-                plot_button.grid(row=i+1, column=3)
-        else:
-            tk.Label(rf, text="Instant\nShocks\nEnabled").grid(row=0, column=0)
+        for i in range(self.num_r_shocks):
+            self.r_shock_files[i] = tk.StringVar()
+            ttk.Combobox(rf, values=os.listdir(self.project_path), textvariable=self.r_shock_files[i], state='readonly').grid(row=i + 1, column=2)
+            plot_button = tk.Button(rf, text="Show", width=4, command=self.on_show_clicked)
+            plot_button.grid(row=i+1, column=3)
+
 
     def show_info_bar_parms(self):
         self.string_period_shocks.set(str(self.num_p_shocks))
@@ -569,7 +606,7 @@ class MarketGui():
     def display_about_messagebox(self, event=None):
         # displays about message
         tkinter.messagebox.showinfo("About", "{}{}".format(self.name,
-                                                           "\n\nCenter for the Study of Neuroeconomics\n\nOctober, 2017"))
+                                                           "\n\nCenter for the Study of Neuroeconomics\n\n Created by Alex Payne"))
 
     def display_help_messagebox(self, event=None):  # displays help messages when message link clicked
         help_msg = "Quick Help: \n\n"
@@ -583,112 +620,114 @@ class MarketGui():
         help_msg += "          b). Period and round shock entries displayed \n"
         tkinter.messagebox.showinfo("Help", help_msg)
 
+    '''The function below activates when the user clicks the Run button within the gui...
+    ... it checks for errors in the secondary parameters such as trader strategies, round shocks, and period shocks
+    ... also creates data folder for all simulation results to be stored in'''
     def check_sim(self):
         # code below checks that the user has set all trading strategies
         self.strategy_trigger = False  # alarm off
         for i in range(self.num_buyers):
             if self.buyer_ids[i].get() == "":
                 self.strategy_trigger = True  # alarm triggered
-                tk.messagebox.askokcancel("TRADER STRATEGY ERROR",
-                                          "1 or more trader strategy has not been set \n --> Please check")
-            else:
-                pass
 
         for i in range(self.num_sellers):
             if self.seller_ids[i].get() == "":
                 self.strategy_trigger = True  # alarm triggered
-                tk.messagebox.askokcancel("TRADER STRATEGY ERROR",
-                                          "1 or more trader strategy has not been set \n --> Please check")
-            else:
-                pass
+
         if self.strategy_trigger == False:
             # the error checks below will look to see if trader replace is enabled...
             # ... if they are: will check to make sure shift strategy is set
             # ... if not: will check to make sure period and round shocks ids and files are set
+            self.r_shock_trigger = False  # sets alarms for p shocks and r shocks
+            for i in range(self.num_r_shocks):  # look through round shock entries
+                if self.r_shock_ids[i].get() == "":  # if any entries blank
+                    self.r_shock_trigger = True  # trigger alarm
 
-            if self.trader_replace.get() == 0:  # if trader replace disabled
-                self.r_shock_trigger = False  # sets alarms for p shocks and r shocks
-                self.p_shock_trigger = False
+                elif self.r_shock_files[i].get() == "":  # if blank
+                    self.r_shock_trigger = True  # trigger alarm
 
-                for i in range(self.num_r_shocks):
-                    if self.r_shock_ids[i].get() == "":  # if any entries blank
-                        self.r_shock_trigger = True  # trigger alarm
-                        tk.messagebox.askokcancel("ROUND SHOCK ERROR",
-                                                  "Round to shock has not been specified \n --> Please check")
-                    elif self.r_shock_files[i].get() == "":
-                        self.r_shock_trigger = True
-                        tk.messagebox.askokcancel("ROUND SHOCK ERROR",
-                                                  "Round shock data file has not been set \n --> Please check")
+                else:
+                    try:
+                        int(self.r_shock_ids[i].get())  # check if integer
+                        if int(self.r_shock_ids[i].get()) > int(self.string_rounds.get()):  # round to shock <= rounds
+                            self.r_shock_trigger = True
+                    except ValueError:  # value error raised if not
+                        self.r_shock_trigger = True  # triggers parameter alarm
+                        raise
                     else:
-                        pass  # keep checking
+                        pass  # else pass to next variable check
 
+            if self.r_shock_trigger == False:
+                self.p_shock_trigger = False
                 for i in range(self.num_p_shocks):
                     if self.p_shock_ids[i].get() == "":
                         self.p_shock_trigger = True
-                        tk.messagebox.askokcancel("PERIOD SHOCK ERROR",
-                                                  "Period to shock has not been specified \n --> Please check")
+
                     elif self.p_shock_files[i].get() == "":
                         self.p_shock_trigger = True
-                        tk.messagebox.askokcancel("PERIOD SHOCK ERROR",
-                                                  "Period shock data file has not been set \n --> Please check")
+
                     else:
-                        pass  # else no errors found
-            else:  # if instant shocks enabled
-                self.replace_trader_trigger = False  # set alarm
-                if self.buyer_replace_strategy.get() == "":
-                    self.replace_trader_trigger = True
-                    tk.messagebox.askokcancel("INSTANT SHOCK ERROR",
-                                              "Buyer Shift Strategy has not been set \n --> Please check")
-                elif self.seller_replace_strategy.get() == "":
-                    self.replace_trader_trigger = True
-                    tk.messagebox.askokcancel("INSTANT SHOCK ERROR",
-                                              "Seller Shift Strategy has not been set \n --> Please check")
-                else:
-                    pass  # else no errors found
-
-                    self.save_file_trigger = False
-                    try:
-                        os.makedirs(
-                            self.output_path + "/" + self.string_session_name.get())  # creates folder for session data
-
-                    except FileExistsError:
-                        self.save_file_trigger = True
-                        messagebox.askokcancel("FILE ERROR",
-                                               "File with session name already exists... \n Please rename session \n OR \n Please delete previous file in project_path")
-                        raise  # raises error if folder already exists
-
-            if self.strategy_trigger == False:  # if no blanks in trader strategies
-                self.save_file_trigger = False
-                try:
-                    os.makedirs(
-                        self.output_path + "/" + self.string_session_name.get())  # creates folder for session data
-
-                except FileExistsError:
-                    self.save_file_trigger = True
-                    messagebox.askokcancel("FILE ERROR",
-                                           "File with session name already exists... \n Please rename session \n OR \n Please delete previous file in project_path")
-                    raise  # raises error if folder already exists
-
-                if self.save_file_trigger == False:
-                    if self.trader_replace.get() == 0:  # if instant shocks disabled
-                        if self.r_shock_trigger == False and self.p_shock_trigger == False:  # if error checks clean
-                            self.run_sim()  # run simulation
+                        try:
+                            int(self.r_shock_ids[i].get())  # check if integer
+                            if self.p_shock_ids[i].get() > self.string_periods.get():
+                                self.p_shock_trigger = True
+                        except ValueError:  # value error raised if not
+                            self.p_shock_trigger = True  # triggers parameter alarm
+                            raise
                         else:
-                            pass  # else hold for r shock/p shock fixes from user
+                            pass  # else pass to next variable check
+
+                if self.p_shock_trigger == False:
+                    self.replace_trader_trigger = False  # set alarm
+                    if self.trader_replace.get() == 1:  # if trader replacement enabled after clicking the Set button
+                        if self.buyer_replace_strategy.get() == "":  # if blank
+                            self.replace_trader_trigger = True  # trigger trader replace error
+                            tk.messagebox.askokcancel("TRADER REPLACE ERROR",
+                                                      "New Buyer Strategy has not been set \n --> Please check")
+                        elif self.seller_replace_strategy.get() == "":  # if blank
+                            self.replace_trader_trigger = True  # trigger trader replace error
+                            tk.messagebox.askokcancel("TRADER REPLACE ERROR",
+                                                      "New Seller Strategy has not been set \n --> Please check")
+                        else:
+                            pass  # else no errors found
+
                     else:
-                        if self.replace_trader_trigger == False:  # if instant shock entries filled
-                            self.run_sim()  # run simulation
-                        else:
-                            pass  # else hold for instant shock fixes from user
+                        pass
+
+                    if self.replace_trader_trigger == False:  # if no blanks in trader strategies
+                        time_stamp = time.strftime("_h%Im%Ms%S", time.localtime())
+                        session_name = self.string_session_name.get() + str(time_stamp)
+                        os.makedirs(self.output_path + session_name)
+                        self.run_sim(session_name)
+                    else:
+                        pass  # else hold for trader replacement fixes or cancellation from user
                 else:
-                    pass
+                    tk.messagebox.askokcancel("PERIOD SHOCK ERROR",
+                                              "Error found in period shocks, please check the below requirements: \n"
+                                              "--> period to shock is set \n"
+                                              "--> period to shock is a whole number \n"
+                                              "--> period shock data file is set \n"
+                                              "To cancel these shocks, set Period Shocks to 0 and re-click the Set button")
+                    pass  # else hold for period shock fixes or cancellation from user
             else:
-                pass  # else hold for strategy fixes from user
+                tk.messagebox.askokcancel("ROUND SHOCK ERROR",
+                                          "Error found in round shocks, please check the below requirements: \n"
+                                          "--> round to shock is set \n"
+                                          "--> round to shock is a whole number \n"
+                                          "--> round shock data file is set \n"
+                                          "To cancel these shocks, set Round Shocks to 0 and re-click the Set button")
+                pass  # else hold for round shock fixes or cancellation from user
         else:
-            pass  # else hold for session name change
+            tk.messagebox.askokcancel("TRADER STRATEGIES ERROR",
+                                      "Error found in trader strategies, please check the below requirements: \n"
+                                      "--> each buyer has a strategy set \n"
+                                      "--> each seller has a strategy set \n")
+            pass  # else hold for trader strategy fixes from user
 
-
-    def run_sim(self):
+    '''This function will execute if no errors found in check_sim()...
+    ... will create a new window to display simulation results to the user
+    ... will also save all simulation results to a data folder'''
+    def run_sim(self, session_name):
         '''Adding in a new window to run simulations in market_gui'''
 
         run_root = tk.Toplevel()  # creates top level root on main root
@@ -705,14 +744,24 @@ class MarketGui():
             trader = self.seller_ids[i].get()
             strat_list.append(trader)
 
-        print("STRAT LIST: " + str(strat_list))
-        print("Length: " + str(len(strat_list)))
+        p_shock_list = []
+        r_shock_list = []
+        for i in range(len(self.p_shock_ids)):
+            p_shock_list.append([int(self.p_shock_ids[i].get()), self.p_shock_files[i].get()])
+        for i in range(len(self.r_shock_ids)):
+            r_shock_list.append([int(self.r_shock_ids[i].get()), self.r_shock_files[i].get()])
 
+        print("Trader Strategies: " + str(strat_list))
+        print("Length: " + str(len(strat_list)))
+        print("\n")
+        print("Period Shocks: " + str(p_shock_list))
+        print("Round Shocks: " + str(r_shock_list))
+        print("\n")
         eff = []
         periods_list = []
         act_surplus = []
         maxi_surplus = []
-        session = self.string_session_name.get()
+        session = session_name
 
         num_periods = int(self.string_periods.get())  # periods or trading days
         limits = (int(self.price_ceiling.get()), int(self.price_floor.get()))  # price ceiling, price floor
@@ -757,7 +806,7 @@ class MarketGui():
         # creates frame to display parameters that were set before running the simulation
         info_frame = tk.LabelFrame(run_root, text="Parameters", font='bold')
         info_frame.grid(row=1, column=0)
-        tk.Label(info_frame, text="Session Name: " + str(self.string_session_name.get())).grid(row=0, column=0)
+        tk.Label(info_frame, text="Session Name: " + str(session)).grid(row=0, column=0)
         tk.Label(info_frame, text="Data Used: " + str(self.string_data.get())).grid(row=1, column=0)
         tk.Label(info_frame, text="Execution Time: " + str(sum(times))).grid(row=2, column=0)
         tk.Label(info_frame, text="Buyers: " + str(self.num_buyers) + "   " + "Sellers: " + str(self.num_sellers)).grid(row=3, column=0)
@@ -768,10 +817,10 @@ class MarketGui():
         # creates a frame to display instant shocks if enabled
         if self.trader_replace.get() == 1:
             move_column = 2  # will change column position of next tk.labelframe
-            shock_frame = tk.LabelFrame(run_root, text="Instantaneous Shocks", font='bold')
-            shock_frame.grid(row=1, column=1)
-            tk.Label(shock_frame, text="New Buyer Strategy: " + str(self.buyer_replace_strategy.get())).grid(row=1, column=0)
-            tk.Label(shock_frame, text="New Seller Strategy: " + str(self.seller_replace_strategy.get())).grid(row=3, column=0)
+            trader_replace_frame = tk.LabelFrame(run_root, text="Trader Replacement", font='bold')
+            trader_replace_frame.grid(row=1, column=1)
+            tk.Label(trader_replace_frame, text="New Buyer Strategy: " + str(self.buyer_replace_strategy.get())).grid(row=1, column=0)
+            tk.Label(trader_replace_frame, text="New Seller Strategy: " + str(self.seller_replace_strategy.get())).grid(row=3, column=0)
         else:
             move_column = 1  # if no instant shocks then next tk.labelframe column =1
             pass
@@ -915,9 +964,8 @@ class MarketGui():
         label6 = tk.Label(alpha_frame, image=photo6)
         label6.pack()
 
-        # TODO delete temp folder of mini images or no?
-        import shutil
-        shutil.rmtree(temp_folder)
+        import shutil  # allows removal of non-empty directory
+        shutil.rmtree(temp_folder)  # remove temp folder of resized images... no longer needed
         # below creates a statistics frame to display next to trader efficiency distribution graph
         stat_frame = tk.LabelFrame(run_root, text="Trader Efficiency Statistics")
         stat_frame.grid(row=2, column=3)
@@ -945,10 +993,13 @@ class MarketGui():
         tk.Label(stat_frame, text="Mean: {}   Std Dev: {}".format(mean2, std_dev2)).grid(row=5, column=0)
         tk.Label(stat_frame, text="Median: {}   Max: {}   Min: {}".format(median2, max2, min2)).grid(row=6, column=0)
 
-        run_root.mainloop()  # continues running run root
-        # TODO getting "ttk:ThemeChanged" error after sim run --> don't know why
-        # TODO fix graphing error when rerunning inside the gui .. plots trader eff dist into SD graph..
+        eff.clear()
+        strat_list.clear()
+        periods_list.clear()  # not sure if clearing all these does anything...
+        maxi_surplus.clear()
+        act_surplus.clear()
 
+        run_root.mainloop()  # continues running run root
 
 if __name__ == "__main__":
     # setup gui
