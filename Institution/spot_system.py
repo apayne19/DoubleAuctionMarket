@@ -98,7 +98,7 @@ class SpotSystem(object):
             random.shuffle(temp_traders)  # generates random order of traders each round
             self.current_round = i
             # TODO round shocks happen below
-            # TODO will be moved to tkinter dialog box
+
             # if self.current_round == 5:
             #     self.init_spot_system_crash('Test', (400, 0), 25, smp.input_path, smp.input_file_market_shock,
             #                                 smp.output_path, smp.session_name)
@@ -117,7 +117,6 @@ class SpotSystem(object):
                     if self.display:  # if display still true (tournament still running)
                         '''need to put ZIP respond() here'''
                         self.deal_status = True
-                        # TODO fix ZIP memory to be stored in ZIP trader class
                         # print("DEAL")
                         # print("ZIP Before: " + str(self.ZIP_watch))
                         # self.ZIP_watch = Trader_ZIP().respond(self.t['t3'].values, self.t['t3'].type, contracts, self.deal_status, self.da.report_standing()[0],
@@ -132,7 +131,6 @@ class SpotSystem(object):
                         if self.trader_replace_trigger == 1:
                             '''Trader replacement process happening below'''
                             # buyer/seller edits complete
-                            # TODO work needed on this section!
                             buyer_out = contracts[len(contracts) - 1][1]  # obtains transacting buyer
                             seller_out = contracts[len(contracts) - 1][2]  # obtains transacating seller
                             print("Buyer_out= " + str(buyer_out))
@@ -144,12 +142,8 @@ class SpotSystem(object):
                             print("Buyer_out Value:" + str(buyer_out_value))
                             print("Seller_out Value:" + str(seller_out_cost))
                             print("before: " + str(self.d))  # print before shock
-                            # TODO need to generalize code to num sellers and num buyers
-                            exiting_traders = []
-                            # TODO append these into exiting_traders
                             del self.d[buyer_out]  # removes successful buyer info from market
                             del self.d[seller_out]  # removes successful seller info from market
-
                             dict_list = list(self.d.items())  # changes static dictionary to list for edits
                             print(dict_list)  # print during shock
                             # insert new trader info into list
@@ -215,13 +209,10 @@ class SpotSystem(object):
             trader_id = trader.name
             self.trader_info[trader_id]['units'] = 0  # sets units to 0 at every round
             self.trader_info[trader_id]['earn'] = 0  # sets earned to 0 at every round
-
             # calculate actual surplus and earnings
-
         actual_surplus = 0  # will change as updated
         count = 0
         act_p = []  # actual transactions
-
         if ep_low == ep_high:
             theor_p = ep_high
         else:
@@ -248,6 +239,7 @@ class SpotSystem(object):
                                                                                        self.trader_info[seller_id]['type']))
             # noinspection PyUnboundLocalVariable,PyUnboundLocalVariable
             actual_surplus += value - cost
+        # TODO calculations below for Smith's Equilibrium Convergence Alphas will need to be checked
         summation = []  # dictionary for holding the summation calculations for Smith's Alpha
         for i in act_p:  # iterate through transaction prices
             s_step = (i-theor_p)**2  # (transaction price - equilibrium price)squared
@@ -256,7 +248,7 @@ class SpotSystem(object):
             smith_alpha = (math.sqrt(sum(summation)/len(act_p))/theor_p)*100
             '''the above calculation comes from Vernon Smith (1967)'''
         else:
-            smith_alpha = 0  # TODO this needs to be changed to None etc.
+            smith_alpha = 0
         self.alphas.append(smith_alpha)  # appends each period's convergence alpha
         efficiency = int((actual_surplus / maximum_surplus) * 100)  # periods trading efficiency
         trade_ratio = count/e_quantity
