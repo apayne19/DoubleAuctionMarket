@@ -110,24 +110,6 @@ class SpotMarketPeriod(object):
             else:
                 self.endpoints.append(i + self.endpoints[-1])  # appends to end of list
 
-    '''Graphs avg and max surpluses by period.. use matplotlib until plot error fixed...
-    ... generates same graph as period efficiency'''
-    # def graph_surplus(self):
-    #     trace1 = go.Scatter(
-    #         x=np.array(periods_list),
-    #         y=np.array(act_surplus), name='Actual Surplus')
-    #     trace2 = go.Scatter(
-    #         x=np.array(periods_list),
-    #         y=np.array(maxi_surplus), name='Max Surplus')
-    #     data = [trace1, trace2]
-    #     layout = go.Layout(title='Market Surpluses by Period',
-    #                         xaxis=dict(title='Periods',
-    #                                    titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')),
-    #                         yaxis=dict(title='Surplus (units)',
-    #                                    titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')))
-    #     fig = go.Figure(data=data, layout=layout)
-    #     py.offline.plot(fig)
-
     '''Graphs market efficiencies by period.. use matplotlib until plot error fixed'''
     def graph_efficiency(self, output, session):
         with plt.style.context('seaborn'):
