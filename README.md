@@ -1,6 +1,10 @@
 # DoubleAuctionMarket
 ## Experimental Market Simulations
 
+### DISCLAIMER: THIS PROJECT IS IN PROGRESS
+   * some functionality may be limited
+   * see In Progress section at the bottom of this file
+ 
 ### ------------------------------------------------------------------------------------------------------------
 ### Created by Dr. Kevin McCabe and Alexander Payne
 ### Please read license.txt and requirements.txt before proceeding
@@ -151,6 +155,20 @@
    * The user can also access all bidding behavior and contract history stored in an excel csv file
    * An example of this excel csv file is displayed below
    #### ![](https://github.com/apayne19/DoubleAuctionMarket/blob/master/Data/icons/excel_file.JPG)
+   
+### In Progress Section
+#### Graphing Errors
+   * supply/demand graphing error and transactions graphing error in run_sim window
+   * occurs when re-running the market simulation in market_gui.py
+   * can be avoided by re-running the market_gui.py script for each simulation
+   
+#### Round/Period Shocks Coming
+   * work being done on market_gui.py and spot_system.py
+   * period shocks and round shocks are not currently available in the market simulator
+   
+#### Json Data Extensions Coming
+   * ability to save in json data files coming
+   * user will then be able to choose between saving data in excel csv files or json data files
    
    
    
