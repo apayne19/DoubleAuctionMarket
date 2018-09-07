@@ -1,9 +1,10 @@
 # DoubleAuctionMarket
 ## Experimental Market Simulations
 
-### DISCLAIMER: THIS PROJECT IS IN PROGRESS
+### DISCLAIMER: THIS PROJECT IS NOT CURRENTLY BEING DEVELOPED
+   * code is provided as-is, use at your own risk
    * some functionality may be limited
-   * see In Progress section at the bottom of this file
+   * this project may start back up at a future time
  
 ### ------------------------------------------------------------------------------------------------------------
 ### Created by Dr. Kevin McCabe and Alexander Payne
@@ -16,8 +17,8 @@
       * Website link: http://www.kevinmccabe.net/kevin/
    * Alexander Payne
       * Graduated from George Mason University with a BS in Economics
-      * Lead Python Developer at The Center for the Study of Neuroeconomics
-      * Technical Analyst at Accenture starting April 2018
+      * Currently a Data Science Analyst at Accenture
+      * Previous Lead Python Developer at The Center for the Study of Neuroeconomics
       * LinkedIn link: https://www.linkedin.com/in/alex-david-payne/
       
 ### Work Cited
