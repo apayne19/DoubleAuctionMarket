@@ -17,7 +17,8 @@
       * Website link: http://www.kevinmccabe.net/kevin/
    * Alexander Payne
       * Graduated from George Mason University with a BS in Economics
-      * Currently a Data Science Analyst at Accenture
+      * Currently a Sr Data Analyst at Deloitte
+      * Previous Data Science Analyst at Accenture
       * Previous Lead Python Developer at The Center for the Study of Neuroeconomics
       * LinkedIn link: https://www.linkedin.com/in/alex-david-payne/
       
